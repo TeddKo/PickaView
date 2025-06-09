@@ -1,5 +1,5 @@
 //
-//  SettingViewController.swift
+//  MyPageViewController.swift
 //  PickaView
 //
 //  Created by Ko Minhyuk on 6/5/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SettingViewController: UIViewController {
+class MyPageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
