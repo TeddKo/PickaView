@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B5F498932DF6975C00C2F7FF /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B5F498922DF6975C00C2F7FF /* Config.xcconfig */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8D20CDCA2DF1728900D1D063 /* PickaView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PickaView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B5F498922DF6975C00C2F7FF /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -45,6 +50,7 @@
 		8D20CDC12DF1728900D1D063 = {
 			isa = PBXGroup;
 			children = (
+				B5F498922DF6975C00C2F7FF /* Config.xcconfig */,
 				8D20CDCC2DF1728900D1D063 /* PickaView */,
 				8D20CDCB2DF1728900D1D063 /* Products */,
 			);
@@ -122,6 +128,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5F498932DF6975C00C2F7FF /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +152,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -173,6 +181,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -196,6 +205,7 @@
 		};
 		8D20CDE02DF1728B00D1D063 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5F498922DF6975C00C2F7FF /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,6 +269,7 @@
 		};
 		8D20CDE12DF1728B00D1D063 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B5F498922DF6975C00C2F7FF /* Config.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
