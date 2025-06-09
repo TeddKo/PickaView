@@ -7,3 +7,5 @@
 
 // Configuration settings file format documentation can be found at:
 // https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+PIXABAY_API_KEY=26315354-6ea065c0da64d0642af2e4bab
