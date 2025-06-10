@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="Tag" representedClassName="Tag" syncable="YES" codeGenerationType="class">
-        <attribute name="count" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="tag" attributeType="String"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Tag" representedClassName="TagEntity" syncable="YES">
+        <attribute name="lastUpdated" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="score" optional="YES" attributeType="Double" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="videos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Video" inverseName="tags" inverseEntity="Video"/>
     </entity>
-    <entity name="TimeStamp" representedClassName="TimeStamp" syncable="YES" codeGenerationType="class">
+    <entity name="TimeStamp" representedClassName="TimeStampEntity" syncable="YES">
         <attribute name="endTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="startTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="whole" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Video" inverseName="timeStamp" inverseEntity="Video"/>
     </entity>
-    <entity name="Video" representedClassName="Video" syncable="YES" codeGenerationType="class">
+    <entity name="Video" representedClassName="VideoEntity" syncable="YES">
         <attribute name="comments" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="downloads" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isLiked" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="user" optional="YES" attributeType="String"/>
-        <attribute name="userId" optional="YES" attributeType="String"/>
+        <attribute name="userID" optional="YES" attributeType="String"/>
         <attribute name="userImageURL" optional="YES" attributeType="String"/>
         <attribute name="views" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="relationship" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TimeStamp"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="videos" inverseEntity="Tag"/>
+        <relationship name="timeStamp" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="TimeStamp" inverseName="video" inverseEntity="TimeStamp"/>
     </entity>
 </model>
