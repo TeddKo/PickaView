@@ -231,8 +231,17 @@ extension MyPageViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        // 셀 너비를 컬렉션뷰 너비의 30%로 설정.
-        let itemWidth = collectionView.bounds.width * 0.3
+
+        
+        // 아이패드에서는 뷰가 너무 커보일 수 있으므로, 기기에 따라 비율을 다르게 적용할 수 있습니다.
+        let widthPercentage: CGFloat
+        if traitCollection.horizontalSizeClass == .compact {
+            widthPercentage = 0.3 // 아이폰
+        } else {
+            widthPercentage = 0.2 // 아이패드
+        }
+        
+        let itemWidth = collectionView.bounds.width * widthPercentage
         
         // 셀 높이를 컬렉션뷰의 높이와 동일하게 설정.
         let itemHeight = collectionView.bounds.height
