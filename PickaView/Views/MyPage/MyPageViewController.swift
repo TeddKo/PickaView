@@ -231,9 +231,7 @@ extension MyPageViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-
-        
-        // 아이패드에서는 뷰가 너무 커보일 수 있으므로, 기기에 따라 비율을 다르게 적용할 수 있습니다.
+        // 아이패드에서는 뷰가 너무 커보일 수 있으므로, 기기에 따라 비율을 다르게 적용
         let widthPercentage: CGFloat
         if traitCollection.horizontalSizeClass == .compact {
             widthPercentage = 0.3 // 아이폰

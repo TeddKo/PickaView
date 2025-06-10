@@ -30,7 +30,7 @@
         <scene sceneID="eXe-1e-hZc">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="C4A-Sc-eyi" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="MyPage" image="heart.fill" catalog="system" id="6zh-5E-tIH"/>
+                    <tabBarItem key="tabBarItem" title="MyPage" image="ellipsis" catalog="system" id="6zh-5E-tIH"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="G0W-L3-TLD">
                         <rect key="frame" x="0.0" y="118" width="393" height="96"/>
@@ -47,7 +47,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="heart.fill" catalog="system" width="128" height="107"/>
+        <image name="ellipsis" catalog="system" width="128" height="37"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
