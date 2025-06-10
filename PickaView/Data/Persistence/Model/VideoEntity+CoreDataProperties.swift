@@ -9,9 +9,7 @@
 import Foundation
 import CoreData
 
-
 extension VideoEntity {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<VideoEntity> {
         return NSFetchRequest<VideoEntity>(entityName: "Video")
     }
@@ -27,12 +25,10 @@ extension VideoEntity {
     @NSManaged public var views: Int64
     @NSManaged public var tags: Set<TagEntity>?
     @NSManaged public var timeStamp: TimeStampEntity?
-
 }
 
 // MARK: Generated accessors for tags
 extension VideoEntity {
-
     @objc(addTagsObject:)
     @NSManaged public func addToTags(_ value: TagEntity)
 
@@ -44,7 +40,6 @@ extension VideoEntity {
 
     @objc(removeTags:)
     @NSManaged public func removeFromTags(_ values: NSSet)
-
 }
 
 extension VideoEntity : Identifiable {
