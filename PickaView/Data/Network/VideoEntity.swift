@@ -31,7 +31,7 @@ struct PixabayVideo: Decodable {
 
     enum CodingKeys: String, CodingKey {
         case id, pageURL, type, tags, duration, videos, views, downloads, likes, comments, user, userImageURL, noAiTraining
-        case userId = "user_id"
+        case userId = "userID"
     }
 }
 
