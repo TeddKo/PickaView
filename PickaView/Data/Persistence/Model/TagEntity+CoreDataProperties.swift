@@ -1,5 +1,5 @@
 //
-//  Tag+CoreDataProperties.swift
+//  TagEntity+CoreDataProperties.swift
 //  PickaView
 //
 //  Created by 장지현 on 6/10/25.
@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 
-extension Tag {
+extension TagEntity {
 
-    @nonobjc public class func fetchRequest() -> NSFetchRequest<Tag> {
-        return NSFetchRequest<Tag>(entityName: "Tag")
+    @nonobjc public class func fetchRequest() -> NSFetchRequest<TagEntity> {
+        return NSFetchRequest<TagEntity>(entityName: "Tag")
     }
 
     @NSManaged public var lastUpdated: Date?
@@ -24,13 +24,13 @@ extension Tag {
 }
 
 // MARK: Generated accessors for videos
-extension Tag {
+extension TagEntity {
 
     @objc(addVideosObject:)
-    @NSManaged public func addToVideos(_ value: Video)
+    @NSManaged public func addToVideos(_ value: VideoEntity)
 
     @objc(removeVideosObject:)
-    @NSManaged public func removeFromVideos(_ value: Video)
+    @NSManaged public func removeFromVideos(_ value: VideoEntity)
 
     @objc(addVideos:)
     @NSManaged public func addToVideos(_ values: NSSet)
@@ -40,6 +40,6 @@ extension Tag {
 
 }
 
-extension Tag : Identifiable {
+extension TagEntity : Identifiable {
 
 }

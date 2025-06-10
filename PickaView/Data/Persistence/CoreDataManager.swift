@@ -37,8 +37,8 @@ final class CoreDataManager {
         }
     }
 
-    func fetchAllVideos() -> [Video] {
-        let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
+    func fetchAllVideos() -> [VideoEntity] {
+        let fetchRequest: NSFetchRequest<VideoEntity> = VideoEntity.fetchRequest()
 
         do {
             let videos = try context.fetch(fetchRequest)
@@ -55,7 +55,7 @@ final class CoreDataManager {
         for video in videos {
             let videoId = Int64(video.id)
 
-            let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
+            let fetchRequest: NSFetchRequest<VideoEntity> = VideoEntity.fetchRequest()
             fetchRequest.predicate = NSPredicate(format: "id == %d", videoId)
 
             if let existingVideo = try? context.fetch(fetchRequest).first {
@@ -66,7 +66,7 @@ final class CoreDataManager {
                 existingVideo.userImageURL = video.userImageURL
                 existingVideo.views = Int64(video.views)
             } else {
-                let newVideo = Video(context: context)
+                let newVideo = VideoEntity(context: context)
                 newVideo.id = videoId
                 newVideo.url = video.videos.medium.url
                 newVideo.comments = Int64(video.comments)
