@@ -54,10 +54,10 @@
             </objects>
             <point key="canvasLocation" x="1978" y="120"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main View Controller-->
         <scene sceneID="kSv-3O-sWd">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="MainViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nKz-Te-FSR">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
