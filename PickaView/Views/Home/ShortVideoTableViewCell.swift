@@ -11,44 +11,34 @@ class ShortVideoTableViewCell: UITableViewCell {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    let shortVideoImages: [UIImage] = [
-           UIImage(named: "short1")!,
-           UIImage(named: "short2")!,
-           UIImage(named: "short3")!,
-           UIImage(named: "short4")!,
-           UIImage(named: "short5")!
+    let symbolData: [(user: String, symbolName: String)] = [
+           ("Alice", "video.fill"),
+           ("Bob", "video.circle.fill"),
+           ("Charlie", "play.rectangle.fill"),
+           ("David", "film.fill")
        ]
 
-    override func awakeFromNib() {
+       override func awakeFromNib() {
            super.awakeFromNib()
 
            collectionView.dataSource = self
            collectionView.delegate = self
 
-           // CollectionView Cell 등록
-           collectionView.register(UINib(nibName: "ShortVideoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ShortVideoCollectionViewCell")
-
-           // 가로 스크롤 설정
-           if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-               flowLayout.scrollDirection = .horizontal
-           }
        }
    }
 
    extension ShortVideoTableViewCell: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-           return shortVideoImages.count
+           return symbolData.count
        }
 
        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ShortVideoCollectionViewCell", for: indexPath) as! ShortVideoCollectionViewCell
-           cell.thumnailImage.image = shortVideoImages[indexPath.item]
+           let item = symbolData[indexPath.item]
+           cell.userNameLabel.text = item.user
+           cell.thumnailImage.image = UIImage(systemName: item.symbolName)
+           cell.thumnailImage.tintColor = .systemBlue
            return cell
-       }
-
-       // 셀 크기 설정
-       func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-           return CGSize(width: 120, height: collectionView.frame.height)
        }
    }

@@ -11,42 +11,38 @@ class HomeViewController: UIViewController {
 
     @IBOutlet weak var tableView: UITableView!
 
-
     override func viewDidLoad() {
-        super.viewDidLoad()
+            super.viewDidLoad()
 
-        tableView.dataSource = self
-        tableView.delegate = self
+            tableView.dataSource = self
+            tableView.delegate = self
+
+            tableView.reloadData()
+        }
     }
-}
 
     extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
-        // Section 몇 개? → 2개 (유저 리스트 Section + 영상 Section)
         func numberOfSections(in tableView: UITableView) -> Int {
             return 2
         }
 
-        // 각 Section마다 몇 개 Row(Cell) 보여줄지
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            if section == 0 {
-                return 1 // Section 0은 항상 하나의 Cell → CollectionView 들어감
-            } else {
-                return 10 // Section 1은 영상 10개 → Cell 10개
-            }
+            return 5  // 각 섹션에 1개씩 셀 표시
         }
 
-        // 각 Row(Cell)에 어떤 셀을 그릴지 → 여기서 UITableViewCell 만들어서 반환
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
             if indexPath.section == 0 {
-                // Section 0 → UserListTableViewCell 반환 (CollectionView 들어가는 Cell)
-                let cell = tableView.dequeueReusableCell(withIdentifier: "shortVideoTableViewCell", for: indexPath)
+                // 이제 videos 전달 불필요
+                let cell = tableView.dequeueReusableCell(withIdentifier: "shortVideoTableViewCell", for: indexPath) as! ShortVideoTableViewCell
                 return cell
             } else {
-                // Section 1 → 영상용 VideoTableViewCell 반환
                 let cell = tableView.dequeueReusableCell(withIdentifier: "longVideoTableViewCell", for: indexPath) as! LongVideoTableViewCell
-                // 셀의 제목 표시 (임시로 영상 번호 표시)
-                cell.userNameLabel.text = "Video \(indexPath.row + 1)"
+                cell.userNameLabel.text = "User"
+                cell.viewsLabel.text = "Views: 1000"
+                cell.durationLabel.text = "3:45"
+                cell.userImage.image = UIImage(systemName: "person.crop.circle")
+                cell.longVideoThumnail.image = UIImage(systemName: "video.fill")
                 return cell
             }
         }
