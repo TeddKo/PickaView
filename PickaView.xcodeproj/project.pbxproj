@@ -145,6 +145,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -173,6 +174,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -196,6 +198,8 @@
 		};
 		8D20CDE02DF1728B00D1D063 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,6 +263,8 @@
 		};
 		8D20CDE12DF1728B00D1D063 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
