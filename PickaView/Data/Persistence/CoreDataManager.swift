@@ -62,7 +62,7 @@ final class CoreDataManager {
                 existingVideo.url = video.videos.medium.url
                 existingVideo.comments = Int64(video.comments)
                 existingVideo.user = video.user
-                existingVideo.userId = String(video.userId)
+                existingVideo.userID = String(video.userID)
                 existingVideo.userImageURL = video.userImageURL
                 existingVideo.views = Int64(video.views)
             } else {
@@ -71,7 +71,7 @@ final class CoreDataManager {
                 newVideo.url = video.videos.medium.url
                 newVideo.comments = Int64(video.comments)
                 newVideo.user = video.user
-                newVideo.userId = String(video.userId)
+                newVideo.userID = String(video.userID)
                 newVideo.userImageURL = video.userImageURL
                 newVideo.views = Int64(video.views)
             }

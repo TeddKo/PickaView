@@ -24,14 +24,14 @@ struct PixabayVideo: Decodable {
     let downloads: Int
     let likes: Int
     let comments: Int
-    let userId: Int
+    let userID: Int
     let user: String
     let userImageURL: String
     let noAiTraining: Bool
 
     enum CodingKeys: String, CodingKey {
         case id, pageURL, type, tags, duration, videos, views, downloads, likes, comments, user, userImageURL, noAiTraining
-        case userId = "userID"
+        case userID = "user_id"
     }
 }
 
