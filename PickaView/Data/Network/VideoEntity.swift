@@ -51,7 +51,7 @@ struct VideoFile: Decodable {
 }
 
 
-// MARK: - Medium 영상만 사용
+// MARK: - Medium 영상만 사용할 경우
 extension PixabayVideo {
     var mediumURL: URL? {
         URL(string: videos.medium.url)
