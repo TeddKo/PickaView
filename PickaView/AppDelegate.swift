@@ -10,34 +10,11 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
-    ) -> Bool {
 
-        Task {
-            await fetchAndTestVideos()
-        }
 
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        // Override point for customization after application launch.
         return true
-    }
-
-    func fetchAndTestVideos() async {
-        do {
-            let videos = try await PixabayVideoService.shared.fetchVideos()
-            print("✅ AppDelegate에서 영상 \(videos.count)개 fetch 완료")
-            // 👉 Core Data에 저장
-            CoreDataManager.shared.saveVideos(videos)
-
-            // 👉 저장 확인
-            let savedVideos = CoreDataManager.shared.fetchAllVideos()
-            print("📦 Core Data에 저장된 영상 수: \(savedVideos.count)")
-            for video in savedVideos.prefix(3) { // 너무 많으면 일부만 출력
-                print("🔹 저장된 Video - id: \(video.id), url: \(video.url ?? "없음")")
-            }
-        } catch {
-            print("❌ AppDelegate 네트워크 오류: \(error.localizedDescription)")
-        }
     }
 
     // MARK: UISceneSession Lifecycle
@@ -56,4 +33,3 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 }
-
