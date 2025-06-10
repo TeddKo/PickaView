@@ -36,10 +36,7 @@ struct PixabayVideo: Decodable {
 }
 
 struct VideoVariants: Decodable {
-    let large: VideoFile
     let medium: VideoFile
-    let small: VideoFile
-    let tiny: VideoFile
 }
 
 struct VideoFile: Decodable {
