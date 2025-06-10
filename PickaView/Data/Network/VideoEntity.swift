@@ -10,8 +10,6 @@
 import Foundation
 
 struct PixabayResponse: Decodable {
-    let total: Int
-    let totalHits: Int
     let hits: [PixabayVideo]
 }
 
@@ -50,4 +48,20 @@ struct VideoFile: Decodable {
     let height: Int
     let size: Int
     let thumbnail: String
+}
+
+
+// MARK: - Medium 영상만 사용
+extension PixabayVideo {
+    var mediumURL: URL? {
+        URL(string: videos.medium.url)
+    }
+
+    var mediumThumbnailURL: URL? {
+        URL(string: videos.medium.thumbnail)
+    }
+
+    var mediumVideoFile: VideoFile {
+        videos.medium
+    }
 }
