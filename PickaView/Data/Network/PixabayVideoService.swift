@@ -90,15 +90,16 @@ struct PixabayVideoService {
     private let apiKey: String
 
     // APIClient와 Info.plist 번들을 주입받아 테스트 가능하게 설계
-    init(client: APIClient = .init(), infoPlistBundle: Bundle = .main) {
+    init(client: APIClient = .init(), infoPlistBundle: Bundle = .main) throws {
         self.client = client
 
         guard let key = infoPlistBundle.object(forInfoDictionaryKey: "PIXABAY_API_KEY") as? String else {
-            fatalError("❌ PIXABAY_API_KEY is missing.")
+            throw NetworkError.missingAPIKey
         }
-
+        
         self.apiKey = key
     }
+
 
     /// Pixabay에서 비디오 목록을 가져옵니다
     /// - Parameter query: 검색어(옵션). 없으면 전체 인기 목록을 불러옵니다
