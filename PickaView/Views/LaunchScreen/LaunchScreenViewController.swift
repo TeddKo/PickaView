@@ -11,5 +11,18 @@ class LaunchScreenViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        Task {
+            do {
+                // Network
+                // CoreData
+
+                await MainActor.run {
+                    self.performSegue(withIdentifier: "ReplaceSegue", sender: nil)
+                }
+            } catch {
+                print("SplashView fetch Error: \(error)")
+            }
+        }
     }
 }
