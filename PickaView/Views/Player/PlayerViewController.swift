@@ -8,8 +8,12 @@
 import UIKit
 import AVKit
 
+protocol PlayerViewControllerDelegate: AnyObject {
+    func didDismissFullscreen()
+}
+
 /// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
-class PlayerViewController: UIViewController {
+class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     // MARK: - Properties
 
@@ -34,6 +38,10 @@ class PlayerViewController: UIViewController {
     /// 세로/가로 전환 시 사용되는 오토레이아웃 제약
     var portraitConstraints: [NSLayoutConstraint] = []
     var landscapeConstraints: [NSLayoutConstraint] = []
+
+    // 프로퍼티 추가
+    var isFullscreenMode: Bool = false
+    weak var delegate: PlayerViewControllerDelegate?
 
     /// 하단 재생/이동 버튼 스택
     lazy var playbackControlsStack: UIStackView = {
@@ -131,6 +139,23 @@ class PlayerViewController: UIViewController {
         addPlayerObservers()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateConstraintsForOrientation()
+    }
+
+    func didDismissFullscreen() {
+        setOrientation(to: .portrait)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isFullscreenMode {
+            setOrientation(to: .portrait)
+            delegate?.didDismissFullscreen()
+        }
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer?.frame = videoContainerView.bounds
@@ -138,7 +163,10 @@ class PlayerViewController: UIViewController {
 
     /// 지원하는 화면 방향
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .all
+        return isFullscreenMode ? .landscape : .all
+    }
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return isFullscreenMode ? .landscapeRight : .portrait
     }
 
     /// 자동 회전 지원 여부

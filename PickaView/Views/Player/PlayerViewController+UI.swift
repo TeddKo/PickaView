@@ -72,7 +72,7 @@ extension PlayerViewController {
 
     /// 기기 방향에 따라 오토레이아웃 제약을 적용
     func updateConstraintsForOrientation() {
-        if UIDevice.current.orientation.isLandscape {
+        if isFullscreenMode || UIDevice.current.orientation.isLandscape {
             NSLayoutConstraint.deactivate(portraitConstraints)
             NSLayoutConstraint.activate(landscapeConstraints)
             contentScrollView.isHidden = true
