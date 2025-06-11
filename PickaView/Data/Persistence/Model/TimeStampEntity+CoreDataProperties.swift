@@ -9,9 +9,7 @@
 import Foundation
 import CoreData
 
-
 extension TimeStampEntity {
-
     @nonobjc public class func fetchRequest() -> NSFetchRequest<TimeStampEntity> {
         return NSFetchRequest<TimeStampEntity>(entityName: "TimeStamp")
     }
@@ -20,7 +18,6 @@ extension TimeStampEntity {
     @NSManaged public var startTime: Date?
     @NSManaged public var whole: Double
     @NSManaged public var video: VideoEntity?
-
 }
 
 extension TimeStampEntity : Identifiable {
