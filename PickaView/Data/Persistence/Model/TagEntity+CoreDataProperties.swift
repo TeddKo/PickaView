@@ -15,7 +15,7 @@ extension TagEntity {
     }
 
     @NSManaged public var lastUpdated: Date?
-    @NSManaged public var name: String?
+    @NSManaged public var name: String
     @NSManaged public var score: Double
     @NSManaged public var videos: NSSet?
 }
