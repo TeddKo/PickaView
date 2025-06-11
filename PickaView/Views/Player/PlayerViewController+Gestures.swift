@@ -7,26 +7,27 @@
 
 import UIKit
 
+/// PlayerViewController의 제스처 관련 확장
 extension PlayerViewController: UIGestureRecognizerDelegate {
 
-    // MARK: - Gestures
+    /// 플레이어 오버레이 뷰에 필요한 제스처를 모두 추가
     func setupGestures() {
-        // 단일 탭 제스처
+        // 단일 탭: 컨트롤 토글
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(toggleControlsVisibility))
         singleTap.numberOfTapsRequired = 1
         singleTap.delegate = self
         controlsOverlayView.addGestureRecognizer(singleTap)
 
-        // 더블 탭 제스처
+        // 더블 탭: 구간 점프(왼쪽: -10초, 오른쪽: +10초)
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
         doubleTap.numberOfTapsRequired = 2
         doubleTap.delegate = self
         controlsOverlayView.addGestureRecognizer(doubleTap)
 
-        // 단일 탭은 더블 탭이 실패했을 때만 인식되도록 설정
+        // 단일 탭은 더블 탭 실패 시에만 인식
         singleTap.require(toFail: doubleTap)
 
-        // ✅ 스와이프 제스처 추가
+        // 스와이프 업/다운: 전체화면 전환
         let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToFullscreen))
         swipeUp.direction = .up
         controlsOverlayView.addGestureRecognizer(swipeUp)
@@ -36,6 +37,8 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         controlsOverlayView.addGestureRecognizer(swipeDown)
     }
 
+    /// 더블 탭 제스처 처리: 화면 좌/우 위치에 따라 -10초/10초 점프
+    /// - Parameter recognizer: UITapGestureRecognizer 인스턴스
     @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: controlsOverlayView)
         let midX = controlsOverlayView.bounds.midX
@@ -47,7 +50,8 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
-    // ✅ 스와이프 제스처 핸들러 추가
+    /// 스와이프 업/다운 제스처 처리: 전체화면 전환 또는 복귀
+    /// - Parameter gesture: UISwipeGestureRecognizer 인스턴스
     @objc func handleSwipeToFullscreen(_ gesture: UISwipeGestureRecognizer) {
         if gesture.direction == .up, !UIDevice.current.orientation.isLandscape {
             setOrientation(to: .landscapeRight)
@@ -56,15 +60,19 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
-    // ✅ 화면 방향 전환을 위한 메서드 추가
+    /// 기기 방향을 강제로 변경
+    /// - Parameter orientation: 설정할 UIInterfaceOrientation 값
     func setOrientation(to orientation: UIInterfaceOrientation) {
         UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
         UIViewController.attemptRotationToDeviceOrientation()
     }
 
-    // MARK: - UIGestureRecognizerDelegate
+    /// UIControl 뷰에 제스처가 적용되지 않도록 필터링
+    /// - Parameters:
+    ///   - gestureRecognizer: 제스처 인식기
+    ///   - touch: 터치 정보
+    /// - Returns: 제스처 적용 가능 여부
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        // 터치된 뷰가 UIControl(버튼, 슬라이더 등)의 하위 뷰인 경우 제스처를 인식하지 않습니다.
         if touch.view is UIControl {
             return false
         }

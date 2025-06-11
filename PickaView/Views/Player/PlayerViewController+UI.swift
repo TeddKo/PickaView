@@ -7,19 +7,22 @@
 
 import UIKit
 
+/// PlayerViewController의 UI 관련 기능 확장
 extension PlayerViewController {
 
-    // 버튼 아이콘 config(한 번만 정의, 전역 변수처럼 씀)
+    /// 큰 버튼용 SF Symbol config
     var symbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 36, weight: .regular, scale: .large)
     }
 
-    // 작은 크기(forward/backward)
+    /// 작은 버튼용 SF Symbol config (forward/backward)
     var smallSymbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 26, weight: .regular, scale: .medium)
     }
 
     // MARK: - UI Setup
+
+    /// 전체 UI 컴포넌트와 오토레이아웃을 세팅
     func setupUI() {
         view.addSubview(videoContainerView)
         view.addSubview(contentScrollView)
@@ -67,6 +70,7 @@ extension PlayerViewController {
         updateConstraintsForOrientation()
     }
 
+    /// 기기 방향에 따라 오토레이아웃 제약을 적용
     func updateConstraintsForOrientation() {
         if UIDevice.current.orientation.isLandscape {
             NSLayoutConstraint.deactivate(portraitConstraints)
@@ -79,6 +83,11 @@ extension PlayerViewController {
         }
     }
 
+    /// 시스템 심볼로 UIButton을 생성
+    /// - Parameters:
+    ///   - systemName: SF Symbol 이름
+    ///   - useSmallConfig: 작은 버튼 여부
+    /// - Returns: 설정된 UIButton
     func createButton(systemName: String, useSmallConfig: Bool = false) -> UIButton {
         let config = useSmallConfig ? smallSymbolConfig : symbolConfig
         let button = UIButton(type: .system)
@@ -99,13 +108,14 @@ extension PlayerViewController {
         return button
     }
 
+    /// 재생/일시정지 버튼의 이미지를 현재 상태에 맞게 변경
+    /// - Parameter isPlaying: true면 pause, false면 play 이미지
     func setPlayPauseImage(isPlaying: Bool) {
         let imageName = isPlaying ? "pause.fill" : "play.fill"
-        // 이미지를 config와 함께 만듭니다.
         let img = UIImage(systemName: imageName, withConfiguration: symbolConfig)
         playPauseButton.setImage(img, for: .normal)
 
-        // pause일 때만 인셋을 음수로 조금 줘서 크기를 맞춤 (필요시 숫자 조정)
+        // 일시정지 아이콘만 살짝 더 크게(인셋)
         if isPlaying {
             playPauseButton.imageEdgeInsets = UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8)
         } else {
@@ -113,6 +123,9 @@ extension PlayerViewController {
         }
     }
 
+    /// 시간 표시용 UILabel을 만듬
+    /// - Parameter text: 초기 텍스트 (예: "00:00")
+    /// - Returns: 설정된 UILabel
     func createTimeLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -122,6 +135,10 @@ extension PlayerViewController {
         return label
     }
 
+    /// 버튼 터치 애니메이션을 실행
+    /// - Parameters:
+    ///   - button: 애니메이션할 버튼
+    ///   - completion: 애니메이션 후 실행할 클로저
     func animateButtonTap(_ button: UIButton, completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0.1, animations: {
             button.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
@@ -134,6 +151,7 @@ extension PlayerViewController {
         }
     }
 
+    /// 스크롤뷰에 더미 컨텐츠 뷰(예시용)를 추가
     func addDummyContentToScrollView() {
         let stackView = UIStackView()
         stackView.axis = .vertical
