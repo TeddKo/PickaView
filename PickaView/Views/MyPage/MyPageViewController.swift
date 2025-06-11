@@ -11,7 +11,7 @@ import UIKit
  마이페이지 화면을 표시하고 관리하는 뷰 컨트롤러.
  
  사용자의 활동 데이터 표시 및 앱의 화면 테마 설정 기능을 포함함.
- */
+ **/
 class MyPageViewController: UIViewController {
     
     // MARK: - Properties
@@ -61,7 +61,7 @@ class MyPageViewController: UIViewController {
     /**
      `colorModeSegment`의 값이 변경될 때 호출될 메서드.
      - Parameter sender: 이벤트가 발생한 `UISegmentedControl` 객체.
-     */
+     **/
     @objc private func themeDidChange(_ sender: UISegmentedControl) {
         ThemeManager.shared.setTheme(selectedIndex: sender.selectedSegmentIndex)
     }
@@ -88,36 +88,9 @@ class MyPageViewController: UIViewController {
     /**
      무작위 RGB 값을 가진 `UIColor` 객체를 생성하여 반환.
      - Returns: 생성된 `UIColor` 객체.
-     */
+     **/
     private func generateRandomColor() -> UIColor {
         return UIColor(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), alpha: 1.0)
-    }
-    
-    /**
-     주어진 뷰를 컨테이너 뷰로 감싸 좌우 여백을 적용하고 `mainVerticalStackView`에 추가하는 래퍼(Wrapper) 함수.
-     - Parameters:
-       - view: 여백을 적용할 대상 뷰.
-       - leftPadding: 왼쪽에 적용할 여백 크기.
-       - rightPadding: 오른쪽에 적용할 여백 크기.
-     */
-    private func wrappedPaddingContainer(
-        view: UIView,
-        leftPadding: CGFloat,
-        rightPadding: CGFloat
-    ) {
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        mainVerticalStackView.addArrangedSubview(containerView)
-        containerView.addSubview(view)
-        
-        // 제약조건 설정. `trailingAnchor`의 constant는 음수 값을 사용해야 함.
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: containerView.topAnchor),
-            view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leftPadding),
-            view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -rightPadding),
-            view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-        ])
     }
     
     /// 화면 설정(테마) 관련 UI 컴포넌트를 구성하고 스택뷰에 추가.
@@ -140,7 +113,12 @@ class MyPageViewController: UIViewController {
         label.text = "시청시간"
         label.font = .preferredFont(forTextStyle: .largeTitle)
         
-        wrappedPaddingContainer(view: stackView, leftPadding: 20, rightPadding: 20)
+        wrappedPaddingContainer(
+            stackView: mainVerticalStackView,
+            view: stackView,
+            leftPadding: 20,
+            rightPadding: 20
+        )
         
         stackView.addArrangedSubview(label)
         stackView.addArrangedSubview(chartView)
@@ -154,7 +132,7 @@ class MyPageViewController: UIViewController {
      - Parameters:
        - leftText: 왼쪽에 표시될 텍스트.
        - rightText: 오른쪽에 표시될 텍스트.
-     */
+     **/
     private func horizontalStackTwoTextView(leftText: String, rightText: String) {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -171,7 +149,12 @@ class MyPageViewController: UIViewController {
         rightLabel.font = .preferredFont(forTextStyle: .body)
         rightLabel.textAlignment = .right
         
-        wrappedPaddingContainer(view: stackView, leftPadding: 20, rightPadding: 20)
+        wrappedPaddingContainer(
+            stackView: mainVerticalStackView,
+            view: stackView,
+            leftPadding: 20,
+            rightPadding: 20
+        )
         
         stackView.addArrangedSubview(leftLabel)
         stackView.addArrangedSubview(rightLabel)
