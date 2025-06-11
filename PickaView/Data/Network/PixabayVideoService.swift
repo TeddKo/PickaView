@@ -6,12 +6,7 @@
 //
 
 import Foundation
-
-
 struct PixabayVideoService {
-    // 싱글턴 패턴을 구현해서 앱 전역에서 동일한 인스턴스를 공유
-    static let shared = PixabayVideoService()
-
     private let baseURL = "https://pixabay.com/api/videos/"
 
     private var apiKey: String {
