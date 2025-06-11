@@ -1,5 +1,5 @@
 //
-//  MyPageHistoriesViewController.swift
+//  LikeViewController.swift
 //  PickaView
 //
 //  Created by Ko Minhyuk on 6/11/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MyPageHistoriesViewController: UIViewController {
+class LikeViewController: UIViewController {
     
     var selectedIndexPath: IndexPath?
     
@@ -65,7 +65,7 @@ class MyPageHistoriesViewController: UIViewController {
     
     private func addMedialView() {
         
-        let mediaCell = MediaHistoryCellView()
+        let mediaCell = LikeCellView()
         
         mediaCell.configure(
             date: .now,

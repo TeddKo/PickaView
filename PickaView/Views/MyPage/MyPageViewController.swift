@@ -35,12 +35,14 @@ class MyPageViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 36
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return stackView
     }()
     
     /// 화면 테마 변경을 위한 `UISegmentedControl`. `lazy` 키워드를 통해 첫 사용 시 초기화됨.
     private lazy var colorModeSegment: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["라이트", "다크", "시스템"])
+        let segment = UISegmentedControl(items: ["Light", "Dark", "System"])
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.addTarget(self, action: #selector(themeDidChange), for: .valueChanged)
         return segment
@@ -110,15 +112,10 @@ class MyPageViewController: UIViewController {
         chartView.backgroundColor = .systemGray4
         
         let label = UILabel()
-        label.text = "시청시간"
+        label.text = "Watch Time"
         label.font = .preferredFont(forTextStyle: .largeTitle)
         
-        wrappedPaddingContainer(
-            stackView: mainVerticalStackView,
-            view: stackView,
-            leftPadding: 20,
-            rightPadding: 20
-        )
+        stackView.wrappedPaddingContainer(stackView: mainVerticalStackView, horizontalPadding: 20)
         
         stackView.addArrangedSubview(label)
         stackView.addArrangedSubview(chartView)
@@ -149,11 +146,9 @@ class MyPageViewController: UIViewController {
         rightLabel.font = .preferredFont(forTextStyle: .body)
         rightLabel.textAlignment = .right
         
-        wrappedPaddingContainer(
+        stackView.wrappedPaddingContainer(
             stackView: mainVerticalStackView,
-            view: stackView,
-            leftPadding: 20,
-            rightPadding: 20
+            horizontalPadding: 20
         )
         
         stackView.addArrangedSubview(leftLabel)
@@ -238,6 +233,19 @@ extension MyPageViewController: UICollectionViewDelegateFlowLayout {
     ) -> UIEdgeInsets {
         // 상하 여백을 0으로 설정하여 셀이 컬렉션뷰의 높이를 완전히 채우도록 함.
         return UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+    }
+}
+
+extension MyPageViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let historiesViewController = MyPageHistoriesViewController()
+
+        historiesViewController.selectedIndexPath = indexPath
+        
+        self.navigationController?.pushViewController(historiesViewController, animated: true)
     }
 }
 
