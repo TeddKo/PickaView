@@ -7,7 +7,9 @@
 
 import UIKit
 
-/// 해시태그 하나를 표시하는  뷰 컴포넌트.
+/**
+ 해시태그 하나를 표시하는 뷰 컴포넌트.
+ */
 final class TagView: UIView {
     
     private let tagLabel: UILabel = {
@@ -20,8 +22,10 @@ final class TagView: UIView {
         return label
     }()
     
-    /// 주어진 제목으로 TagView를 초기화.
-    /// - Parameter title: 태그에 표시될 문자열.
+    /**
+     주어진 제목으로 TagView를 초기화함.
+     - Parameter title: 태그에 표시될 문자열.
+     */
     init(title: String) {
         super.init(frame: .zero)
         
@@ -53,7 +57,9 @@ final class TagView: UIView {
     }
 }
 
-/// 썸네일, 영상 길이를 표시하는 뷰 컴포넌트.
+/**
+ 썸네일, 영상 길이를 표시하는 뷰 컴포넌트.
+ */
 final class MediaContentView: UIView {
     
     private let thumbnailImageView: UIImageView = {
@@ -63,6 +69,8 @@ final class MediaContentView: UIView {
         image.contentMode = .scaleAspectFill
         image.layer.cornerRadius = 12
         image.clipsToBounds = true
+        // `contentMode`가 중복 선언되어 있어 마지막 .scaleAspectFit이 적용됩니다. 의도한 설정이 맞는지 확인이 필요합니다.
+        image.contentMode = .scaleAspectFit
         return image
     }()
     
@@ -87,19 +95,28 @@ final class MediaContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 뷰를 주어진 데이터로 설정.
-    /// - Parameters:
-    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-    ///   - videoLength: 영상 길이 (초단위).
+    /**
+     뷰를 주어진 데이터로 설정함.
+     - Parameters:
+       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+       - videoLength: 영상 길이 (초단위).
+     */
     func configure(
         thumbnailURL: String,
         videoLength: Double
     ) {
-         thumbnailImageView.loadImage(from: thumbnailURL)
+        thumbnailImageView.loadImage(from: thumbnailURL)
         
         let minutes = Int(videoLength) / 60
         let seconds = Int(videoLength) % 60
         durationLabel.text = String(format: " %02d:%02d ", minutes, seconds)
+    }
+    
+    /**
+     썸네일 이미지를 초기화함.
+     */
+    func resetImage() {
+        thumbnailImageView.image = nil
     }
     
     private func setupUI() {
@@ -114,15 +131,15 @@ final class MediaContentView: UIView {
             thumbnailImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            thumbnailImageView.heightAnchor.constraint(equalTo: thumbnailImageView.widthAnchor, multiplier: 0.56),
-            
             durationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8),
             durationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8)
         ])
     }
 }
 
-/// 날짜, 썸네일, 영상 길이를 표시하는  뷰 컴포넌트.
+/**
+ 날짜, 썸네일, 영상 길이를 표시하는 뷰 컴포넌트.
+ */
 final class MediaDateContentView: UIView {
     
     private let contentVStack: UIStackView = {
@@ -172,11 +189,13 @@ final class MediaDateContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 뷰를 주어진 데이터로 설정.
-    /// - Parameters:
-    ///   - date: 표시할 날짜.
-    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-    ///   - videoLength: 영상 길이 (초단위).
+    /**
+     뷰를 주어진 데이터로 설정함.
+     - Parameters:
+       - date: 표시할 날짜.
+       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+       - videoLength: 영상 길이 (초단위).
+     */
     func configure(
         date: Date,
         thumbnailURL: String,
@@ -208,15 +227,22 @@ final class MediaDateContentView: UIView {
             contentVStack.trailingAnchor.constraint(equalTo: trailingAnchor),
             contentVStack.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            thumbnailImageView.heightAnchor.constraint(equalTo: thumbnailImageView.widthAnchor, multiplier: 0.56),
-            
             durationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8),
             durationLabel.bottomAnchor.constraint(equalTo: thumbnailImageView.bottomAnchor, constant: -8)
         ])
     }
+    
+    /**
+     썸네일 이미지를 초기화함.
+     */
+    func resetImage() {
+        thumbnailImageView.image = nil
+    }
 }
 
-/// 상단의 액션 버튼과 하단의 태그 목록을 포함하는 뷰.
+/**
+ 상단의 액션 버튼과 하단의 태그 목록을 포함하는 뷰.
+ */
 final class ActionableTagsView: UIView {
 
     private lazy var likeButton: UIButton = {
@@ -244,8 +270,10 @@ final class ActionableTagsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    /// 태그 목록을 주어진 문자열 배열로 설정.
-    /// - Parameter tags: 표시할 태그 문자열의 배열.
+    /**
+     태그 목록을 주어진 문자열 배열로 설정함.
+     - Parameter tags: 표시할 태그 문자열의 배열.
+     */
     func configure(with tags: [String]) {
         tagsView.configure(with: tags)
     }
@@ -270,7 +298,9 @@ final class ActionableTagsView: UIView {
     }
 }
 
-/// 여러 태그를 가로로 스크롤하여 보여주는 뷰.
+/**
+ 여러 태그를 가로로 스크롤하여 보여주는 뷰.
+ */
 final class HorizontalTagsView: UIView {
     
     private let scrollView: UIScrollView = {
@@ -285,6 +315,8 @@ final class HorizontalTagsView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 8
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = .init(horizontal: 16)
         return stack
     }()
     
@@ -299,8 +331,12 @@ final class HorizontalTagsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 태그 목록을 주어진 문자열 배열로 설정.
-    /// - Parameter tags: 표시할 태그 문자열의 배열.
+    /**
+     태그 목록을 주어진 문자열 배열로 설정함.
+     
+     기존에 표시되던 모든 태그를 제거하고 새로운 태그로 교체.
+     - Parameter tags: 표시할 태그 문자열의 배열.
+     */
     func configure(with tags: [String]) {
         tagsHStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
@@ -332,22 +368,22 @@ final class HorizontalTagsView: UIView {
     }
 }
 
-/// 미디어 콘텐츠와 수평 태그 목록을 조합한 히스토리 셀 뷰.
+/**
+ 미디어 콘텐츠와 수평 태그 목록을 조합한 히스토리 셀 뷰.
+ */
 final class MediaHistoryCellView: UIView {
     
     private let mainHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 16
+
         stack.alignment = .bottom
         return stack
     }()
     
     private let mediaDateContentView = MediaDateContentView()
     private let tagsView = HorizontalTagsView()
-    
-    private var contentWidthConstraint: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -359,12 +395,14 @@ final class MediaHistoryCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 셀 뷰를 주어진 데이터로 설정.
-    /// - Parameters:
-    ///   - date: 표시할 날짜.
-    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-    ///   - videoLength: 영상 길이 (초단위).
-    ///   - tags: 표시할 태그 문자열의 배열.
+    /**
+     셀 뷰를 주어진 데이터로 설정함.
+     - Parameters:
+       - date: 표시할 날짜.
+       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+       - videoLength: 영상 길이 (초단위).
+       - tags: 표시할 태그 문자열의 배열.
+     */
     func configure(
         date: Date,
         thumbnailURL: String,
@@ -378,15 +416,6 @@ final class MediaHistoryCellView: UIView {
                 videoLength: videoLength
             )
         tagsView.configure(with: tags)
-    }
-    
-    /// 화면 특성 변경 시 호출되어 너비 제약조건을 업데이트.
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
-            updateContentWidth()
-        }
     }
     
     private func setupUI() {
@@ -403,47 +432,40 @@ final class MediaHistoryCellView: UIView {
             mainHStack.topAnchor.constraint(equalTo: topAnchor),
             mainHStack.leadingAnchor.constraint(equalTo: leadingAnchor),
             mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor)
+            mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.6),
+            mediaDateContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
+            tagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4)
         ])
-        
-        updateContentWidth()
     }
     
-    /// 화면 너비(Size Class)에 따라 미디어 콘텐츠 뷰의 너비를 동적으로 조절.
-    private func updateContentWidth() {
-        let widthPercentage: CGFloat
-        
-        if traitCollection.horizontalSizeClass == .compact {
-            widthPercentage = 0.5
-        } else {
-            widthPercentage = 0.7
-        }
-        
-        if let existingConstraint = contentWidthConstraint {
-            existingConstraint.isActive = false
-        }
-        
-        contentWidthConstraint = mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.widthAnchor, multiplier: widthPercentage)
-        contentWidthConstraint?.isActive = true
+    /**
+     셀의 모든 콘텐츠를 초기화함.
+     
+     `prepareForReuse`에서 호출될 것을 대비한 메서드.
+     */
+    func resetContents() {
+        mediaDateContentView.resetImage()
+        tagsView.configure(with: [])
     }
 }
 
-/// 미디어 콘텐츠와 액션 버튼 및 태그 목록을 조합한 '좋아요' 셀 뷰.
+/**
+ 미디어 콘텐츠와 액션 버튼 및 태그 목록을 조합한 '좋아요' 셀 뷰.
+ */
 final class LikeCellView: UIView {
     
     private let mainHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 16
         stack.alignment = .fill
         return stack
     }()
     
     private let mediaContentView = MediaContentView()
     private let actionabletagsView = ActionableTagsView()
-    
-    private var contentWidthConstraint: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -455,12 +477,14 @@ final class LikeCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /// 셀 뷰를 주어진 데이터로 설정.
-    /// - Parameters:
-    ///   - date: 표시할 날짜.
-    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-    ///   - videoLength: 영상 길이 (초단위).
-    ///   - tags: 표시할 태그 문자열의 배열.
+    /**
+     셀 뷰를 주어진 데이터로 설정함.
+     - Parameters:
+       - date: 표시할 날짜.
+       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+       - videoLength: 영상 길이 (초단위).
+       - tags: 표시할 태그 문자열의 배열.
+     */
     func configure(
         date: Date,
         thumbnailURL: String,
@@ -475,14 +499,6 @@ final class LikeCellView: UIView {
         actionabletagsView.configure(with: tags)
     }
     
-    /// 화면 특성 변경 시 호출되어 너비 제약조건을 업데이트.
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        
-        if traitCollection.horizontalSizeClass != previousTraitCollection?.horizontalSizeClass {
-            updateContentWidth()
-        }
-    }
     
     private func setupUI() {
         mainHStack.addArrangedSubview(mediaContentView)
@@ -498,27 +514,21 @@ final class LikeCellView: UIView {
             mainHStack.topAnchor.constraint(equalTo: topAnchor),
             mainHStack.leadingAnchor.constraint(equalTo: leadingAnchor),
             mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor)
+            mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            mediaContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.6),
+            mediaContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
+            actionabletagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4)
         ])
-        
-        updateContentWidth()
     }
     
-    /// 화면 너비(Size Class)에 따라 미디어 콘텐츠 뷰의 너비를 동적으로 조절.
-    private func updateContentWidth() {
-        let widthPercentage: CGFloat
-        
-        if traitCollection.horizontalSizeClass == .compact {
-            widthPercentage = 0.5
-        } else {
-            widthPercentage = 0.7
-        }
-        
-        if let existingConstraint = contentWidthConstraint {
-            existingConstraint.isActive = false
-        }
-        
-        contentWidthConstraint = mediaContentView.widthAnchor.constraint(equalTo: mainHStack.widthAnchor, multiplier: widthPercentage)
-        contentWidthConstraint?.isActive = true
+    /**
+     셀의 모든 콘텐츠를 초기화함.
+     
+     `prepareForReuse`에서 호출될 것을 대비한 메서드.
+     */
+    func resetContents() {
+        mediaContentView.resetImage()
+        actionabletagsView.configure(with: [])
     }
 }
