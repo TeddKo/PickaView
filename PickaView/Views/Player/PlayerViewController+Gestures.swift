@@ -53,10 +53,13 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
     /// 스와이프 업/다운 제스처 처리: 전체화면 전환 또는 복귀
     /// - Parameter gesture: UISwipeGestureRecognizer 인스턴스
     @objc func handleSwipeToFullscreen(_ gesture: UISwipeGestureRecognizer) {
-        if gesture.direction == .up, !UIDevice.current.orientation.isLandscape {
+        if gesture.direction == .up {
+            let fullscreenVC = FullscreenPlayerViewController()
+            fullscreenVC.player = self.player
+            fullscreenVC.modalPresentationStyle = .fullScreen
+
             setOrientation(to: .landscapeRight)
-        } else if gesture.direction == .down, UIDevice.current.orientation.isLandscape {
-            setOrientation(to: .portrait)
+            present(fullscreenVC, animated: true)
         }
     }
 

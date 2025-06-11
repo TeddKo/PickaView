@@ -10,12 +10,12 @@ import UIKit
 /// PlayerViewController의 UI 관련 기능 확장
 extension PlayerViewController {
 
-    /// 큰 버튼용 SF Symbol config
+    /// 큰 버튼용(play/pause) SF Symbol config
     var symbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 36, weight: .regular, scale: .large)
     }
 
-    /// 작은 버튼용 SF Symbol config (forward/backward)
+    /// 작은 버튼용(backward/forward) SF Symbol config (forward/backward)
     var smallSymbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 26, weight: .regular, scale: .medium)
     }
