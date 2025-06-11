@@ -13,7 +13,7 @@ final class CoreDataManager {
 
     let persistentContainer: NSPersistentContainer
     let mainContext: NSManagedObjectContext
-    let fetchedResults: NSFetchedResultsController<VideoEntity>
+    let fetchedResults: NSFetchedResultsController<Video>
 
     private init() {
         // Core Data 스택 초기화
@@ -26,7 +26,7 @@ final class CoreDataManager {
         persistentContainer = container
         mainContext = container.viewContext
 
-        let request: NSFetchRequest<VideoEntity> = VideoEntity.fetchRequest()
+        let request: NSFetchRequest<Video> = Video.fetchRequest()
 
         fetchedResults = NSFetchedResultsController(
             fetchRequest: request,
@@ -58,7 +58,7 @@ final class CoreDataManager {
         for video in videos {
             let videoId = Int64(video.id)
 
-            let request: NSFetchRequest<VideoEntity> = VideoEntity.fetchRequest()
+            let request: NSFetchRequest<Video> = Video.fetchRequest()
             request.predicate = NSPredicate(format: "id == %d", videoId)
 
             if let existing = try? mainContext.fetch(request).first {
@@ -72,7 +72,7 @@ final class CoreDataManager {
 
     // 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
     private func insert(_ video: PixabayVideo) {
-        let newVideo = VideoEntity(context: mainContext)
+        let newVideo = Video(context: mainContext)
         newVideo.id = Int64(video.id)
         newVideo.url = video.videos.medium.url
         newVideo.comments = Int64(video.comments)
@@ -83,7 +83,7 @@ final class CoreDataManager {
     }
 
     // 기존 Core Data 엔티티에 새 비디오 데이터로 속성 업데이트
-    func update(entity: VideoEntity, with video: PixabayVideo) {
+    func update(entity: Video, with video: PixabayVideo) {
         entity.url = video.videos.medium.url
         entity.comments = Int64(video.comments)
         entity.user = video.user
@@ -109,7 +109,8 @@ final class CoreDataManager {
     /// - Parameters:
     ///   - tags: 추가할 tag들
     ///   - watchProgress: 현재 시청 중인 영상 시간 / 전체 영상 시간
-    func calculateUserTagScores(for tags: Set<TagEntity>, watchProgress: Double) {
+    func updateTagScores(for tags: NSSet?, watchProgress: Double) {
+        guard let tags = tags as? Set<Tag> else { return }
         guard watchProgress > 0.3 else { return }
 
         for tag in tags {

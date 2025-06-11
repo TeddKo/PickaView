@@ -12,9 +12,9 @@ enum RecommendationScorer {
     /// - Parameters:
     ///   - video: 추천 점수를 계산할 대상 VideoEntity
     /// - Returns: 0이상 Double 값의 추천 점수
-    static func calculateRecommendationScore(for video: VideoEntity) -> Double {
+    static func calculateRecommendationScore(for video: Video) -> Double {
         // 각 tag score에 time decay를 곱해 합산
-        guard let tags = video.tags else { return 0.0 }
+        guard let tags = video.tags as? Set<Tag> else { return 0.0 }
         let userTagValue = tags.reduce(0.0) { $0 + ($1.score * decayWeight(for: $1.lastUpdated)) }
         
         let likeBoost = video.isLiked ? 5.0 : 0.0
