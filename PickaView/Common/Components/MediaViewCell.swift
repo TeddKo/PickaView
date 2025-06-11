@@ -113,7 +113,6 @@ final class MediaContentView: UIView {
             thumbnailImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
             thumbnailImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
             thumbnailImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
             thumbnailImageView.heightAnchor.constraint(equalTo: thumbnailImageView.widthAnchor, multiplier: 0.56),
             
             durationLabel.trailingAnchor.constraint(equalTo: thumbnailImageView.trailingAnchor, constant: -8),
@@ -285,6 +284,8 @@ final class HorizontalTagsView: UIView {
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
         stack.spacing = 8
+        stack.isLayoutMarginsRelativeArrangement = true
+        stack.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         return stack
     }()
     
@@ -339,7 +340,7 @@ final class MediaHistoryCellView: UIView {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 16
+
         stack.alignment = .bottom
         return stack
     }()
@@ -435,7 +436,6 @@ final class LikeCellView: UIView {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-        stack.spacing = 16
         stack.alignment = .fill
         return stack
     }()

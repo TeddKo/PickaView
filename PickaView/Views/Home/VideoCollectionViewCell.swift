@@ -13,7 +13,6 @@ class VideoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var durationLabel: UILabel!
 
-
     @IBOutlet weak var userImage: UIImageView!
 
     @IBOutlet weak var userNameLabel: UILabel!
@@ -32,6 +31,7 @@ class VideoCollectionViewCell: UICollectionViewCell {
         userImage.layer.cornerRadius = userImage.frame.width / 2
         userImage.clipsToBounds = true
     }
+    
     override func prepareForReuse() {
             super.prepareForReuse()
 

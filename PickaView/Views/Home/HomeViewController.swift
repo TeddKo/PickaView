@@ -76,8 +76,8 @@ class HomeViewController: UIViewController {
             cell.userNameLabel.text = video.user
             cell.viewsLabel.text = "Views: \(video.views)"
             cell.durationLabel.text = formatDuration(video.duration)
-            cell.userImage.loadImage(from: URL(string: video.userImageURL))
-            cell.thumnail.loadImage(from: URL(string: video.videos.medium.thumbnail))
+            cell.userImage.loadImage(from: video.userImageURL)
+            cell.thumnail.loadImage(from: video.videos.medium.thumbnail)
             cell.thumnail.contentMode = .scaleToFill
 
             return cell
@@ -132,25 +132,4 @@ class HomeViewController: UIViewController {
             return isPhonePortrait ? .zero : UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         }
     }
-
-   // 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
-   extension UIImageView {
-       func loadImage(from url: URL?) {
-           guard let url else {
-               self.image = UIImage(systemName: "photo")
-               return
-           }
-
-           // 백그라운드 스레드에서 이미지 데이터 다운로드
-           DispatchQueue.global().async {
-               if let data = try? Data(contentsOf: url),
-                  let image = UIImage(data: data) {
-                   // 메인 스레드에서 이미지 뷰에 설정
-                   DispatchQueue.main.async {
-                       self.image = image
-                   }
-               }
-           }
-       }
-   }
 
