@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0EA2B32DF81B1E005AA031 /* DGCharts */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8D20CDCA2DF1728900D1D063 /* PickaView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PickaView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = PickaView;
 			packageProductDependencies = (
+				8D0EA2B32DF81B1E005AA031 /* DGCharts */,
 			);
 			productName = PickaView;
 			productReference = 8D20CDCA2DF1728900D1D063 /* PickaView.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 8D20CDC12DF1728900D1D063;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D20CDCB2DF1728900D1D063 /* Products */;
 			projectDirPath = "";
@@ -145,6 +154,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -173,6 +183,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4JHY536SZ3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -196,6 +207,8 @@
 		};
 		8D20CDE02DF1728B00D1D063 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,6 +272,8 @@
 		};
 		8D20CDE12DF1728B00D1D063 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -335,6 +350,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ChartsOrg/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8D0EA2B32DF81B1E005AA031 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D20CDC22DF1728900D1D063 /* Project object */;
 }

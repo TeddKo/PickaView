@@ -16,9 +16,36 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="TK8-wB-Znq">
+                                <rect key="frame" x="30" y="312.33333333333331" width="333" height="227.33333333333331"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="vLo-hf-3mv">
+                                        <rect key="frame" x="0.0" y="0.0" width="333" height="166.66666666666666"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="vLo-hf-3mv" secondAttribute="height" multiplier="2:1" id="GjC-Rs-eU4"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PICK A VIEW" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHn-bP-UpJ">
+                                        <rect key="frame" x="71.333333333333329" y="186.66666666666669" width="190.33333333333337" height="40.666666666666657"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                            </stackView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="TK8-wB-Znq" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="height" multiplier="1:2" id="4Fv-MW-Kmi"/>
+                            <constraint firstItem="TK8-wB-Znq" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="76f-oH-nca"/>
+                            <constraint firstItem="TK8-wB-Znq" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="f85-Lb-OQ9"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <segue destination="T1G-iv-UrV" kind="presentation" identifier="ReplaceSegue" modalPresentationStyle="fullScreen" id="XFa-Lu-XMY"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
@@ -54,12 +81,13 @@
             </objects>
             <point key="canvasLocation" x="1978" y="120"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Main View Controller-->
         <scene sceneID="kSv-3O-sWd">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="MainViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nKz-Te-FSR">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
@@ -75,6 +103,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="Logo" width="512" height="512"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
