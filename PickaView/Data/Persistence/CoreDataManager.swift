@@ -43,7 +43,7 @@ final class CoreDataManager {
     }
 
     // MARK: - Fetch
-
+	// fetchedResults를 통해 Core Data에서 데이터를 다시 fetch함
     func fetchAll(keyword: String? = nil) {
         do {
             try fetchedResults.performFetch()
@@ -53,7 +53,7 @@ final class CoreDataManager {
     }
 
     // MARK: - Insert / Update
-
+	// 전달받은 비디오 리스트를 Core Data에 저장
     func saveVideos(_ videos: [PixabayVideo]) {
         for video in videos {
             let videoId = Int64(video.id)
@@ -70,6 +70,7 @@ final class CoreDataManager {
         saveContext()
     }
 
+    // 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
     private func insert(_ video: PixabayVideo) {
         let newVideo = VideoEntity(context: mainContext)
         newVideo.id = Int64(video.id)
@@ -81,6 +82,7 @@ final class CoreDataManager {
         newVideo.views = Int64(video.views)
     }
 
+    // 기존 Core Data 엔티티에 새 비디오 데이터로 속성 업데이트
     func update(entity: VideoEntity, with video: PixabayVideo) {
         entity.url = video.videos.medium.url
         entity.comments = Int64(video.comments)
@@ -91,7 +93,7 @@ final class CoreDataManager {
     }
 
     // MARK: - Save
-
+ 	// mainContext에 변경사항이 있을 때 저장 수행
     func saveContext() {
         if mainContext.hasChanges {
             do {
