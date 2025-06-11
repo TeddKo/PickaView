@@ -15,7 +15,7 @@ import UIKit
 class MyPageViewController: UIViewController {
     
     // MARK: - Properties
-        
+    
     /// 수평 스크롤 리스트를 위한 `UICollectionView`. `setupCollectionView()`에서 초기화됨.
     private var collectionView: UICollectionView!
     
@@ -127,8 +127,8 @@ class MyPageViewController: UIViewController {
     /**
      두 개의 텍스트를 수평으로 배치하는 UI 컴포넌트를 생성하여 스택뷰에 추가.
      - Parameters:
-       - leftText: 왼쪽에 표시될 텍스트.
-       - rightText: 오른쪽에 표시될 텍스트.
+     - leftText: 왼쪽에 표시될 텍스트.
+     - rightText: 오른쪽에 표시될 텍스트.
      **/
     private func horizontalStackTwoTextView(leftText: String, rightText: String) {
         let stackView = UIStackView()
@@ -201,7 +201,7 @@ class MyPageViewController: UIViewController {
 }
 
 // MARK: - UICollectionViewDelegateFlowLayout
-extension MyPageViewController: UICollectionViewDelegateFlowLayout {
+extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     /// 각 셀의 크기를 동적으로 계산하여 반환.
     func collectionView(
@@ -234,23 +234,18 @@ extension MyPageViewController: UICollectionViewDelegateFlowLayout {
         // 상하 여백을 0으로 설정하여 셀이 컬렉션뷰의 높이를 완전히 채우도록 함.
         return UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
     }
-}
-
-extension MyPageViewController: UICollectionViewDelegate {
+    
     func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
         let historiesViewController = MyPageHistoriesViewController()
-
+        
         historiesViewController.selectedIndexPath = indexPath
         
         self.navigationController?.pushViewController(historiesViewController, animated: true)
     }
-}
-
-// MARK: - UICollectionViewDataSource
-extension MyPageViewController: UICollectionViewDataSource {
+    
     /// 섹션에 표시할 아이템의 총 개수를 반환.
     func collectionView(
         _ collectionView: UICollectionView,

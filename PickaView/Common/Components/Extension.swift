@@ -182,3 +182,14 @@ extension UIView {
         )
     }
 }
+
+extension UIEdgeInsets {
+    
+    init(horizontal: CGFloat) {
+        self.init(top: 0, left: horizontal, bottom: 0, right: horizontal)
+    }
+    
+    init(vertical: CGFloat) {
+        self.init(top: vertical, left: 0, bottom: vertical, right: 0)
+    }
+}
