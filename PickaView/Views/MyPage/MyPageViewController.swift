@@ -11,7 +11,7 @@ import UIKit
  마이페이지 화면을 표시하고 관리하는 뷰 컨트롤러.
  
  사용자의 활동 데이터 표시 및 앱의 화면 테마 설정 기능을 포함함.
- */
+ **/
 class MyPageViewController: UIViewController {
     
     // MARK: - Properties
@@ -35,12 +35,14 @@ class MyPageViewController: UIViewController {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 36
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return stackView
     }()
     
     /// 화면 테마 변경을 위한 `UISegmentedControl`. `lazy` 키워드를 통해 첫 사용 시 초기화됨.
     private lazy var colorModeSegment: UISegmentedControl = {
-        let segment = UISegmentedControl(items: ["라이트", "다크", "시스템"])
+        let segment = UISegmentedControl(items: ["Light", "Dark", "System"])
         segment.translatesAutoresizingMaskIntoConstraints = false
         segment.addTarget(self, action: #selector(themeDidChange), for: .valueChanged)
         return segment
@@ -61,7 +63,7 @@ class MyPageViewController: UIViewController {
     /**
      `colorModeSegment`의 값이 변경될 때 호출될 메서드.
      - Parameter sender: 이벤트가 발생한 `UISegmentedControl` 객체.
-     */
+     **/
     @objc private func themeDidChange(_ sender: UISegmentedControl) {
         ThemeManager.shared.setTheme(selectedIndex: sender.selectedSegmentIndex)
     }
@@ -88,36 +90,9 @@ class MyPageViewController: UIViewController {
     /**
      무작위 RGB 값을 가진 `UIColor` 객체를 생성하여 반환.
      - Returns: 생성된 `UIColor` 객체.
-     */
+     **/
     private func generateRandomColor() -> UIColor {
         return UIColor(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), alpha: 1.0)
-    }
-    
-    /**
-     주어진 뷰를 컨테이너 뷰로 감싸 좌우 여백을 적용하고 `mainVerticalStackView`에 추가하는 래퍼(Wrapper) 함수.
-     - Parameters:
-       - view: 여백을 적용할 대상 뷰.
-       - leftPadding: 왼쪽에 적용할 여백 크기.
-       - rightPadding: 오른쪽에 적용할 여백 크기.
-     */
-    private func wrappedPaddingContainer(
-        view: UIView,
-        leftPadding: CGFloat,
-        rightPadding: CGFloat
-    ) {
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        mainVerticalStackView.addArrangedSubview(containerView)
-        containerView.addSubview(view)
-        
-        // 제약조건 설정. `trailingAnchor`의 constant는 음수 값을 사용해야 함.
-        NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: containerView.topAnchor),
-            view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: leftPadding),
-            view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -rightPadding),
-            view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-        ])
     }
     
     /// 화면 설정(테마) 관련 UI 컴포넌트를 구성하고 스택뷰에 추가.
@@ -137,10 +112,10 @@ class MyPageViewController: UIViewController {
         chartView.backgroundColor = .systemGray4
         
         let label = UILabel()
-        label.text = "시청시간"
+        label.text = "Watch Time"
         label.font = .preferredFont(forTextStyle: .largeTitle)
         
-        wrappedPaddingContainer(view: stackView, leftPadding: 20, rightPadding: 20)
+        stackView.wrappedPaddingContainer(stackView: mainVerticalStackView, horizontalPadding: 20)
         
         stackView.addArrangedSubview(label)
         stackView.addArrangedSubview(chartView)
@@ -154,7 +129,7 @@ class MyPageViewController: UIViewController {
      - Parameters:
        - leftText: 왼쪽에 표시될 텍스트.
        - rightText: 오른쪽에 표시될 텍스트.
-     */
+     **/
     private func horizontalStackTwoTextView(leftText: String, rightText: String) {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -171,7 +146,10 @@ class MyPageViewController: UIViewController {
         rightLabel.font = .preferredFont(forTextStyle: .body)
         rightLabel.textAlignment = .right
         
-        wrappedPaddingContainer(view: stackView, leftPadding: 20, rightPadding: 20)
+        stackView.wrappedPaddingContainer(
+            stackView: mainVerticalStackView,
+            horizontalPadding: 20
+        )
         
         stackView.addArrangedSubview(leftLabel)
         stackView.addArrangedSubview(rightLabel)
@@ -255,6 +233,19 @@ extension MyPageViewController: UICollectionViewDelegateFlowLayout {
     ) -> UIEdgeInsets {
         // 상하 여백을 0으로 설정하여 셀이 컬렉션뷰의 높이를 완전히 채우도록 함.
         return UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+    }
+}
+
+extension MyPageViewController: UICollectionViewDelegate {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        let historiesViewController = MyPageHistoriesViewController()
+
+        historiesViewController.selectedIndexPath = indexPath
+        
+        self.navigationController?.pushViewController(historiesViewController, animated: true)
     }
 }
 
