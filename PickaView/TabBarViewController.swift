@@ -8,11 +8,10 @@
 import UIKit
 
 class TabBarViewController: UITabBarController {
+    private let viewModel: TabBarViewModel
     
-    private let coreDataManager: CoreDataManager
-    
-    init(coreDataManager: CoreDataManager) {
-        self.coreDataManager = coreDataManager
+    init(viewModel: TabBarViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -26,26 +25,6 @@ class TabBarViewController: UITabBarController {
         ThemeManager.shared.applyTheme()
         print("initial")
         
-        setupTabBar()
-    }
-    
-    private func setupTabBar() {
-//        let homeVM = HomeViewModel(coreDataManager: coreDataManager)
-//        let homeVC = HomeViewController(viewModel: homeVM)
-//        homeVC.tabBarItem = UITabBarItem(title: "Home", image: "house.fill", tag: 0)
-//        
-//        let likeVM = LikeViewModel(coreDataManager: coreDataManager)
-//        let likeVC = LikeViewController(viewModel: likeVM)
-//        likeVC.tabBarItem = UITabBarItem(title: "Like", image: "heart.fill", tag: 1)
-//        
-//        let myPageVM = MyPageViewModel(coreDataManager: coreDataManager)
-//        let myPageVC = MyPageViewController(viewModel: myPageVM)
-//        myPageVC.tabBarItem = UITabBarItem(title: "MyPage", image: "ellipsis", tag: 2)
-//
-//        viewControllers = [
-//            UINavigationController(rootViewController: homeVC),
-//            UINavigationController(rootViewController: likeVC),
-//            UINavigationController(rootViewController: myPageVC)
-//        ]
+        viewControllers = viewModel.makeTabViewControllers()
     }
 }
