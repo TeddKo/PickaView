@@ -9,7 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
-    @IBOutlet weak var titleLabel: UILabel!
+
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -19,7 +19,7 @@ class HomeViewController: UIViewController {
        override func viewDidLoad() {
            super.viewDidLoad()
 
-           titleLabel.font = UIFont.boldSystemFont(ofSize: titleLabel.font.pointSize)
+
            collectionView.dataSource = self
            collectionView.delegate = self
 
@@ -78,7 +78,7 @@ class HomeViewController: UIViewController {
             cell.durationLabel.text = formatDuration(video.duration)
             cell.userImage.loadImage(from: URL(string: video.userImageURL))
             cell.thumnail.loadImage(from: URL(string: video.videos.medium.thumbnail))
-            cell.thumnail.contentMode = .scaleToFill
+            cell.thumnail.contentMode = .scaleAspectFill
 
             return cell
         }
@@ -115,7 +115,7 @@ class HomeViewController: UIViewController {
 
         //줄 간격
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-            return 10
+            return 30
         }
 
         //셀 사이 간격
@@ -134,23 +134,27 @@ class HomeViewController: UIViewController {
     }
 
    // 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
-   extension UIImageView {
-       func loadImage(from url: URL?) {
-           guard let url else {
-               self.image = UIImage(systemName: "photo")
-               return
-           }
+extension UIImageView {
+    func loadImage(from url: URL?, thumbnailHeight: CGFloat = 0) {
+        guard let url else {
+            self.image = UIImage(systemName: "photo")
+            return
+        }
 
-           // 백그라운드 스레드에서 이미지 데이터 다운로드
-           DispatchQueue.global().async {
-               if let data = try? Data(contentsOf: url),
-                  let image = UIImage(data: data) {
-                   // 메인 스레드에서 이미지 뷰에 설정
-                   DispatchQueue.main.async {
-                       self.image = image
-                   }
-               }
-           }
-       }
-   }
+        // 백그라운드 스레드에서 이미지 데이터 다운로드
+        DispatchQueue.global().async {
+            if let data = try? Data(contentsOf: url),
+               let image = UIImage(data: data) {
+                // 메인 스레드에서 이미지 뷰에 설정
+                DispatchQueue.main.async {
+                    self.image = image
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.image = UIImage(systemName: "photo")
+                }
+            }
+        }
+    }
+}
 
