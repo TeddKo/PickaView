@@ -34,7 +34,7 @@ final class ThemeManager {
     /**
      저장된 테마 설정을 앱의 모든 윈도우에 즉시 적용함.
      
-     앱이 시작될 때 `MainViewController`에서 호출됨.
+     앱이 시작될 때 `TabBarViewController`에서 호출됨.
      */
     func applyTheme() {
         let themeIndex = UserDefaults.standard.integer(forKey: themeKey)

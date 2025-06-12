@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -81,10 +80,10 @@
             </objects>
             <point key="canvasLocation" x="1978" y="120"/>
         </scene>
-        <!--Main View Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="kSv-3O-sWd">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="MainViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="TabBarViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nKz-Te-FSR">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
