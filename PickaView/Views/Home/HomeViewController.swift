@@ -7,41 +7,40 @@
 
 import UIKit
 
+struct DummyVideo {
+    let user: String
+    let views: Int
+    let duration: Int
+    let userImageSymbol: String
+    let thumbnailSymbol: String
+}
+
+
 class HomeViewController: UIViewController {
 
 
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    @IBOutlet weak var searchBar: UISearchBar!
+
+
     //가져온 비디오리스트를 저장하는 배열
-    private var videoList: [PixabayVideo] = []
+    private var videoList: [DummyVideo] = [
+           DummyVideo(user: "Alice", views: 1200, duration: 85, userImageSymbol: "person.crop.circle", thumbnailSymbol: "video"),
+           DummyVideo(user: "Bob", views: 3000, duration: 210, userImageSymbol: "person.crop.circle.fill", thumbnailSymbol: "film"),
+           DummyVideo(user: "Charlie", views: 560, duration: 45, userImageSymbol: "person.circle", thumbnailSymbol: "tv"),
+           DummyVideo(user: "Diana", views: 14000, duration: 132, userImageSymbol: "person.crop.square", thumbnailSymbol: "play.rectangle")
+       ]
 
        override func viewDidLoad() {
            super.viewDidLoad()
-
-
            collectionView.dataSource = self
            collectionView.delegate = self
 
-           fetchVideoList()
+
        }
 
-       // Pixabay API로부터 비디오 데이터를 가져오는 함수
-       func fetchVideoList() {
-           Task {
-               do {
-                   // 비디오 목록 비동기로 가져옴
-                   let videos = try await PixabayVideoService.shared.fetchVideos()
-                   self.videoList = videos
-
-                   DispatchQueue.main.async {
-                       self.collectionView.reloadData()
-                   }
-               } catch {
-                   print("❌ Error fetching videos: \(error)")
-               }
-           }
-       }
 
        // 비디오 길이를 "분:초" 형식으로 변환
      func formatDuration(_ duration: Int) -> String {
@@ -76,9 +75,9 @@ class HomeViewController: UIViewController {
             cell.userNameLabel.text = video.user
             cell.viewsLabel.text = "Views: \(video.views)"
             cell.durationLabel.text = formatDuration(video.duration)
-            cell.userImage.loadImage(from: URL(string: video.userImageURL))
-            cell.thumnail.loadImage(from: URL(string: video.videos.medium.thumbnail))
-            cell.thumnail.contentMode = .scaleAspectFill
+            cell.userImage.image = UIImage(systemName: video.userImageSymbol)
+            cell.thumnail.image = UIImage(systemName: video.thumbnailSymbol)
+            cell.thumnail.contentMode = .scaleAspectFit
 
             return cell
         }
@@ -108,7 +107,7 @@ class HomeViewController: UIViewController {
             let itemWidth = (width - totalSpacing) / itemsPerRow
 
             let thumbnailHeight = itemWidth * 9 / 16
-            let extraHeight: CGFloat = 80
+            let extraHeight: CGFloat = 80 //수정 필요
 
             return CGSize(width: itemWidth, height: thumbnailHeight + extraHeight)
         }
@@ -133,28 +132,32 @@ class HomeViewController: UIViewController {
         }
     }
 
-   // 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
-extension UIImageView {
-    func loadImage(from url: URL?, thumbnailHeight: CGFloat = 0) {
-        guard let url else {
-            self.image = UIImage(systemName: "photo")
-            return
-        }
+extension HomeViewController: UISearchBarDelegate {
 
-        // 백그라운드 스레드에서 이미지 데이터 다운로드
-        DispatchQueue.global().async {
-            if let data = try? Data(contentsOf: url),
-               let image = UIImage(data: data) {
-                // 메인 스레드에서 이미지 뷰에 설정
-                DispatchQueue.main.async {
-                    self.image = image
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.image = UIImage(systemName: "photo")
-                }
-            }
-        }
-    }
 }
+
+   // 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
+//extension UIImageView {
+//    func loadImage(from url: URL?, thumbnailHeight: CGFloat = 0) {
+//        guard let url else {
+//            self.image = UIImage(systemName: "photo")
+//            return
+//        }
+//
+//        // 백그라운드 스레드에서 이미지 데이터 다운로드
+//        DispatchQueue.global().async {
+//            if let data = try? Data(contentsOf: url),
+//               let image = UIImage(data: data) {
+//                // 메인 스레드에서 이미지 뷰에 설정
+//                DispatchQueue.main.async {
+//                    self.image = image
+//                }
+//            } else {
+//                DispatchQueue.main.async {
+//                    self.image = UIImage(systemName: "photo")
+//                }
+//            }
+//        }
+//    }
+//}
 
