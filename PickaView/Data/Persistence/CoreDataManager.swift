@@ -42,8 +42,25 @@ final class CoreDataManager {
     }
 
     // MARK: - Fetch
-	// fetchedResults를 통해 Core Data에서 데이터를 다시 fetch함
-    func fetchAll(keyword: String? = nil) {
+
+    func fetch() {
+        fetchedResults.fetchRequest.predicate = nil
+        performFetch()
+    }
+
+    func fetch(tag: String) {
+        let predicate = NSPredicate(format: "SUBQUERY(tags, $tag, $tag.name CONTAINS[cd] %@).@count > 0", tag)
+        fetchedResults.fetchRequest.predicate = predicate
+        performFetch()
+    }
+
+    func fetchRecommended() -> [Video] {
+        performFetch()
+        let videos = fetchedResults.fetchedObjects ?? []
+        return VideoRecommender.sortVideosByRecommendationScore(from: videos)
+    }
+
+    private func performFetch() {
         do {
             try fetchedResults.performFetch()
         } catch {
@@ -52,20 +69,31 @@ final class CoreDataManager {
     }
 
     // MARK: - Insert / Update
-	// 전달받은 비디오 리스트를 Core Data에 저장
+    // 전달받은 비디오 리스트를 Core Data에 저장
     func saveVideos(_ videos: [PixabayVideo]) {
+        if fetchedResults.fetchedObjects == nil || fetchedResults.fetchedObjects?.isEmpty == true {
+            fetch()
+        }
+        
+        let existingVideos = fetchedResults.fetchedObjects ?? []
+        let existingVideoDict = Dictionary(uniqueKeysWithValues: existingVideos.map { ($0.id, $0) })
+
+        let incomingIDs = Set(videos.map { Int64($0.id) })
+        let idsToDelete = Set(existingVideoDict.keys).subtracting(incomingIDs)
+        for id in idsToDelete {
+            delete(by: id)
+        }
+        
         for video in videos {
             let videoId = Int64(video.id)
-
-            let request: NSFetchRequest<Video> = Video.fetchRequest()
-            request.predicate = NSPredicate(format: "id == %d", videoId)
-
-            if let existing = try? mainContext.fetch(request).first {
+            
+            if let existing = existingVideoDict[videoId] {
                 update(entity: existing, with: video)
             } else {
                 insert(video)
             }
         }
+        
         saveContext()
     }
 
@@ -73,38 +101,73 @@ final class CoreDataManager {
     private func insert(_ video: PixabayVideo) {
         let newVideo = Video(context: mainContext)
         newVideo.id = Int64(video.id)
-        newVideo.url = video.videos.medium.url
-        newVideo.comments = Int64(video.comments)
-        newVideo.user = video.user
-        newVideo.userID = String(video.userID)
-        newVideo.userImageURL = video.userImageURL
-        newVideo.views = Int64(video.views)
+        apply(video, to: newVideo)
+        newVideo.tags = insertTags(from: video.tags)
+    }
+    
+    // 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
+    private func insertTags(from tagString: String) -> NSSet {
+        let tagNames = tagString
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+        
+        let tagSet: Set<Tag> = Set(tagNames.compactMap { name in
+            let request: NSFetchRequest<Tag> = Tag.fetchRequest()
+            request.predicate = NSPredicate(format: "name =[c] %@", name)
+            request.fetchLimit = 1
+
+            if let existing = try? mainContext.fetch(request).first {
+                return existing
+            } else {
+                let tag = Tag(context: mainContext)
+                tag.name = name
+                return tag
+            }
+        })
+
+        return tagSet as NSSet
     }
 
     // 기존 Core Data 엔티티에 새 비디오 데이터로 속성 업데이트
     func update(entity: Video, with video: PixabayVideo) {
-        entity.url = video.videos.medium.url
-        entity.comments = Int64(video.comments)
-        entity.user = video.user
-        entity.userID = String(video.userID)
-        entity.userImageURL = video.userImageURL
-        entity.views = Int64(video.views)
-    }
-
-    // MARK: - Save
- 	// mainContext에 변경사항이 있을 때 저장 수행
-    func saveContext() {
-        if mainContext.hasChanges {
-            do {
-                try mainContext.save()
-                print("✅ Core Data 저장 성공")
-            } catch {
-                print("❌ Core Data 저장 실패: \(error.localizedDescription)")
-            }
+        guard entity.url != video.videos.medium.url ||
+              entity.comments != video.comments ||
+              entity.user != video.user ||
+              entity.userID != String(video.userID) ||
+              entity.userImageURL != video.userImageURL ||
+              entity.views != video.views
+        else {
+            return
         }
+        
+        apply(video, to: entity)
+    }
+    
+    func updateIsLiked(for video: Video, isLiked: Bool) {
+        video.isLiked = isLiked
+        saveContext()
     }
 
-    /// Tag Score를 계산합니다.
+    func updateStartTime(for video: Video, withTotalTime totalTime: Double) {
+        if video.timeStamp == nil {
+            let stamp = TimeStamp(context: mainContext)
+            video.timeStamp = stamp
+        }
+        video.timeStamp?.startDate = Date()
+        video.timeStamp?.totalTime = totalTime
+        saveContext()
+    }
+
+    func updateEndTime(for video: Video) {
+        guard let timeStamp = video.timeStamp else {
+            print("❌ timeStamp가 존재하지 않아 endDate를 기록할 수 없음")
+            return
+        }
+        timeStamp.endDate = Date()
+        saveContext()
+    }
+    
+    /// Tag Score 계산
     /// - Parameters:
     ///   - tags: 추가할 tag들
     ///   - watchProgress: 현재 시청 중인 영상 시간 / 전체 영상 시간
@@ -118,5 +181,38 @@ final class CoreDataManager {
         }
 
         self.saveContext()
+    }
+    
+    private func apply(_ video: PixabayVideo, to entity: Video) {
+        entity.url = video.videos.medium.url
+        entity.comments = Int64(video.comments)
+        entity.user = video.user
+        entity.userID = String(video.userID)
+        entity.userImageURL = video.userImageURL
+        entity.views = Int64(video.views)
+    }
+    
+    // MARK: - Delete
+
+    // id를 통해 특정 Video 객체를 직접 삭제
+    func delete(by id: Int64) {
+        guard let toDelete = fetchedResults.fetchedObjects?.first(where: { $0.id == id }) else { return }
+        mainContext.delete(toDelete)
+    }
+
+    // MARK: - Save
+     // mainContext에 변경사항이 있을 때 저장 수행
+    @discardableResult
+    func saveContext() -> Bool {
+        guard mainContext.hasChanges else { return true }
+
+        do {
+            try mainContext.save()
+            print("✅ 저장 성공")
+            return true
+        } catch {
+            print("❌ 저장 실패: \(error.localizedDescription)")
+            return false
+        }
     }
 }
