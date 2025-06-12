@@ -8,27 +8,84 @@
 import UIKit
 
 extension UIImageView {
+    /// `currentURL` 연관 객체(Associated Object)를 위한 안정적인 메모리 주소 키.
+    private static var currentURLKey: Void?
+
+    /// 셀 재사용 시 이미지 충돌을 방지하기 위해 현재 인스턴스에서 로딩 중인 이미지의 URL.
+    private var currentURL: URL? {
+        get {
+            return objc_getAssociatedObject(self, &Self.currentURLKey) as? URL
+        }
+        set {
+            objc_setAssociatedObject(self, &Self.currentURLKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+     
+    
+    /// 지정된 URL 문자열에서 비동기적으로 이미지를 로드.
+    /// - 캐시에서 이미지를 먼저 확인.
+    /// - 캐시에 없는 경우, 네트워크를 통해 이미지를 다운로드.
+    /// - 다운로드된 이미지를 현재 `UIImageView`의 크기에 맞게 리사이징.
+    /// - 리사이징된 이미지를 캐시에 저장하여 향후 요청 시 재사용.
+    /// - 셀 재사용으로 인한 이미지 뒤바뀜 현상을 방지.
+    /// - Parameter urlString: 로드할 이미지의 URL 주소.
     func loadImage(from urlString: String) {
+        self.image = nil
         guard let url = URL(string: urlString) else {
             print("Error: Invalid URL string.")
             return
         }
+        self.currentURL = url
+        let cacheKey = urlString as NSString
+
+        if let cachedImage = ImageCacheManager.shared.object(forKey: cacheKey) {
+            self.image = cachedImage
+            return
+        }
         
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        let targetSize = self.bounds.size
+
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+
+            if self.currentURL != url {
+                return
+            }
+
             if let error = error {
                 print("Error loading image: \(error.localizedDescription)")
                 return
             }
-            
+
             guard let data = data, let image = UIImage(data: data) else {
                 print("Error: No data or could not create image.")
                 return
             }
+
+            let resizedImage = targetSize == .zero ? image : self.resizeImage(image, to: targetSize)
+            
+            ImageCacheManager.shared.setObject(resizedImage, forKey: cacheKey)
+
             DispatchQueue.main.async {
-                self.image = image
+                if self.currentURL == url {
+                    self.image = resizedImage
+                }
             }
         }
         task.resume()
+    }
+     
+    
+    /// 주어진 `UIImage`를 목표 크기로 리사이징하는 private 헬퍼 메서드.
+    /// - Parameters:
+    ///   - image: 리사이징할 원본 이미지.
+    ///   - targetSize: 리사이징될 목표 크기.
+    /// - Returns: 목표 크기로 리사이징된 새로운 이미지.
+    private func resizeImage(_ image: UIImage, to targetSize: CGSize) -> UIImage {
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        return renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
+        }
     }
 }
 
