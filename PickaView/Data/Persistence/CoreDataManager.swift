@@ -43,21 +43,41 @@ final class CoreDataManager {
 
     // MARK: - Fetch
 
-    func fetch() {
+    func fetch() -> [Video] {
         fetchedResults.fetchRequest.predicate = nil
         performFetch()
+        return fetchedResults.fetchedObjects ?? []
     }
 
-    func fetch(tag: String) {
+    func fetch(tag: String) -> [Video] {
         let predicate = NSPredicate(format: "SUBQUERY(tags, $tag, $tag.name CONTAINS[cd] %@).@count > 0", tag)
         fetchedResults.fetchRequest.predicate = predicate
         performFetch()
+        return fetchedResults.fetchedObjects ?? []
     }
 
     func fetchRecommended() -> [Video] {
+        fetchedResults.fetchRequest.predicate = nil
         performFetch()
         let videos = fetchedResults.fetchedObjects ?? []
         return VideoRecommender.sortVideosByRecommendationScore(from: videos)
+    }
+    
+    func fetchLiked() -> [Video] {
+        let predicate = NSPredicate(format: "isLiked == true")
+        fetchedResults.fetchRequest.predicate = predicate
+        performFetch()
+        return fetchedResults.fetchedObjects ?? []
+    }
+
+    // timeStamp.startDate가 존재하는 경우, 해당 필드로 내림차순 정렬하여 fetch
+    func fetchHistory() -> [Video] {
+        let predicate = NSPredicate(format: "timeStamp != nil")
+        let sortDescriptor = NSSortDescriptor(key: "timeStamp.startDate", ascending: false)
+        fetchedResults.fetchRequest.predicate = predicate
+        fetchedResults.fetchRequest.sortDescriptors = [sortDescriptor]
+        performFetch()
+        return fetchedResults.fetchedObjects ?? []
     }
 
     private func performFetch() {
