@@ -7,17 +7,9 @@
 
 import Foundation
 
-// MARK: - HTTP 메서드 정의
-// 현재는 GET만 사용하지만 확장을 고려해 enum으로 설계 , 추후 확장되면 파일로 분리
-enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case put = "PUT"
-    case delete = "DELETE"
-}
-
 // MARK: - URLRequest 생성용 구조체
 // 개별 API 요청을 구성하는 역할. URL, 쿼리, HTTP 메서드 등을 관리 , 추후 확장되면 파일로 분리
+
 struct Endpoint {
     let scheme = "https"
     let host = "pixabay.com"
@@ -46,6 +38,7 @@ struct Endpoint {
 
 // MARK: - Pixabay 전용 서비스
 // Pixabay 비디오 API에 대한 비즈니스 로직 담당
+
 struct PixabayVideoService {
     private let client: APIClient
     private let apiKey: String
