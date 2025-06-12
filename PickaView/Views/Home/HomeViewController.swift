@@ -8,6 +8,8 @@
 import UIKit
 
 class HomeViewController: UIViewController {
+    
+    var viewModel: HomeViewModel!
 
     @IBOutlet weak var titleLabel: UILabel!
 
