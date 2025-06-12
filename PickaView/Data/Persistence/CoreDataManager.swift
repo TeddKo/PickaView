@@ -9,13 +9,11 @@ import Foundation
 import CoreData
 
 final class CoreDataManager {
-    static let shared = CoreDataManager()
-
     let persistentContainer: NSPersistentContainer
     let mainContext: NSManagedObjectContext
     let fetchedResults: NSFetchedResultsController<Video>
 
-    private init() {
+    init() {
         // Core Data 스택 초기화
         let container = NSPersistentContainer(name: "Model")
         container.loadPersistentStores { storeDescription, error in
@@ -118,6 +116,6 @@ final class CoreDataManager {
             tag.lastUpdated = Date()
         }
 
-        CoreDataManager.shared.saveContext()
+        self.saveContext()
     }
 }
