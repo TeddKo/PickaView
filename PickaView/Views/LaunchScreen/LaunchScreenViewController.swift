@@ -8,22 +8,26 @@
 import UIKit
 
 class LaunchScreenViewController: UIViewController {
-
+    private let viewModel: LaunchScreenViewModel
+    
+    init(viewModel: LaunchScreenViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
         
         Task {
-            do {
-                // Network
-                // CoreData
-
-                await MainActor.run {
-                    self.performSegue(withIdentifier: "ReplaceSegue", sender: nil)
-                }
-            } catch {
-                print("SplashView fetch Error: \(error)")
-            }
+            await loadInitialData()
+            transitionToMain()
         }
     }
     
@@ -77,4 +81,17 @@ class LaunchScreenViewController: UIViewController {
             logoImageView.widthAnchor.constraint(equalTo: logoImageView.heightAnchor, multiplier: 2.0)
         ])
     }
+    
+    // MARK: - Initial Load & Navigation
+    
+    private func loadInitialData() async {
+        // viewModel로 접근해서 네트워크 요청 및 coreDataManager.save() 등 처리
+    }
+    
+    @MainActor
+    private func transitionToMain() {
+         let tabBarController = viewModel.makeMainTabBarController()
+         tabBarController.modalPresentationStyle = .fullScreen
+         present(tabBarController, animated: true)
+     }
 }
