@@ -145,6 +145,7 @@ final class CoreDataManager {
     
     func updateIsLiked(for video: Video, isLiked: Bool) {
         video.isLiked = isLiked
+        
         saveContext()
     }
 
@@ -155,6 +156,7 @@ final class CoreDataManager {
         }
         video.timeStamp?.startDate = Date()
         video.timeStamp?.totalTime = totalTime
+        
         saveContext()
     }
 
@@ -164,23 +166,34 @@ final class CoreDataManager {
             return
         }
         timeStamp.endDate = Date()
+        updateTagScores(for: video)
+        
         saveContext()
     }
     
     /// Tag Score 계산
     /// - Parameters:
-    ///   - tags: 추가할 tag들
-    ///   - watchProgress: 현재 시청 중인 영상 시간 / 전체 영상 시간
-    func updateTagScores(for tags: NSSet?, watchProgress: Double) {
-        guard let tags = tags as? Set<Tag> else { return }
-        guard watchProgress > 0.3 else { return }
+    ///   - video: Tag 점수를 업데이트할 Video 객체
+    func updateTagScores(for video: Video) {
+        guard let tags = video.tags as? Set<Tag> else { return }
+        guard let timeStamp = video.timeStamp,
+              let startDate = timeStamp.startDate,
+              let endDate = timeStamp.endDate else { return }
+
+        let interval = endDate.timeIntervalSince(startDate)
+        guard timeStamp.totalTime > 0 else { return }
+
+        let rawProgress = interval / timeStamp.totalTime
+        let roundedProgress = (rawProgress * 100).rounded() / 100
+
+        guard roundedProgress > 0.3 else { return }
 
         for tag in tags {
-            tag.score += watchProgress
+            tag.score += roundedProgress
             tag.lastUpdated = Date()
         }
 
-        self.saveContext()
+        saveContext()
     }
     
     private func apply(_ video: PixabayVideo, to entity: Video) {
