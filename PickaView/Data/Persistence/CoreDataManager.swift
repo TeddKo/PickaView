@@ -24,10 +24,11 @@ final class CoreDataManager {
         persistentContainer = container
         mainContext = container.viewContext
 
-        let request: NSFetchRequest<Video> = Video.fetchRequest()
+        let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
 
         fetchedResults = NSFetchedResultsController(
-            fetchRequest: request,
+            fetchRequest: fetchRequest,
             managedObjectContext: mainContext,
             sectionNameKeyPath: nil,
             cacheName: nil
