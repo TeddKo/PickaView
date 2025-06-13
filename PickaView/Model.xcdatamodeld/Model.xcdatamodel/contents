@@ -7,7 +7,6 @@
         <relationship name="videos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Video" inverseName="tags" inverseEntity="Video"/>
     </entity>
     <entity name="TimeStamp" representedClassName="TimeStamp" syncable="YES" codeGenerationType="class">
-        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="totalTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Video" inverseName="timeStamp" inverseEntity="Video"/>
@@ -17,6 +16,7 @@
         <attribute name="downloads" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="id" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isLiked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="thumbnailURL" optional="YES" attributeType="String"/>
         <attribute name="url" optional="YES" attributeType="String"/>
         <attribute name="user" optional="YES" attributeType="String"/>
         <attribute name="userID" optional="YES" attributeType="String"/>
