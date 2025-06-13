@@ -44,7 +44,7 @@ class HomeViewController: UIViewController {
            Task {
                 if let viewModel = viewModel {
                     // 2. 네트워크에서 영상 가져와 Core Data에 저장
-                    await viewModel.fetchAndSaveVideos(query: "cats")
+                    await viewModel.fetchAndSaveVideos(query: "")
 
                     // 3. Core Data에서 Video 객체들 fetch
                     let videosFromCoreData = viewModel.fetchVideosFromCoreData()
@@ -58,7 +58,6 @@ class HomeViewController: UIViewController {
                     print("viewModel이 아직 초기화되지 않았습니다.")
                 }
             }
-
        }
 
 
@@ -115,7 +114,7 @@ class HomeViewController: UIViewController {
                  cell.durationLabel.text = "Duration: N/A"
              }
 
-            if let userImageURL = video.userImageURL {
+            if let userImageURL = video.userImageURL, !userImageURL.isEmpty {
                 cell.userImage.loadImage(from: userImageURL)
             } else {
                 cell.userImage.image = UIImage(systemName: "person.circle")
@@ -124,7 +123,8 @@ class HomeViewController: UIViewController {
             if let thumbnailURL = video.userImageURL {
                 cell.thumnail.loadImage(from: thumbnailURL)
             } else {
-                cell.thumnail.image = UIImage(systemName: "photo")
+                cell.thumnail.image = UIImage(systemName: "person.circle")
+
             }
 
             cell.thumnail.contentMode = .scaleAspectFit
