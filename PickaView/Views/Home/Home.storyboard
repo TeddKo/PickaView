@@ -26,7 +26,7 @@
                                 </connections>
                             </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="DdB-0f-Tho">
-                                <rect key="frame" x="0.0" y="270" width="393" height="582"/>
+                                <rect key="frame" x="0.0" y="270" width="393" height="465"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="B8z-bL-yo4">
                                     <size key="itemSize" width="392" height="287"/>
@@ -110,7 +110,7 @@
                         <constraints>
                             <constraint firstItem="rM4-xC-Jut" firstAttribute="trailing" secondItem="TIZ-io-mjc" secondAttribute="trailing" id="9eK-me-5id"/>
                             <constraint firstItem="rM4-xC-Jut" firstAttribute="top" secondItem="TIZ-io-mjc" secondAttribute="top" id="CRs-pA-ERN"/>
-                            <constraint firstAttribute="bottom" secondItem="DdB-0f-Tho" secondAttribute="bottom" id="ape-NJ-Ni8"/>
+                            <constraint firstItem="TIZ-io-mjc" firstAttribute="bottom" secondItem="DdB-0f-Tho" secondAttribute="bottom" id="ape-NJ-Ni8"/>
                             <constraint firstItem="rM4-xC-Jut" firstAttribute="leading" secondItem="TIZ-io-mjc" secondAttribute="leading" id="cNA-Ks-Iu0"/>
                             <constraint firstItem="DdB-0f-Tho" firstAttribute="trailing" secondItem="TIZ-io-mjc" secondAttribute="trailing" id="gHu-Zh-224"/>
                             <constraint firstItem="DdB-0f-Tho" firstAttribute="leading" secondItem="TIZ-io-mjc" secondAttribute="leading" id="tB7-wQ-zG7"/>
@@ -151,7 +151,7 @@
     <resources>
         <image name="house.fill" catalog="system" width="128" height="104"/>
         <systemColor name="quaternaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.1764705882" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.17647058823529413" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
