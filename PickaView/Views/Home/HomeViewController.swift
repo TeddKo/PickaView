@@ -22,8 +22,9 @@ class HomeViewController: UIViewController {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let selectedVideo = videoList[indexPath.item]
         let playerVC = PlayerViewController()
+        // 풀스크린 모달로 설정해서 PlayerView
         playerVC.viewModel = PlayerViewModel(video: selectedVideo)
-        playerVC.modalPresentationStyle = .fullScreen  // 풀스크린 모달 설정
+        playerVC.modalPresentationStyle = .fullScreen  
         present(playerVC, animated: true, completion: nil)
     }
 
