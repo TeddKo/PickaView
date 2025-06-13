@@ -46,6 +46,7 @@ class HomeViewController: UIViewController {
         tableView.isHidden = true
         tableViewHeightConstraint.constant = 0
 
+        searchBar.searchBarStyle = .minimal
         //화면 터치하면 키보드 내려가도록 설정
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
           tapGesture.cancelsTouchesInView = false
