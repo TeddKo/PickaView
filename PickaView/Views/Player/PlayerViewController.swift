@@ -19,6 +19,8 @@ protocol PlayerViewControllerDelegate: AnyObject {
 
 /// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
 class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
+    
+    var viewModel: PlayerViewModel!
 
     // MARK: - Player Properties
 
