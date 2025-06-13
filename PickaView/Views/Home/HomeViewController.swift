@@ -52,7 +52,7 @@ class HomeViewController: UIViewController {
     }
 
 
-    // 비디오 길이를 "분:초" 형식으로 변환
+    // 비디오 길이를 "분:초" 형식으로 변환 , 추후 Extention에서 관리하도록하자
     func formatDuration(_ duration: Int) -> String {
         let minutes = duration / 60
         let seconds = duration % 60
