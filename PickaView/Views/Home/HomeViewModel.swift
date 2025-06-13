@@ -25,7 +25,6 @@ final class HomeViewModel {
             if let firstVideo = videos.first {
                 print("0번째 비디오 정보:")
                 print("duration: \(firstVideo.duration)")
-/
             } else {
                 print("비디오가 하나도 없습니다.")
             }
