@@ -92,9 +92,11 @@ final class CoreDataManager {
     /// - Parameter video: 저장할 PixabayVideo 데이터
     private func insert(_ video: PixabayVideo) {
         let newVideo = Video(context: mainContext)
+        let newStamp = TimeStamp(context: mainContext)
         newVideo.id = Int64(video.id)
-        apply(video, to: newVideo)
         newVideo.tags = insertTags(from: video.tags)
+        newVideo.timeStamp = newStamp
+        apply(video, to: newVideo)
     }
     
     /// 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
@@ -202,10 +204,6 @@ final class CoreDataManager {
         entity.user = video.user
         entity.userID = String(video.userID)
         entity.userImageURL = video.userImageURL
-        if entity.timeStamp == nil {
-            let stamp = TimeStamp(context: mainContext)
-            entity.timeStamp = stamp
-        }
         entity.timeStamp?.totalTime = Double(video.duration)
     }
     
