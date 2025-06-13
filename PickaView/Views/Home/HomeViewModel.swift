@@ -18,18 +18,22 @@ final class HomeViewModel {
     /// 네트워크에서 비디오를 가져오고 Core Data에 저장
     func fetchAndSaveVideos(query: String? = nil) async {
         do {
-            print("📡 비디오 가져오기 시작: query = \(query ?? "없음")")
+            // 네트워크에서 비디오 데이터 가져오기
+            print("Fetching videos for query: \(query ?? "none")")
             let videos = try await pixabayVideoService.fetchVideos(query: query)
-            print("✅ 비디오 가져오기 완료: \(videos.count)개")
+            print("Fetched \(videos.count) videos")
 
             await MainActor.run {
-                print("💾 CoreData에 저장 시작")
+                // Core Data에 비디오 데이터 저장
+                print("Saving videos to Core Data")
                 self.coreDataManager.saveVideos(videos)
-                print("✅ CoreData에 저장 완료")
+                print("Saved videos successfully")
             }
         } catch {
-            print("❌ 네트워크 요청 실패: \(error.localizedDescription)")
+            // 네트워크 요청 실패 시 에러 출력
+            print("Failed to fetch videos: \(error.localizedDescription)")
         }
+
     }
 
     func fetchVideosFromCoreData() -> [Video] {
