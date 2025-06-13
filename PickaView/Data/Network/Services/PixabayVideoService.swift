@@ -58,8 +58,11 @@ struct PixabayVideoService {
     /// Pixabay에서 비디오 목록을 가져옵니다
     /// - Parameter query: 검색어(옵션). 없으면 전체 인기 목록을 불러옵니다
     /// - Returns: [PixabayVideo] 배열
-    func fetchVideos(query: String? = nil) async throws -> [PixabayVideo] {
-        var queryItems: [URLQueryItem] = []
+    func fetchVideos(query: String? = nil, page: Int = 1, perPage: Int = 20) async throws -> [PixabayVideo] {
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "page", value: "\(page)"),
+            URLQueryItem(name: "per_page", value: "\(perPage)")
+        ]
         if let q = query {
             queryItems.append(URLQueryItem(name: "q", value: q))
         }
