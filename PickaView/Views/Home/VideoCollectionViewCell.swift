@@ -8,11 +8,10 @@
 import UIKit
 
 class VideoCollectionViewCell: UICollectionViewCell {
-
+    
     @IBOutlet weak var thumnail: UIImageView!
 
     @IBOutlet weak var durationLabel: UILabel!
-
 
     @IBOutlet weak var userImage: UIImageView!
 
