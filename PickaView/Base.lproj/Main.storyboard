@@ -1,111 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="T1G-iv-UrV">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Launch Screen View Controller-->
-        <scene sceneID="tne-QT-ifu">
-            <objects>
-                <viewController id="BYZ-38-t0r" customClass="LaunchScreenViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="TK8-wB-Znq">
-                                <rect key="frame" x="30" y="312.33333333333331" width="333" height="227.33333333333331"/>
-                                <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo" translatesAutoresizingMaskIntoConstraints="NO" id="vLo-hf-3mv">
-                                        <rect key="frame" x="0.0" y="0.0" width="333" height="166.66666666666666"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="vLo-hf-3mv" secondAttribute="height" multiplier="2:1" id="GjC-Rs-eU4"/>
-                                        </constraints>
-                                    </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PICK A VIEW" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHn-bP-UpJ">
-                                        <rect key="frame" x="71.333333333333329" y="186.66666666666669" width="190.33333333333337" height="40.666666666666657"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle0"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <constraints>
-                            <constraint firstItem="TK8-wB-Znq" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="height" multiplier="1:2" id="4Fv-MW-Kmi"/>
-                            <constraint firstItem="TK8-wB-Znq" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="76f-oH-nca"/>
-                            <constraint firstItem="TK8-wB-Znq" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="f85-Lb-OQ9"/>
-                        </constraints>
-                    </view>
-                    <connections>
-                        <segue destination="T1G-iv-UrV" kind="presentation" identifier="ReplaceSegue" modalPresentationStyle="fullScreen" id="XFa-Lu-XMY"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="152" y="-51"/>
-        </scene>
-        <!--Home-->
-        <scene sceneID="UEe-yM-Otl">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Home" id="e2u-q1-NAk" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="rUf-eL-VLf"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vcV-ee-1tI" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1978" y="-230"/>
-        </scene>
-        <!--Like-->
-        <scene sceneID="aI9-FB-CNU">
-            <objects>
-                <viewControllerPlaceholder storyboardName="Like" id="GXV-pb-Ooy" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="Pln-jd-2id"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="AeG-2a-2xe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1978" y="-51"/>
-        </scene>
-        <!--MyPage-->
-        <scene sceneID="Twr-vB-NQh">
-            <objects>
-                <viewControllerPlaceholder storyboardName="MyPage" id="4YG-MR-fvA" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="Nnn-ZW-1IV"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="QIv-F6-0vW" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1978" y="120"/>
-        </scene>
-        <!--Main View Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="kSv-3O-sWd">
             <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="MainViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="T1G-iv-UrV" customClass="TabBarViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="nKz-Te-FSR">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
-                    <connections>
-                        <segue destination="e2u-q1-NAk" kind="relationship" relationship="viewControllers" id="I7Q-aZ-nqf"/>
-                        <segue destination="GXV-pb-Ooy" kind="relationship" relationship="viewControllers" id="llo-kA-2af"/>
-                        <segue destination="4YG-MR-fvA" kind="relationship" relationship="viewControllers" id="m1c-4n-Xmd"/>
-                    </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3pZ-GI-xee" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1164" y="-51"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="Logo" width="512" height="512"/>
-        <systemColor name="systemBackgroundColor">
-            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>

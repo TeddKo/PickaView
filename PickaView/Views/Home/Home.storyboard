@@ -13,7 +13,7 @@
         <!--Home-->
         <scene sceneID="nE6-a6-IVI">
             <objects>
-                <viewController id="HZY-Ch-Qe1" customClass="HomeViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="HomeViewController" id="HZY-Ch-Qe1" customClass="HomeViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4L5-1a-Lg2">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

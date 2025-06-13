@@ -9,13 +9,11 @@ import Foundation
 import CoreData
 
 final class CoreDataManager {
-    static let shared = CoreDataManager()
-
     let persistentContainer: NSPersistentContainer
     let mainContext: NSManagedObjectContext
     let fetchedResults: NSFetchedResultsController<Video>
 
-    private init() {
+    init() {
         // Core Data 스택 초기화
         let container = NSPersistentContainer(name: "Model")
         container.loadPersistentStores { storeDescription, error in
@@ -26,10 +24,11 @@ final class CoreDataManager {
         persistentContainer = container
         mainContext = container.viewContext
 
-        let request: NSFetchRequest<Video> = Video.fetchRequest()
+        let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
 
         fetchedResults = NSFetchedResultsController(
-            fetchRequest: request,
+            fetchRequest: fetchRequest,
             managedObjectContext: mainContext,
             sectionNameKeyPath: nil,
             cacheName: nil
@@ -118,6 +117,6 @@ final class CoreDataManager {
             tag.lastUpdated = Date()
         }
 
-        CoreDataManager.shared.saveContext()
+        self.saveContext()
     }
 }
