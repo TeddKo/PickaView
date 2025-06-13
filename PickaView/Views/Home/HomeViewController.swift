@@ -19,6 +19,14 @@ class HomeViewController: UIViewController {
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let selectedVideo = videoList[indexPath.item]
+        let playerVC = PlayerViewController()
+        playerVC.viewModel = PlayerViewModel(video: selectedVideo)
+        playerVC.modalPresentationStyle = .fullScreen  // 풀스크린 모달 설정
+        present(playerVC, animated: true, completion: nil)
+    }
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
