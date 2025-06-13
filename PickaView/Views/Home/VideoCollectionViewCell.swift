@@ -20,10 +20,6 @@ class VideoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var viewsLabel: UILabel!
 
-    @IBAction func likeButton(_ sender: Any) {
-    }
-    
-    @IBOutlet weak var likeButton: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()
