@@ -93,16 +93,12 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         let video = videoList[indexPath.item]
 
         // 데이터 출력
-        print("---- Video \(indexPath.item) ----")
-        print("user: \(video.user ?? "nil")")
-        print("views: \(video.views)")
-        if let durationSeconds = video.timeStamp?.totalTime {
-            print("duration (seconds): \(durationSeconds)")
-        } else {
-            print("duration: N/A")
-        }
-        print("userImageURL: \(video.userImageURL ?? "nil")")
-        print("thumbnailURL: \(video.url ?? "nil")")
+        // print("---- Video \(indexPath.item) ----")
+        // print("user: \(video.user ?? "nil")")
+        // print("views: \(video.views)")
+        print("duration: \(video.timeStamp)")
+        // print("userImageURL: \(video.userImageURL ?? "nil")")
+        // print("thumbnailURL: \(video.url ?? "nil")")
 
         // UI 업데이트
         cell.userNameLabel.text = video.user
@@ -183,10 +179,6 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 
         return isPhonePortrait ? .zero : UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
-}
-
-extension HomeViewController: UISearchBarDelegate {
-
 }
 
 // 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
