@@ -7,7 +7,6 @@
         <relationship name="videos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Video" inverseName="tags" inverseEntity="Video"/>
     </entity>
     <entity name="TimeStamp" representedClassName="TimeStamp" syncable="YES" codeGenerationType="class">
-        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="startDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="totalTime" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <relationship name="video" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Video" inverseName="timeStamp" inverseEntity="Video"/>
