@@ -19,13 +19,21 @@ class HomeViewController: UIViewController {
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
 
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let cell = sender as? VideoCollectionViewCell {
+            if let indexPath = collectionView.indexPath(for: cell) {
+                if let vc = segue.destination as? PlayerViewController {
+                    vc.viewModel = PlayerViewModel(video: videoList[indexPath.item])
+                    vc.modalPresentationStyle = .fullScreen
+                }
+            }
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedVideo = videoList[indexPath.item]
-        let playerVC = PlayerViewController()
-        // 풀스크린 모달로 설정해서 PlayerView
-        playerVC.viewModel = PlayerViewModel(video: selectedVideo)
-        playerVC.modalPresentationStyle = .fullScreen  
-        present(playerVC, animated: true, completion: nil)
+        if let cell = collectionView.cellForItem(at: indexPath) {
+            performSegue(withIdentifier: "Player", sender: cell)
+        }
     }
 
 
@@ -50,7 +58,7 @@ class HomeViewController: UIViewController {
                 let videosFromCoreData = viewModel.fetchVideosFromCoreData()
 
                 await MainActor.run {
-                	// 3. 화면 데이터로 저장 및 리로드
+                    // 3. 화면 데이터로 저장 및 리로드
                     self.videoList = videosFromCoreData
                     self.collectionView.reloadData()
                 }
