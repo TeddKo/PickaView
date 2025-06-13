@@ -134,28 +134,3 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
 }
 
-// 이미지 URL을 비동기적으로 불러오는 UIImageView 확장
-//extension UIImageView {
-//    func loadImage(from url: URL?, thumbnailHeight: CGFloat = 0) {
-//        guard let url else {
-//            self.image = UIImage(systemName: "photo")
-//            return
-//        }
-//
-//        // 백그라운드 스레드에서 이미지 데이터 다운로드
-//        DispatchQueue.global().async {
-//            if let data = try? Data(contentsOf: url),
-//               let image = UIImage(data: data) {
-//                // 메인 스레드에서 이미지 뷰에 설정
-//                DispatchQueue.main.async {
-//                    self.image = image
-//                }
-//            } else {
-//                DispatchQueue.main.async {
-//                    self.image = UIImage(systemName: "photo")
-//                }
-//            }
-//        }
-//    }
-//}
-
