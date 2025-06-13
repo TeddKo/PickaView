@@ -1,351 +1,60 @@
-////
-////  PlayerViewController.swift
-////  PickaView
-////
-////  Created by junil on 6/9/25.
-////
 //
-//import UIKit
-//import AVKit
+//  PlayerViewController.swift
+//  PickaView
 //
-//protocol PlayerViewControllerDelegate: AnyObject {
-//    func didDismissFullscreen()
-//}
+//  Created by junil on 6/9/25.
 //
-///// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
-//class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
-//
-//    // MARK: - Properties
-//
-//    /// AVPlayer 인스턴스 (영상 재생 담당)
-//    var player: AVPlayer?
-//
-//    /// 영상 출력을 위한 AVPlayerLayer
-//    var playerLayer: AVPlayerLayer?
-//
-//    /// 재생 시간 업데이트 관찰 토큰
-//    var timeObserverToken: Any?
-//
-//    /// 현재 재생 여부
-//    var isPlaying = false
-//
-//    /// 컨트롤(버튼 등) 표시 여부
-//    var areControlsVisible = true
-//
-//    /// 컨트롤 자동 숨김용 타이머
-//    var controlsHideTimer: Timer?
-//
-//    /// 세로/가로 전환 시 사용되는 오토레이아웃 제약
-//    var portraitConstraints: [NSLayoutConstraint] = []
-//    var landscapeConstraints: [NSLayoutConstraint] = []
-//
-//    // 프로퍼티 추가
-//    var isFullscreenMode: Bool = false
-//    weak var delegate: PlayerViewControllerDelegate?
-//
-//    /// 하단 재생/이동 버튼 스택
-//    lazy var playbackControlsStack: UIStackView = {
-//        let stackView = UIStackView(arrangedSubviews: [backwardButton, playPauseButton, forwardButton])
-//        stackView.axis = .horizontal
-//        stackView.alignment = .center
-//        stackView.distribution = .equalSpacing
-//        stackView.spacing = 40
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        return stackView
-//    }()
-//
-//    /// 시간/슬라이더 스택
-//    lazy var seekerStack: UIStackView = {
-//        let stackView = UIStackView(arrangedSubviews: [currentTimeLabel, progressSlider, totalDurationLabel])
-//        stackView.spacing = 8
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//        return stackView
-//    }()
-//
-//    /// 영상 표시용 컨테이너 뷰
-//    let videoContainerView: UIView = {
-//        let view = UIView()
-//        view.backgroundColor = .black
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-//
-//    /// 컨트롤 오버레이 뷰
-//    let controlsOverlayView: UIView = {
-//        let view = UIView()
-//        view.translatesAutoresizingMaskIntoConstraints = false
-//        return view
-//    }()
-//
-//    /// 재생/일시정지 버튼
-//    lazy var playPauseButton: UIButton = {
-//        let button = createButton(systemName: "play.fill")
-//        button.addTarget(self, action: #selector(playPauseButtonTapped), for: .touchUpInside)
-//        return button
-//    }()
-//
-//    /// 10초 뒤로 버튼
-//    lazy var backwardButton: UIButton = {
-//        let button = createButton(systemName: "10.arrow.trianglehead.counterclockwise", useSmallConfig: true)
-//        button.addTarget(self, action: #selector(backwardButtonTapped), for: .touchUpInside)
-//        return button
-//    }()
-//
-//    /// 10초 앞으로 버튼
-//    lazy var forwardButton: UIButton = {
-//        let button = createButton(systemName: "10.arrow.trianglehead.clockwise", useSmallConfig: true)
-//        button.addTarget(self, action: #selector(forwardButtonTapped), for: .touchUpInside)
-//        return button
-//    }()
-//
-//    /// 현재 재생 시간 표시 라벨
-//    lazy var currentTimeLabel: UILabel = {
-//        createTimeLabel(text: "00:00")
-//    }()
-//
-//    /// 총 영상 길이 표시 라벨
-//    lazy var totalDurationLabel: UILabel = {
-//        createTimeLabel(text: "00:00")
-//    }()
-//
-//    /// 재생 위치 조정 슬라이더
-//    lazy var progressSlider: UISlider = {
-//        let slider = UISlider()
-//        slider.minimumValue = 0
-//        slider.tintColor = .red
-//        slider.thumbTintColor = .red
-//        slider.translatesAutoresizingMaskIntoConstraints = false
-//        slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
-//        return slider
-//    }()
-//
-//    /// (선택) 추가 스크롤 컨테이너
-//    let contentScrollView: UIScrollView = {
-//        let scrollView = UIScrollView()
-//        scrollView.translatesAutoresizingMaskIntoConstraints = false
-//        return scrollView
-//    }()
-//
-//    // MARK: - View Lifecycle
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        view.backgroundColor = .systemBackground
-//
-//        setupPlayer()
-//        setupUI()
-//        setPlayPauseImage(isPlaying: false)
-//        setupGestures()
-//        addPlayerObservers()
-//    }
-//
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//        updateConstraintsForOrientation()
-//    }
-//
-//    func didDismissFullscreen() {
-//        setOrientation(to: .portrait)
-//    }
-//
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//        if isFullscreenMode {
-//            setOrientation(to: .portrait)
-//            delegate?.didDismissFullscreen()
-//        }
-//    }
-//
-//    override func viewDidLayoutSubviews() {
-//        super.viewDidLayoutSubviews()
-//        playerLayer?.frame = videoContainerView.bounds
-//    }
-//
-//    /// 지원하는 화면 방향
-//    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-//        return isFullscreenMode ? .landscape : .all
-//    }
-//    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
-//        return isFullscreenMode ? .landscapeRight : .portrait
-//    }
-//
-//    /// 자동 회전 지원 여부
-//    override var shouldAutorotate: Bool {
-//        return true
-//    }
-//
-//    /// 화면 회전 시 제약 업데이트
-//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//        super.viewWillTransition(to: size, with: coordinator)
-//
-//        coordinator.animate(alongsideTransition: { _ in
-//            self.updateConstraintsForOrientation()
-//            self.view.layoutIfNeeded()
-//        })
-//    }
-//
-//    // MARK: - Actions
-//
-//    /// 재생/일시정지 버튼 탭 시 호출
-//    @objc func playPauseButtonTapped() {
-//        guard let player = self.player else { return }
-//
-//        animateButtonTap(playPauseButton) {
-//            self.isPlaying.toggle()
-//            self.setPlayPauseImage(isPlaying: self.isPlaying)
-//
-//            if self.isPlaying {
-//                player.play()
-//                self.scheduleControlsHide()
-//            } else {
-//                player.pause()
-//                self.cancelControlsHide()
-//            }
-//        }
-//    }
-//
-//    /// 버튼을 일정 각도로 돌렸다가 복귀하는 애니메이션
-//    /// - Parameters:
-//    ///   - button: 애니메이션할 버튼
-//    ///   - clockwise: 시계 방향 여부
-//    ///   - completion: 완료 핸들러
-//    func animateButtonSpin(_ button: UIButton, clockwise: Bool, completion: (() -> Void)? = nil) {
-//        button.layer.removeAllAnimations()
-//        let angle: CGFloat = clockwise ? -CGFloat.pi / 2 : CGFloat.pi / 2
-//
-//        UIView.animateKeyframes(withDuration: 0.25, delay: 0, options: [], animations: {
-//            UIView.addKeyframe(withRelativeStartTime: 0.0, relativeDuration: 0.5) {
-//                button.transform = CGAffineTransform(rotationAngle: angle).scaledBy(x: 0.85, y: 0.85)
-//            }
-//            UIView.addKeyframe(withRelativeStartTime: 0.5, relativeDuration: 0.5) {
-//                button.transform = .identity
-//            }
-//        }, completion: { _ in
-//            completion?()
-//        })
-//    }
-//
-//    /// 뒤로가기(10초) 버튼 탭 시 호출
-//    @objc func backwardButtonTapped() {
-//        animateButtonSpin(backwardButton, clockwise: true) {
-//            self.seek(by: -10)
-//        }
-//    }
-//
-//    /// 앞으로(10초) 버튼 탭 시 호출
-//    @objc func forwardButtonTapped() {
-//        animateButtonSpin(forwardButton, clockwise: false) {
-//            self.seek(by: 10)
-//        }
-//    }
-//
-//    /// 슬라이더 값 변경 시 호출 (영상 위치 이동)
-//    @objc func sliderValueChanged(_ slider: UISlider) {
-//        guard let player = self.player, let duration = player.currentItem?.duration else { return }
-//
-//        let totalSeconds = CMTimeGetSeconds(duration)
-//        let value = Float64(slider.value) * totalSeconds
-//        let seekTime = CMTime(value: Int64(value), timescale: 1)
-//        player.seek(to: seekTime)
-//        resetControlsHideTimer()
-//    }
-//
-//    /// 영상 재생 완료 시 호출
-//    @objc func playerDidFinishPlaying() {
-//        guard let player = self.player else { return }
-//
-//        isPlaying = false
-//        let playImage = UIImage(systemName: "arrow.clockwise")
-//        playPauseButton.setImage(playImage, for: .normal)
-//        player.seek(to: .zero)
-//        progressSlider.value = 0
-//        currentTimeLabel.text = "00:00"
-//    }
-//
-//    /// 화면 터치 등으로 컨트롤러 표시/숨김 토글
-//    @objc func toggleControlsVisibility() {
-//        areControlsVisible.toggle()
-//        let alpha: CGFloat = areControlsVisible ? 1.0 : 0.0
-//
-//        UIView.animate(withDuration: 0.3) {
-//            self.playbackControlsStack.alpha = alpha
-//            self.seekerStack.alpha = alpha
-//        }
-//
-//        if areControlsVisible && isPlaying {
-//            scheduleControlsHide()
-//        } else {
-//            cancelControlsHide()
-//        }
-//    }
-//
-//    /// 컨트롤 자동 숨김 예약 (3초 후)
-//    func scheduleControlsHide() {
-//        cancelControlsHide()
-//        controlsHideTimer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(hideControls), userInfo: nil, repeats: false)
-//    }
-//
-//    /// 컨트롤 숨김 처리
-//    @objc func hideControls() {
-//        areControlsVisible = false
-//        UIView.animate(withDuration: 0.3) {
-//            self.playbackControlsStack.alpha = 0.0
-//            self.seekerStack.alpha = 0.0
-//        }
-//    }
-//
-//    /// 컨트롤 자동 숨김 취소
-//    func cancelControlsHide() {
-//        controlsHideTimer?.invalidate()
-//        controlsHideTimer = nil
-//    }
-//
-//    /// 재생 중 터치/이동 시 타이머 리셋
-//    func resetControlsHideTimer() {
-//        if isPlaying {
-//            scheduleControlsHide()
-//        }
-//    }
-//
-//    // MARK: - Deinit
-//
-//    /// 뷰 컨트롤러 해제 시 옵저버 및 타이머 해제
-//    deinit {
-//        if let token = timeObserverToken {
-//            player?.removeTimeObserver(token)
-//            timeObserverToken = nil
-//        }
-//        if let player = player {
-//            player.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
-//        }
-//        NotificationCenter.default.removeObserver(self)
-//        print("PlayerViewController deinitialized")
-//    }
-//}
 
 import UIKit
 import AVKit
 
+// MARK: - Delegate Protocol
+
+/// 전체화면 모드 dismiss 시 호출되는 델리게이트 프로토콜
 protocol PlayerViewControllerDelegate: AnyObject {
     func didDismissFullscreen()
 }
 
+// MARK: - Main Player View Controller
+
 /// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
 class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
-    // MARK: - Properties
+    // MARK: - Player Properties
 
+    /// AVPlayer 인스턴스 (영상 재생)
     var player: AVPlayer?
+
+    /// 영상 레이어(재생 화면용)
     var playerLayer: AVPlayerLayer?
+
+    /// 재생 시간 관찰 토큰 (clean-up용)
     var timeObserverToken: Any?
+
+    /// 현재 재생 상태
     var isPlaying = false
+
+    /// 컨트롤 표시 여부
     var areControlsVisible = true
+
+    /// 컨트롤 자동 숨김 타이머
     var controlsHideTimer: Timer?
+
+    /// 세로 레이아웃 제약 목록
     var portraitConstraints: [NSLayoutConstraint] = []
+
+    /// 가로 레이아웃 제약 목록
     var landscapeConstraints: [NSLayoutConstraint] = []
+
+    /// 전체화면 모드 여부
     var isFullscreenMode: Bool = false
+
+    /// 전체화면 dismiss 델리게이트
     weak var delegate: PlayerViewControllerDelegate?
 
+    // MARK: - UI Components
+
+    /// 재생/정지, 앞뒤 버튼 스택
     lazy var playbackControlsStack: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [backwardButton, playPauseButton, forwardButton])
         stackView.axis = .horizontal
@@ -356,6 +65,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         return stackView
     }()
 
+    /// 시커(현재시간/슬라이더/총시간) 스택
     lazy var seekerStack: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [currentTimeLabel, progressSlider, totalDurationLabel])
         stackView.spacing = 8
@@ -363,6 +73,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         return stackView
     }()
 
+    /// 영상 표시 영역
     let videoContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .black
@@ -370,38 +81,45 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         return view
     }()
 
+    /// 플레이어 컨트롤 오버레이
     let controlsOverlayView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
+    /// 재생/일시정지 버튼
     lazy var playPauseButton: UIButton = {
         let button = createButton(systemName: "play.fill")
         button.addTarget(self, action: #selector(playPauseButtonTapped), for: .touchUpInside)
         return button
     }()
 
+    /// 10초 뒤로 버튼
     lazy var backwardButton: UIButton = {
         let button = createButton(systemName: "10.arrow.trianglehead.counterclockwise", useSmallConfig: true)
         button.addTarget(self, action: #selector(backwardButtonTapped), for: .touchUpInside)
         return button
     }()
 
+    /// 10초 앞으로 버튼
     lazy var forwardButton: UIButton = {
         let button = createButton(systemName: "10.arrow.trianglehead.clockwise", useSmallConfig: true)
         button.addTarget(self, action: #selector(forwardButtonTapped), for: .touchUpInside)
         return button
     }()
 
+    /// 현재 재생 위치 라벨
     lazy var currentTimeLabel: UILabel = {
         createTimeLabel(text: "00:00")
     }()
 
+    /// 총 영상 길이 라벨
     lazy var totalDurationLabel: UILabel = {
         createTimeLabel(text: "00:00")
     }()
 
+    /// 재생 위치 슬라이더
     lazy var progressSlider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 0
@@ -412,12 +130,16 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         return slider
     }()
 
+    /// 영상 이외의 부가 정보 영역(예: 설명)
     let contentScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
     }()
 
+    // MARK: - LifeCycle
+
+    /// 뷰가 로드될 때 초기 세팅
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
@@ -427,6 +149,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         setupGestures()
         addPlayerObservers()
 
+        // 기기 방향 변화 알림 등록
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(deviceOrientationDidChange),
@@ -435,16 +158,45 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         )
     }
 
-    func scheduleControlsHide() {
-        cancelControlsHide()
-        controlsHideTimer = Timer.scheduledTimer(timeInterval: 3.0, target: self, selector: #selector(hideControls), userInfo: nil, repeats: false)
+    /// 뷰가 나타날 때 방향/레이아웃 갱신
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateConstraintsForOrientation()
     }
 
+    /// 뷰가 사라질 때 전체화면 delegate 호출
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        delegate?.didDismissFullscreen()
+    }
+
+    /// 뷰의 크기 변경시 AVPlayerLayer 리사이즈
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        playerLayer?.frame = videoContainerView.bounds
+    }
+
+    // MARK: - Player Controls
+
+    /// 3초 후 컨트롤 자동 숨김 예약
+    func scheduleControlsHide() {
+        cancelControlsHide()
+        controlsHideTimer = Timer.scheduledTimer(
+            timeInterval: 3.0,
+            target: self,
+            selector: #selector(hideControls),
+            userInfo: nil,
+            repeats: false
+        )
+    }
+
+    /// 컨트롤 자동 숨김 예약 취소
     func cancelControlsHide() {
         controlsHideTimer?.invalidate()
         controlsHideTimer = nil
     }
 
+    /// 컨트롤(버튼/시커) 숨기기 애니메이션
     @objc func hideControls() {
         areControlsVisible = false
         UIView.animate(withDuration: 0.3) {
@@ -453,9 +205,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         }
     }
 
+    /// 재생/일시정지 버튼 클릭 핸들러
     @objc func playPauseButtonTapped() {
         guard let player = self.player else { return }
-
         animateButtonTap(playPauseButton) {
             self.isPlaying.toggle()
             self.setPlayPauseImage(isPlaying: self.isPlaying)
@@ -467,6 +219,48 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
                 player.pause()
                 self.cancelControlsHide()
             }
+        }
+    }
+
+    /// 10초 뒤로 버튼 클릭 핸들러
+    @objc func backwardButtonTapped() {
+        animateButtonSpin(backwardButton, clockwise: true) {
+            self.seek(by: -10)
+        }
+    }
+
+    /// 10초 앞으로 버튼 클릭 핸들러
+    @objc func forwardButtonTapped() {
+        animateButtonSpin(forwardButton, clockwise: false) {
+            self.seek(by: 10)
+        }
+    }
+
+    /// 재생 위치 슬라이더 값 변경 핸들러
+    @objc func sliderValueChanged(_ slider: UISlider) {
+        guard let player = self.player, let duration = player.currentItem?.duration else { return }
+        let totalSeconds = CMTimeGetSeconds(duration)
+        let value = Float64(slider.value) * totalSeconds
+        let seekTime = CMTime(value: Int64(value), timescale: 1)
+        player.seek(to: seekTime)
+        resetControlsHideTimer()
+    }
+
+    /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
+    @objc func playerDidFinishPlaying() {
+        guard let player = self.player else { return }
+        isPlaying = false
+        let playImage = UIImage(systemName: "arrow.clockwise")
+        playPauseButton.setImage(playImage, for: .normal)
+        player.seek(to: .zero)
+        progressSlider.value = 0
+        currentTimeLabel.text = "00:00"
+    }
+
+    /// 컨트롤 자동 숨김 타이머 재설정
+    func resetControlsHideTimer() {
+        if isPlaying {
+            scheduleControlsHide()
         }
     }
 
@@ -491,48 +285,72 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         })
     }
 
-    @objc func backwardButtonTapped() {
-        animateButtonSpin(backwardButton, clockwise: true) {
-            self.seek(by: -10)
+    // MARK: - 전체화면 진입/복귀
+
+    /// 전체화면 모드 진입
+    func presentFullscreen() {
+        guard !isFullscreenMode else { return }
+        isFullscreenMode = true
+
+        let fullscreenVC = FullscreenPlayerViewController()
+        fullscreenVC.modalPresentationStyle = .fullScreen
+        fullscreenVC.playerLayer = self.playerLayer
+        fullscreenVC.controlsOverlayView = self.controlsOverlayView
+        fullscreenVC.delegate = self
+
+        // iOS 16 이상은 windowScene geometryUpdate 사용
+        if #available(iOS 16.0, *) {
+            let windowScene = view.window?.windowScene
+            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { [weak self] _ in
+                self?.present(fullscreenVC, animated: true)
+            }
+        } else {
+            UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
+            UIViewController.attemptRotationToDeviceOrientation()
+            present(fullscreenVC, animated: true)
         }
     }
 
-    @objc func forwardButtonTapped() {
-        animateButtonSpin(forwardButton, clockwise: false) {
-            self.seek(by: 10)
+    /// 전체화면에서 복귀(dismiss)할 때 호출 (FullScreen → 일반모드)
+    func didDismissFullscreen() {
+        isFullscreenMode = false
+        setNeedsUpdateOfSupportedInterfaceOrientations()
+
+        // 화면 방향을 '세로'로 강제 설정
+        if #available(iOS 16.0, *) {
+            let windowScene = view.window?.windowScene
+            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+        } else {
+            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            UIViewController.attemptRotationToDeviceOrientation()
         }
-    }
 
-    @objc func sliderValueChanged(_ slider: UISlider) {
-        guard let player = self.player, let duration = player.currentItem?.duration else { return }
-
-        let totalSeconds = CMTimeGetSeconds(duration)
-        let value = Float64(slider.value) * totalSeconds
-        let seekTime = CMTime(value: Int64(value), timescale: 1)
-        player.seek(to: seekTime)
-        resetControlsHideTimer()
-    }
-
-    @objc func playerDidFinishPlaying() {
-        guard let player = self.player else { return }
-
-        isPlaying = false
-        let playImage = UIImage(systemName: "arrow.clockwise")
-        playPauseButton.setImage(playImage, for: .normal)
-        player.seek(to: .zero)
-        progressSlider.value = 0
-        currentTimeLabel.text = "00:00"
-    }
-
-    func resetControlsHideTimer() {
-        if isPlaying {
-            scheduleControlsHide()
+        // playerLayer, controlsOverlayView 다시 복구
+        if let playerLayer = self.playerLayer {
+            playerLayer.removeFromSuperlayer()
+            videoContainerView.layer.insertSublayer(playerLayer, at: 0)
+            playerLayer.frame = videoContainerView.bounds
         }
+
+        controlsOverlayView.removeFromSuperview()
+        videoContainerView.addSubview(controlsOverlayView)
+        controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
+            controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
+            controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
+            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
+        ])
+
+        updateConstraintsForOrientation()
+        setupGestures()
     }
 
+    // MARK: - Orientation
+
+    /// 기기 방향 변경시 호출(가로 → 전체화면, 세로 → 복귀)
     @objc func deviceOrientationDidChange() {
         let orientation = UIDevice.current.orientation
-        // 가로면 전체화면 진입, 세로면 해제 (기기 직접 돌렸을 때도 동작)
         if (orientation == .landscapeLeft || orientation == .landscapeRight), !isFullscreenMode {
             presentFullscreen()
         } else if orientation == .portrait, isFullscreenMode {
@@ -540,11 +358,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        updateConstraintsForOrientation()
-    }
-
+    /// (legacy) iOS 16 미만에서 방향 강제 변경
     func setOrientationLegacy(to orientation: UIInterfaceOrientation) {
         if #available(iOS 16.0, *) {
             if let scene = view.window?.windowScene {
@@ -560,91 +374,22 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         }
     }
 
-    // PlayerViewController.swift
-    // 전체화면에서 돌아왔을 때 호출되는 핵심 메서드
-    func didDismissFullscreen() {
-        // 상태를 '일반 모드'로 변경합니다.
-        isFullscreenMode = false
-
-        // 화면 방향 설정을 업데이트 하도록 시스템에 요청.
-        setNeedsUpdateOfSupportedInterfaceOrientations()
-
-        // 화면 방향을 '세로'로 강제 설정.
-        if #available(iOS 16.0, *) {
-            let windowScene = view.window?.windowScene
-            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
-        } else {
-            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-            UIViewController.attemptRotationToDeviceOrientation()
-        }
-
-        // 빌려줬던 playerLayer와 controlsOverlayView를 다시 가져옴.
-        if let playerLayer = self.playerLayer {
-            playerLayer.removeFromSuperlayer()
-            videoContainerView.layer.insertSublayer(playerLayer, at: 0)
-            playerLayer.frame = videoContainerView.bounds
-        }
-
-        controlsOverlayView.removeFromSuperview()
-        videoContainerView.addSubview(controlsOverlayView)
-        // 제약조건도 다시 설정해줍니다. (이전보다 간결화)
-        controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
-            controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
-            controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
-            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
-        ])
-
-        // 세로 모드에 맞는 레이아웃과 제스처로 업데이트.
-        updateConstraintsForOrientation()
-        setupGestures()
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        delegate?.didDismissFullscreen()
-    }
-
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        playerLayer?.frame = videoContainerView.bounds
-    }
-
+    /// 현재 지원되는 화면 방향
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return isFullscreenMode ? .landscape : .portrait
     }
 
+    /// 프리젠테이션시 기본 방향
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
         return isFullscreenMode ? .landscapeRight : .portrait
     }
+
+    /// 자동회전 허용 여부
     override var shouldAutorotate: Bool { true }
 
-    // MARK: - 전체화면 진입 함수
-    // PlayerViewController.swift 안에서
-    func presentFullscreen() {
-        guard !isFullscreenMode else { return }
-        isFullscreenMode = true
+    // MARK: - Deinit
 
-        let fullscreenVC = FullscreenPlayerViewController()
-        fullscreenVC.modalPresentationStyle = .fullScreen
-        fullscreenVC.playerLayer = self.playerLayer
-        fullscreenVC.controlsOverlayView = self.controlsOverlayView
-        fullscreenVC.delegate = self
-
-        // 화면 방향을 먼저 요청하고, 완료되면 뷰 컨트롤러를 띄움.
-        if #available(iOS 16.0, *) {
-            let windowScene = view.window?.windowScene
-            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { [weak self] _ in
-                self?.present(fullscreenVC, animated: true)
-            }
-        } else {
-            UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-            UIViewController.attemptRotationToDeviceOrientation()
-            present(fullscreenVC, animated: true)
-        }
-    }
-
+    /// 뷰컨트롤러 해제 시 클린업
     deinit {
         if let token = timeObserverToken { player?.removeTimeObserver(token) }
         NotificationCenter.default.removeObserver(self)

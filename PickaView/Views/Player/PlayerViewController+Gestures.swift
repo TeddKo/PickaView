@@ -1,119 +1,41 @@
-////
-////  PlayerViewController+Gestures.swift
-////  PickaView
-////
-////  Created by junil on 6/11/25.
-////
 //
-//import UIKit
+//  PlayerViewController+Gestures.swift
+//  PickaView
 //
-///// PlayerViewController의 제스처 관련 확장
-//extension PlayerViewController: UIGestureRecognizerDelegate {
+//  Created by junil on 6/11/25.
 //
-//    /// 플레이어 오버레이 뷰에 필요한 제스처를 모두 추가
-//    func setupGestures() {
-//        // 단일/더블 탭은 항상 등록
-//        let singleTap = UITapGestureRecognizer(target: self, action: #selector(toggleControlsVisibility))
-//        singleTap.numberOfTapsRequired = 1
-//        singleTap.delegate = self
-//        controlsOverlayView.addGestureRecognizer(singleTap)
-//
-//        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
-//        doubleTap.numberOfTapsRequired = 2
-//        doubleTap.delegate = self
-//        controlsOverlayView.addGestureRecognizer(doubleTap)
-//
-//        singleTap.require(toFail: doubleTap)
-//
-//        // **스와이프 업: 기본 모드에서만**
-//        if !isFullscreenMode {
-//            let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToFullscreen))
-//            swipeUp.direction = .up
-//            controlsOverlayView.addGestureRecognizer(swipeUp)
-//        }
-//
-//        // **스와이프 다운: 전체화면에서만**
-//        if isFullscreenMode {
-//            let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToFullscreen))
-//            swipeDown.direction = .down
-//            controlsOverlayView.addGestureRecognizer(swipeDown)
-//        }
-//    }
-//
-//    /// 더블 탭 제스처 처리: 화면 좌/우 위치에 따라 -10초/10초 점프
-//    /// - Parameter recognizer: UITapGestureRecognizer 인스턴스
-//    @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
-//        let location = recognizer.location(in: controlsOverlayView)
-//        let midX = controlsOverlayView.bounds.midX
-//
-//        if location.x < midX {
-//            seek(by: -10)
-//        } else {
-//            seek(by: 10)
-//        }
-//    }
-//
-//    /// 스와이프 업/다운 제스처 처리: 전체화면 전환 또는 복귀
-//    /// - Parameter gesture: UISwipeGestureRecognizer 인스턴스
-//    @objc func handleSwipeToFullscreen(_ gesture: UISwipeGestureRecognizer) {
-//        if #available(iOS 16, *) {
-//            print("#### if")
-//            DispatchQueue.main.async {
-//                let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-//                self.setNeedsUpdateOfSupportedInterfaceOrientations()
-//                self.navigationController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-//                windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { error in
-//                    print(error)
-//                    print(windowScene?.effectiveGeometry ?? "")
-//                }
-//            }
-//
-//        } else {
-//            print("#### else")
-//            //               appDelegate.myOrientation = .landscape
-//            //               UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-//            //               UIView.setAnimationsEnabled(true)
-//        }
-//    }
-//
-//    /// 기기 방향을 강제로 변경
-//    /// - Parameter orientation: 설정할 UIInterfaceOrientation 값
-//    func setOrientation(to orientation: UIInterfaceOrientation) {
-//        UIDevice.current.setValue(orientation.rawValue, forKey: "orientation")
-//        UIViewController.attemptRotationToDeviceOrientation()
-//    }
-//
-//    /// UIControl 뷰에 제스처가 적용되지 않도록 필터링
-//    /// - Parameters:
-//    ///   - gestureRecognizer: 제스처 인식기
-//    ///   - touch: 터치 정보
-//    /// - Returns: 제스처 적용 가능 여부ㄹ
-//    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-//        if touch.view is UIControl {
-//            return false
-//        }
-//        return true
-//    }
-//}
 
 import UIKit
 
+/// PlayerViewController의 제스처 관련 확장
 extension PlayerViewController: UIGestureRecognizerDelegate {
 
-    func setupGestures() {
-        controlsOverlayView.gestureRecognizers?.forEach { controlsOverlayView.removeGestureRecognizer($0) }
+    // MARK: - 제스처 초기화
 
+    /// 플레이어 오버레이 뷰에 필요한 모든 제스처를 등록합니다.
+    /// - 단일 탭: 컨트롤 토글
+    /// - 더블 탭: 10초 앞으로/뒤로 시킹
+    /// - (세로) 위로 스와이프: 전체화면 진입
+    func setupGestures() {
+        // 기존 제스처 모두 제거
+        controlsOverlayView.gestureRecognizers?.forEach {
+            controlsOverlayView.removeGestureRecognizer($0)
+        }
+
+        // 단일 탭: 컨트롤 show/hide
         let singleTap = UITapGestureRecognizer(target: self, action: #selector(toggleControlsVisibility))
         singleTap.numberOfTapsRequired = 1
         singleTap.delegate = self
         controlsOverlayView.addGestureRecognizer(singleTap)
 
+        // 더블 탭: 10초 skip (좌/우)
         let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
         doubleTap.numberOfTapsRequired = 2
         doubleTap.delegate = self
         controlsOverlayView.addGestureRecognizer(doubleTap)
         singleTap.require(toFail: doubleTap)
 
+        // (세로모드일 때만) 위로 스와이프 → 전체화면
         if !isFullscreenMode {
             let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToFullscreen))
             swipeUp.direction = .up
@@ -121,6 +43,9 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
+    // MARK: - 제스처 핸들러
+
+    /// 단일 탭: 컨트롤(재생버튼, 시커 등) show/hide 토글
     @objc func toggleControlsVisibility() {
         areControlsVisible.toggle()
         let alpha: CGFloat = areControlsVisible ? 1.0 : 0.0
@@ -137,6 +62,8 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
+    /// 더블 탭: 왼쪽/오른쪽 10초 skip
+    /// - Parameter recognizer: UITapGestureRecognizer
     @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
         let location = recognizer.location(in: controlsOverlayView)
         let midX = controlsOverlayView.bounds.midX
@@ -148,6 +75,7 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
+    /// 위로 스와이프: 전체화면 진입(세로모드일 때만)
     @objc func handleSwipeToFullscreen(_ gesture: UISwipeGestureRecognizer) {
         guard !isFullscreenMode else { return }
         let isPortrait: Bool
@@ -160,6 +88,9 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         presentFullscreen()
     }
 
+    // MARK: - UIGestureRecognizerDelegate
+
+    /// UIControl(버튼, 슬라이더 등)에는 제스처 적용 X
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return !(touch.view is UIControl)
     }

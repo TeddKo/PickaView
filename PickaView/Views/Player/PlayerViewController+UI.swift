@@ -1,196 +1,30 @@
-////
-////  PlayerViewController+UI.swift
-////  PickaView
-////
-////  Created by junil on 6/11/25.
-////
 //
-//import UIKit
+//  PlayerViewController+UI.swift
+//  PickaView
 //
-///// PlayerViewController의 UI 관련 기능 확장
-//extension PlayerViewController {
+//  Created by junil on 6/11/25.
 //
-//    /// 큰 버튼용(play/pause) SF Symbol config
-//    var symbolConfig: UIImage.SymbolConfiguration {
-//        UIImage.SymbolConfiguration(pointSize: 36, weight: .regular, scale: .large)
-//    }
-//
-//    /// 작은 버튼용(backward/forward) SF Symbol config (forward/backward)
-//    var smallSymbolConfig: UIImage.SymbolConfiguration {
-//        UIImage.SymbolConfiguration(pointSize: 26, weight: .regular, scale: .medium)
-//    }
-//
-//    // MARK: - UI Setup
-//
-//    /// 전체 UI 컴포넌트와 오토레이아웃을 세팅
-//    func setupUI() {
-//        view.addSubview(videoContainerView)
-//        view.addSubview(contentScrollView)
-//
-//        videoContainerView.addSubview(controlsOverlayView)
-//        controlsOverlayView.addSubview(playbackControlsStack)
-//        controlsOverlayView.addSubview(seekerStack)
-//
-//        let safeArea = view.safeAreaLayoutGuide
-//
-//        portraitConstraints = [
-//            videoContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            videoContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            videoContainerView.topAnchor.constraint(equalTo: safeArea.topAnchor),
-//            videoContainerView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 9.0/16.0),
-//
-//            contentScrollView.topAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
-//            contentScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            contentScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            contentScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//        ]
-//
-//        landscapeConstraints = [
-//            videoContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            videoContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            videoContainerView.topAnchor.constraint(equalTo: view.topAnchor),
-//            videoContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//        ]
-//
-//        NSLayoutConstraint.activate([
-//            controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
-//            controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
-//            controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
-//            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
-//
-//            playbackControlsStack.centerXAnchor.constraint(equalTo: controlsOverlayView.centerXAnchor),
-//            playbackControlsStack.centerYAnchor.constraint(equalTo: controlsOverlayView.centerYAnchor),
-//
-//            seekerStack.leadingAnchor.constraint(equalTo: controlsOverlayView.leadingAnchor, constant: 16),
-//            seekerStack.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
-//            seekerStack.bottomAnchor.constraint(equalTo: controlsOverlayView.bottomAnchor, constant: -10)
-//        ])
-//
-//        addDummyContentToScrollView()
-//        updateConstraintsForOrientation()
-//    }
-//
-//    /// 기기 방향에 따라 오토레이아웃 제약을 적용
-//    func updateConstraintsForOrientation() {
-//        if isFullscreenMode || UIDevice.current.orientation.isLandscape {
-//            NSLayoutConstraint.deactivate(portraitConstraints)
-//            NSLayoutConstraint.activate(landscapeConstraints)
-//            contentScrollView.isHidden = true
-//        } else {
-//            NSLayoutConstraint.deactivate(landscapeConstraints)
-//            NSLayoutConstraint.activate(portraitConstraints)
-//            contentScrollView.isHidden = false
-//        }
-//        view.setNeedsLayout()
-//        view.layoutIfNeeded()
-//    }
-//
-//    /// 시스템 심볼로 UIButton을 생성
-//    /// - Parameters:
-//    ///   - systemName: SF Symbol 이름
-//    ///   - useSmallConfig: 작은 버튼 여부
-//    /// - Returns: 설정된 UIButton
-//    func createButton(systemName: String, useSmallConfig: Bool = false) -> UIButton {
-//        let config = useSmallConfig ? smallSymbolConfig : symbolConfig
-//        let button = UIButton(type: .system)
-//        let image = UIImage(systemName: systemName, withConfiguration: config)
-//        button.setImage(image, for: .normal)
-//        button.tintColor = .white
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//
-//        let size: CGFloat = useSmallConfig ? 44 : 54
-//        button.widthAnchor.constraint(equalToConstant: size).isActive = true
-//        button.heightAnchor.constraint(equalToConstant: size).isActive = true
-//        button.layer.cornerRadius = size / 2
-//
-//        button.contentHorizontalAlignment = .center
-//        button.contentVerticalAlignment = .center
-//        button.imageView?.contentMode = .scaleAspectFit
-//
-//        return button
-//    }
-//
-//    /// 재생/일시정지 버튼의 이미지를 현재 상태에 맞게 변경
-//    /// - Parameter isPlaying: true면 pause, false면 play 이미지
-//    func setPlayPauseImage(isPlaying: Bool) {
-//        let imageName = isPlaying ? "pause.fill" : "play.fill"
-//        let img = UIImage(systemName: imageName, withConfiguration: symbolConfig)
-//        playPauseButton.setImage(img, for: .normal)
-//
-//        // 일시정지 아이콘만 살짝 더 크게(인셋)
-//        if isPlaying {
-//            playPauseButton.imageEdgeInsets = UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8)
-//        } else {
-//            playPauseButton.imageEdgeInsets = .zero
-//        }
-//    }
-//
-//    /// 시간 표시용 UILabel을 만듬
-//    /// - Parameter text: 초기 텍스트 (예: "00:00")
-//    /// - Returns: 설정된 UILabel
-//    func createTimeLabel(text: String) -> UILabel {
-//        let label = UILabel()
-//        label.text = text
-//        label.textColor = .white
-//        label.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
-//        label.translatesAutoresizingMaskIntoConstraints = false
-//        return label
-//    }
-//
-//    /// 버튼 터치 애니메이션을 실행
-//    /// - Parameters:
-//    ///   - button: 애니메이션할 버튼
-//    ///   - completion: 애니메이션 후 실행할 클로저
-//    func animateButtonTap(_ button: UIButton, completion: @escaping () -> Void) {
-//        UIView.animate(withDuration: 0.1, animations: {
-//            button.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
-//        }) { _ in
-//            UIView.animate(withDuration: 0.1, animations: {
-//                button.transform = .identity
-//            }, completion: { _ in
-//                completion()
-//            })
-//        }
-//    }
-//
-//    /// 스크롤뷰에 더미 컨텐츠 뷰(예시용)를 추가
-//    func addDummyContentToScrollView() {
-//        let stackView = UIStackView()
-//        stackView.axis = .vertical
-//        stackView.spacing = 10
-//        stackView.translatesAutoresizingMaskIntoConstraints = false
-//
-//        for _ in 1...5 {
-//            let dummyView = UIView()
-//            dummyView.backgroundColor = .systemGray4
-//            dummyView.layer.cornerRadius = 15
-//            dummyView.heightAnchor.constraint(equalToConstant: 220).isActive = true
-//            stackView.addArrangedSubview(dummyView)
-//        }
-//
-//        contentScrollView.addSubview(stackView)
-//        NSLayoutConstraint.activate([
-//            stackView.topAnchor.constraint(equalTo: contentScrollView.topAnchor, constant: 20),
-//            stackView.bottomAnchor.constraint(equalTo: contentScrollView.bottomAnchor, constant: -20),
-//            stackView.leadingAnchor.constraint(equalTo: contentScrollView.leadingAnchor, constant: 15),
-//            stackView.trailingAnchor.constraint(equalTo: contentScrollView.trailingAnchor, constant: -15),
-//            stackView.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor, constant: -30)
-//        ])
-//    }
-//}
 
 import UIKit
 
+/// PlayerViewController의 UI 및 레이아웃 확장
 extension PlayerViewController {
 
+    // MARK: - Symbol Config
+
+    /// 기본 아이콘 크기 설정 (플레이/정지 버튼)
     var symbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 36, weight: .regular, scale: .large)
     }
 
+    /// 작은 아이콘 크기 설정 (앞/뒤 버튼)
     var smallSymbolConfig: UIImage.SymbolConfiguration {
         UIImage.SymbolConfiguration(pointSize: 26, weight: .regular, scale: .medium)
     }
 
+    // MARK: - UI 초기 세팅
+
+    /// UI 컴포넌트 계층 및 오토레이아웃 세팅, 더미 스크롤 컨텐츠 추가
     func setupUI() {
         view.addSubview(videoContainerView)
         view.addSubview(contentScrollView)
@@ -201,6 +35,7 @@ extension PlayerViewController {
 
         let safeArea = view.safeAreaLayoutGuide
 
+        // 세로/가로 레이아웃 제약 정의
         portraitConstraints = [
             videoContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             videoContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -220,6 +55,7 @@ extension PlayerViewController {
             videoContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ]
 
+        // 공통 오토레이아웃 (컨트롤/시커/버튼)
         NSLayoutConstraint.activate([
             controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
             controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
@@ -234,12 +70,11 @@ extension PlayerViewController {
             seekerStack.bottomAnchor.constraint(equalTo: controlsOverlayView.bottomAnchor, constant: -10)
         ])
 
+        // 버튼 고정 크기 설정
         playPauseButton.widthAnchor.constraint(equalToConstant: 54).isActive = true
         playPauseButton.heightAnchor.constraint(equalToConstant: 54).isActive = true
-
         backwardButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         backwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-
         forwardButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         forwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
 
@@ -247,6 +82,9 @@ extension PlayerViewController {
         updateConstraintsForOrientation()
     }
 
+    // MARK: - 레이아웃 변경
+
+    /// 가로/세로 모드에 따라 제약조건 전환
     func updateConstraintsForOrientation() {
         let isLandscape = UIDevice.current.orientation.isLandscape
         if isFullscreenMode || isLandscape {
@@ -260,6 +98,13 @@ extension PlayerViewController {
         }
     }
 
+    // MARK: - UI 생성 유틸
+
+    /// SF Symbol을 사용한 플레이어 버튼 생성
+    /// - Parameters:
+    ///   - systemName: 아이콘 이름
+    ///   - useSmallConfig: 작은 버튼 여부
+    /// - Returns: UIButton 인스턴스
     func createButton(systemName: String, useSmallConfig: Bool = false) -> UIButton {
         let config = useSmallConfig ? smallSymbolConfig : symbolConfig
         let button = UIButton(type: .system)
@@ -274,6 +119,8 @@ extension PlayerViewController {
         return button
     }
 
+    /// 재생/일시정지 버튼 이미지 상태 변경
+    /// - Parameter isPlaying: 재생 중 여부
     func setPlayPauseImage(isPlaying: Bool) {
         let imageName = isPlaying ? "pause.fill" : "play.fill"
         let img = UIImage(systemName: imageName, withConfiguration: symbolConfig)
@@ -281,6 +128,9 @@ extension PlayerViewController {
         playPauseButton.imageEdgeInsets = isPlaying ? UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8) : .zero
     }
 
+    /// 시간 라벨 생성 (monospaced font)
+    /// - Parameter text: 초기 문자열
+    /// - Returns: UILabel 인스턴스
     func createTimeLabel(text: String) -> UILabel {
         let label = UILabel()
         label.text = text
@@ -290,6 +140,10 @@ extension PlayerViewController {
         return label
     }
 
+    /// 버튼 터치 다운 애니메이션
+    /// - Parameters:
+    ///   - button: 대상 버튼
+    ///   - completion: 애니메이션 완료 시 실행할 클로저
     func animateButtonTap(_ button: UIButton, completion: @escaping () -> Void) {
         UIView.animate(withDuration: 0.1, animations: {
             button.transform = CGAffineTransform(scaleX: 0.85, y: 0.85)
@@ -302,6 +156,9 @@ extension PlayerViewController {
         }
     }
 
+    // MARK: - Demo용 Dummy Content
+
+    /// 스크롤뷰에 더미 컨텐츠 추가 (예: 영상 설명)
     func addDummyContentToScrollView() {
         let stackView = UIStackView()
         stackView.axis = .vertical
