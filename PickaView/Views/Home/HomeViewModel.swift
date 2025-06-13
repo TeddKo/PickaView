@@ -22,6 +22,13 @@ final class HomeViewModel {
             print("Fetching videos for query: \(query ?? "none")")
             let videos = try await pixabayVideoService.fetchVideos(query: query)
             print("Fetched \(videos.count) videos")
+            if let firstVideo = videos.first {
+                print("0번째 비디오 정보:")
+                print("duration: \(firstVideo.duration)")
+/
+            } else {
+                print("비디오가 하나도 없습니다.")
+            }
 
             await MainActor.run {
                 // Core Data에 비디오 데이터 저장
