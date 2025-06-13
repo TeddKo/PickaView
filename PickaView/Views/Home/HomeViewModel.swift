@@ -34,7 +34,7 @@ final class HomeViewModel {
     }
 
     func fetchVideosFromCoreData() -> [Video] {
-        return coreDataManager.fetch()
+        return coreDataManager.fetchRecommended()
     }
 
 
