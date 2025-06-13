@@ -51,6 +51,8 @@ class HomeViewController: UIViewController {
 
         Task {
             if let viewModel = viewModel {
+                // // 페이징 초기화
+                viewModel.resetPagination()
                 // 1. 네트워크에서 영상 가져와 Core Data에 저장
                 await viewModel.fetchAndSaveVideos(query: "")
 
@@ -80,6 +82,27 @@ class HomeViewController: UIViewController {
 
 //UICollectionView 설정
 extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+         let offsetY = scrollView.contentOffset.y
+         let contentHeight = scrollView.contentSize.height
+         let height = scrollView.frame.size.height
+
+         // 스크롤이 contentHeight - height - 100 위치에 도달하면 다음 페이지 호출
+         if offsetY > contentHeight - height - 100 {
+             Task {
+                 guard let viewModel = self.viewModel else { return }
+                 await viewModel.fetchAndSaveVideos(query: "") // 페이지 넘겨주는 거 뷰모델에서 관리중
+
+                 // Core Data에서 새로 저장된 데이터 다시 가져오기
+                 let updatedVideos = viewModel.fetchVideosFromCoreData()
+                 await MainActor.run {
+                     self.videoList = updatedVideos
+                     self.collectionView.reloadData()
+                 }
+             }
+         }
+     }
 
     //셀은 비디오 개수 만큼 반환
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
