@@ -19,7 +19,7 @@ protocol PlayerViewControllerDelegate: AnyObject {
 
 /// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
 class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
-    
+
     var viewModel: PlayerViewModel!
 
     // MARK: - Player Properties
@@ -34,7 +34,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     var timeObserverToken: Any?
 
     /// 현재 재생 상태
-    var isPlaying = false
+    var isPlaying = true
 
     /// 컨트롤 표시 여부
     var areControlsVisible = true
@@ -145,9 +145,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        setupPlayer()
+        if let videoURL = viewModel.videoURL {
+            setupPlayer(with: videoURL.absoluteString)
+        } else {
+            print("Invalid video URL")
+        }
         setupUI()
-        setPlayPauseImage(isPlaying: false)
+        setPlayPauseImage(isPlaying: true)
         setupGestures()
         addPlayerObservers()
 

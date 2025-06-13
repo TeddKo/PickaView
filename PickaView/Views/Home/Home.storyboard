@@ -106,6 +106,7 @@
                                             <outlet property="userImage" destination="q4Q-wi-Kjt" id="lXm-ZW-135"/>
                                             <outlet property="userNameLabel" destination="rvN-9k-Jin" id="2se-SU-KL1"/>
                                             <outlet property="viewsLabel" destination="eJ6-uL-DHR" id="PGc-ZX-ihl"/>
+                                            <segue destination="HM3-ot-7Zg" kind="modal" identifier="Player" id="Qkq-yH-k78"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -177,6 +178,14 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DcI-gi-Vsk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1916.7938931297708" y="-38.028169014084511"/>
+        </scene>
+        <!--PlayerViewController-->
+        <scene sceneID="FqZ-H1-fEE">
+            <objects>
+                <viewControllerPlaceholder storyboardName="Player" referencedIdentifier="PlayerViewController" id="HM3-ot-7Zg" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZRe-vj-Xrg" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2596" y="-94"/>
         </scene>
         <!--Home-->
         <scene sceneID="aDL-34-gZL">
