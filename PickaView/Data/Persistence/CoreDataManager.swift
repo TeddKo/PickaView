@@ -10,11 +10,9 @@ import CoreData
 
 /// Core Data의 영속 컨테이너, 컨텍스트 및 기본 데이터 처리 로직을 관리하는 클래스
 /// Video 엔티티에 대한 Fetch, Insert, Update, Delete 로직 포함
-/// NSFetchedResultsController를 사용하여 자동 UI 갱신과 데이터 동기화 지원
 final class CoreDataManager {
     let persistentContainer: NSPersistentContainer
     let mainContext: NSManagedObjectContext
-    let fetchedResults: NSFetchedResultsController<Video>
 
     init() {
         let container = NSPersistentContainer(name: "Model")
@@ -25,22 +23,6 @@ final class CoreDataManager {
         }
         persistentContainer = container
         mainContext = container.viewContext
-
-        let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
-
-        fetchedResults = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: mainContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-
-        do {
-            try fetchedResults.performFetch()
-        } catch {
-            print("❌ 초기 fetch 실패: \(error.localizedDescription)")
-        }
     }
 
     // MARK: - Fetch
@@ -48,71 +30,47 @@ final class CoreDataManager {
     /// 전체 Video 엔티티를 fetch하여 배열로 반환
     /// 정렬 기준: id 오름차순 (기본 설정)
     func fetch() -> [Video] {
-        fetchedResults.fetchRequest.predicate = nil
-        performFetch()
-        return fetchedResults.fetchedObjects ?? []
+        let request: NSFetchRequest<Video> = Video.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        do {
+            return try mainContext.fetch(request)
+        } catch {
+            print("❌ fetch 실패: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// 특정 태그를 포함하는 Video 엔티티만 필터링하여 fetch
     /// - Parameter tag: 검색할 태그 문자열 (대소문자 구분 없이 포함 여부 확인)
     /// - Returns: 해당 태그가 포함된 Video 배열
     func fetch(tag: String) -> [Video] {
-        let predicate = NSPredicate(format: "SUBQUERY(tags, $tag, $tag.name CONTAINS[cd] %@).@count > 0", tag)
-        fetchedResults.fetchRequest.predicate = predicate
-        performFetch()
-        return fetchedResults.fetchedObjects ?? []
+        let request: NSFetchRequest<Video> = Video.fetchRequest()
+        request.predicate = NSPredicate(format: "SUBQUERY(tags, $tag, $tag.name CONTAINS[cd] %@).@count > 0", tag)
+        request.sortDescriptors = [NSSortDescriptor(key: "id", ascending: true)]
+        do {
+            return try mainContext.fetch(request)
+        } catch {
+            print("❌ tag 기반 fetch 실패: \(error.localizedDescription)")
+            return []
+        }
     }
 
     /// 추천 점수를 기준으로 정렬된 Video 리스트를 반환
     /// 내부적으로 sortVideosByRecommendationScore 사용
     func fetchRecommended() -> [Video] {
-        fetchedResults.fetchRequest.predicate = nil
-        performFetch()
-        let videos = fetchedResults.fetchedObjects ?? []
+        let videos = fetch()
         return VideoRecommender.sortVideosByRecommendationScore(from: videos)
-    }
-    
-    /// 좋아요가 눌린 Video만 fetch하여 반환
-    func fetchLiked() -> [Video] {
-        let predicate = NSPredicate(format: "isLiked == true")
-        fetchedResults.fetchRequest.predicate = predicate
-        performFetch()
-        return fetchedResults.fetchedObjects ?? []
-    }
-
-    /// 시청 기록이 있는 Video만 fetch
-    /// timeStamp가 존재하고, 그 중 startDate를 기준으로 최신 순 정렬
-    func fetchHistory() -> [Video] {
-        let predicate = NSPredicate(format: "timeStamp != nil")
-        let sortDescriptor = NSSortDescriptor(key: "timeStamp.startDate", ascending: false)
-        fetchedResults.fetchRequest.predicate = predicate
-        fetchedResults.fetchRequest.sortDescriptors = [sortDescriptor]
-        performFetch()
-        return fetchedResults.fetchedObjects ?? []
-    }
-
-    /// fetchedResultsController를 이용한 fetch 수행
-    /// 오류 발생 시 로그 출력
-    private func performFetch() {
-        do {
-            try fetchedResults.performFetch()
-        } catch {
-            print("❌ fetch 실패: \(error.localizedDescription)")
-        }
     }
 
     // MARK: - Insert / Update
     // 전달받은 비디오 리스트를 Core Data에 저장
     func saveVideos(_ videos: [PixabayVideo]) {
-        if fetchedResults.fetchedObjects == nil || fetchedResults.fetchedObjects?.isEmpty == true {
-            fetch()
-        }
-        
-        let existingVideos = fetchedResults.fetchedObjects ?? []
+        let existingVideos: [Video] = fetch()
         let existingVideoDict = Dictionary(uniqueKeysWithValues: existingVideos.map { ($0.id, $0) })
 
         let incomingIDs = Set(videos.map { Int64($0.id) })
         let idsToDelete = Set(existingVideoDict.keys).subtracting(incomingIDs)
+        
         for id in idsToDelete {
             delete(by: id)
         }
@@ -171,11 +129,14 @@ final class CoreDataManager {
     /// 변경 사항이 없으면 업데이트하지 않음
     func update(entity: Video, with video: PixabayVideo) {
         guard entity.url != video.videos.medium.url ||
-              entity.comments != video.comments ||
+              entity.thumbnailURL != video.videos.medium.thumbnail ||
+              entity.isLiked != false || // since apply resets this
+              entity.views != Int64(video.views) ||
+              entity.comments != Int64(video.comments) ||
+              entity.downloads != Int64(video.downloads) ||
               entity.user != video.user ||
               entity.userID != String(video.userID) ||
-              entity.userImageURL != video.userImageURL ||
-              entity.views != video.views
+              entity.userImageURL != video.userImageURL
         else {
             return
         }
@@ -197,27 +158,12 @@ final class CoreDataManager {
     /// - Parameters:
     ///   - video: 대상 Video 객체
     ///   - totalTime: 영상 전체 시간
-    func updateStartTime(for video: Video, withTotalTime totalTime: Double) {
+    func updateStartTime(for video: Video) {
         if video.timeStamp == nil {
             let stamp = TimeStamp(context: mainContext)
             video.timeStamp = stamp
         }
         video.timeStamp?.startDate = Date()
-        video.timeStamp?.totalTime = totalTime
-        
-        saveContext()
-    }
-
-    /// 시청 종료 시간 기록 및 태그 점수 업데이트
-    /// - Parameter video: 대상 Video 객체
-    /// timeStamp가 없으면 종료 기록 생략
-    func updateEndTime(for video: Video) {
-        guard let timeStamp = video.timeStamp else {
-            print("❌ timeStamp가 존재하지 않아 endDate를 기록할 수 없음")
-            return
-        }
-        timeStamp.endDate = Date()
-        updateTagScores(for: video)
         
         saveContext()
     }
@@ -225,16 +171,11 @@ final class CoreDataManager {
     /// Tag Score 계산
     /// - Parameters:
     ///   - video: Tag 점수를 업데이트할 Video 객체
-    func updateTagScores(for video: Video) {
+    func updateTagScores(for video: Video, watchTime: Double) {
         guard let tags = video.tags as? Set<Tag> else { return }
-        guard let timeStamp = video.timeStamp,
-              let startDate = timeStamp.startDate,
-              let endDate = timeStamp.endDate else { return }
+        guard let timeStamp = video.timeStamp, timeStamp.totalTime > 0 else { return }
 
-        let interval = endDate.timeIntervalSince(startDate)
-        guard timeStamp.totalTime > 0 else { return }
-
-        let rawProgress = interval / timeStamp.totalTime
+        let rawProgress = watchTime / timeStamp.totalTime
         let roundedProgress = (rawProgress * 100).rounded() / 100
 
         guard roundedProgress > 0.3 else { return }
@@ -253,18 +194,30 @@ final class CoreDataManager {
     ///   - entity: 대상 Core Data 객체
     private func apply(_ video: PixabayVideo, to entity: Video) {
         entity.url = video.videos.medium.url
+        entity.thumbnailURL = video.videos.medium.thumbnail
+        entity.isLiked = false
+        entity.views = Int64(video.views)
         entity.comments = Int64(video.comments)
+        entity.downloads = Int64(video.downloads)
         entity.user = video.user
         entity.userID = String(video.userID)
         entity.userImageURL = video.userImageURL
-        entity.views = Int64(video.views)
+        entity.timeStamp?.totalTime = Double(video.duration)
     }
     
     /// id를 통해 특정 Video 객체를 직접 삭제
     /// - Parameter id: 삭제할 Video의 고유 ID
     func delete(by id: Int64) {
-        guard let toDelete = fetchedResults.fetchedObjects?.first(where: { $0.id == id }) else { return }
-        mainContext.delete(toDelete)
+        let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %d", id)
+        fetchRequest.fetchLimit = 1
+        do {
+            if let toDelete = try mainContext.fetch(fetchRequest).first {
+                mainContext.delete(toDelete)
+            }
+        } catch {
+            print("❌ 삭제할 비디오 fetch 실패: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Save
