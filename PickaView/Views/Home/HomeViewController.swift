@@ -12,10 +12,10 @@ class HomeViewController: UIViewController {
     var viewModel: HomeViewModel?
 
     @IBOutlet weak var collectionView: UICollectionView!
-
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
-
-
+    @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
+    
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
 
@@ -24,6 +24,17 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        searchBar.delegate = self
+        searchBar.searchTextField.delegate = self
+        tableView.isHidden = true
+        tableViewHeightConstraint.constant = 0
+
+        //화면 터치하면 키보드 내려가도록 설정
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+          tapGesture.cancelsTouchesInView = false
+          view.addGestureRecognizer(tapGesture)
+
+
         do {
             let coreDataManager = CoreDataManager()
             let pixabayVideoService = try PixabayVideoService()
@@ -50,6 +61,11 @@ class HomeViewController: UIViewController {
             }
         }
     }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
 
     //화면 회전 시 레이아웃 업데이트
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -133,4 +149,28 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         return isPhonePortrait ? .zero : UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 }
+
+extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1 // 기본은 섹션 1개
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 10 //
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        // 기본 템플릿 셀 생성 (임시용)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "tableVIewCell", for: indexPath)
+        cell.textLabel?.text = ""
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        print("셀 선택됨: \(indexPath.row)")
+    }
+}
+
 
