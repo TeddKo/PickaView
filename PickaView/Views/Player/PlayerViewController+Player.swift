@@ -13,8 +13,7 @@ extension PlayerViewController {
     // MARK: - Player 초기화
 
     /// AVPlayer 및 AVPlayerLayer를 초기화하고 기본 영상으로 세팅합니다.
-    func setupPlayer() {
-        let urlString = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
+    func setupPlayer(with urlString: String) {
         guard let videoURL = URL(string: urlString) else {
             print("Error: Invalid URL string.")
             return
@@ -23,11 +22,16 @@ extension PlayerViewController {
         player = AVPlayer(url: videoURL)
         playerLayer = AVPlayerLayer(player: player)
         playerLayer?.videoGravity = .resizeAspect
+        playerLayer?.frame = videoContainerView.bounds
 
         if let playerLayer = playerLayer {
+            videoContainerView.layer.sublayers?.forEach { $0.removeFromSuperlayer() } // 기존 레이어 제거
             videoContainerView.layer.insertSublayer(playerLayer, at: 0)
         }
+
+        player?.play()
     }
+
 
     // MARK: - Player Observer 관리
 
