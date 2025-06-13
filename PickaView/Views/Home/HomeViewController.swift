@@ -34,14 +34,14 @@ class HomeViewController: UIViewController {
 
         Task {
             if let viewModel = viewModel {
-                // 2. 네트워크에서 영상 가져와 Core Data에 저장
+                // 1. 네트워크에서 영상 가져와 Core Data에 저장
                 await viewModel.fetchAndSaveVideos(query: "")
 
-                // 3. Core Data에서 Video 객체들 fetch
+                // 2. Core Data에서 Video 객체들 fetch
                 let videosFromCoreData = viewModel.fetchVideosFromCoreData()
 
-                DispatchQueue.main.async {
-                    // 4. 화면 데이터로 저장 및 리로드
+                await MainActor.run {
+                	// 3. 화면 데이터로 저장 및 리로드
                     self.videoList = videosFromCoreData
                     self.collectionView.reloadData()
                 }
@@ -49,14 +49,6 @@ class HomeViewController: UIViewController {
                 print("viewModel이 아직 초기화되지 않았습니다.")
             }
         }
-    }
-
-
-    // 비디오 길이를 "분:초" 형식으로 변환 , 추후 Extention에서 관리하도록하자
-    func formatDuration(_ duration: Int) -> String {
-        let minutes = duration / 60
-        let seconds = duration % 60
-        return String(format: "%d:%02d", minutes, seconds)
     }
 
     //화면 회전 시 레이아웃 업데이트
@@ -79,36 +71,15 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 
     // 코어데이터에서 불러온 정보 각 셀에 저장
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! VideoCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? VideoCollectionViewCell else {
+            fatalError("Failed to dequeue VideoCollectionViewCell")
+        }
 
         let video = videoList[indexPath.item]
-        // UI 업데이트
-        cell.userNameLabel.text = video.user
-        cell.viewsLabel.text = "Views: \(video.views)"
-
-        if let durationSeconds = video.timeStamp?.totalTime {
-            cell.durationLabel.text = formatDuration(Int(durationSeconds))
-        } else {
-            cell.durationLabel.text = "Duration: N/A"
-        }
-
-        if let userImageURL = video.userImageURL, !userImageURL.isEmpty {
-            cell.userImage.loadImage(from: userImageURL)
-        } else {
-            cell.userImage.image = UIImage(systemName: "person.circle")
-        }
-
-        if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
-            cell.thumnail.loadImage(from: thumbnailURL)
-        } else {
-            cell.thumnail.image = UIImage(systemName: "person.circle")
-
-        }
-
-        cell.thumnail.contentMode = .scaleAspectFit
-
+        cell.configure(with: video)
         return cell
     }
+
 
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
