@@ -18,9 +18,7 @@ struct DummyVideo {
 
 class HomeViewController: UIViewController {
     
-    var viewModel: HomeViewModel!
-
-
+    var viewModel: HomeViewModel?
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -28,18 +26,38 @@ class HomeViewController: UIViewController {
 
 
     //가져온 비디오리스트를 저장하는 배열
-    private var videoList: [DummyVideo] = [
-           DummyVideo(user: "Alice", views: 1200, duration: 85, userImageSymbol: "person.crop.circle", thumbnailSymbol: "video"),
-           DummyVideo(user: "Bob", views: 3000, duration: 210, userImageSymbol: "person.crop.circle.fill", thumbnailSymbol: "film"),
-           DummyVideo(user: "Charlie", views: 560, duration: 45, userImageSymbol: "person.circle", thumbnailSymbol: "tv"),
-           DummyVideo(user: "Diana", views: 14000, duration: 132, userImageSymbol: "person.crop.square", thumbnailSymbol: "play.rectangle")
-       ]
+    private var videoList: [Video] = []
+
 
        override func viewDidLoad() {
            super.viewDidLoad()
            collectionView.dataSource = self
            collectionView.delegate = self
+           do {
+               let coreDataManager = CoreDataManager()
+               let pixabayVideoService = try PixabayVideoService()
+                   viewModel = HomeViewModel(coreDataManager: coreDataManager, pixabayVideoService: pixabayVideoService)
+               } catch {
+                   print("CoreDataManager 초기화 실패: \(error)")
+               }
 
+           Task {
+                if let viewModel = viewModel {
+                    // 2. 네트워크에서 영상 가져와 Core Data에 저장
+                    await viewModel.fetchAndSaveVideos(query: "cats")
+
+                    // 3. Core Data에서 Video 객체들 fetch
+                    let videosFromCoreData = viewModel.fetchVideosFromCoreData()
+
+                    DispatchQueue.main.async {
+                        // 4. 화면 데이터로 저장 및 리로드
+                        self.videoList = videosFromCoreData
+                        self.collectionView.reloadData()
+                    }
+                } else {
+                    print("viewModel이 아직 초기화되지 않았습니다.")
+                }
+            }
 
        }
 
@@ -69,20 +87,52 @@ class HomeViewController: UIViewController {
             return videoList.count
         }
 
-        //api에서 불러온 정보 각 셀에 저장
+        // 코어데이터에서 불러온 정보 각 셀에 저장
         func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! VideoCollectionViewCell
 
             let video = videoList[indexPath.item]
+
+            // 데이터 출력
+            print("---- Video \(indexPath.item) ----")
+            print("user: \(video.user ?? "nil")")
+            print("views: \(video.views)")
+            if let durationSeconds = video.timeStamp?.totalTime {
+                print("duration (seconds): \(durationSeconds)")
+            } else {
+                print("duration: N/A")
+            }
+            print("userImageURL: \(video.userImageURL ?? "nil")")
+            print("thumbnailURL: \(video.url ?? "nil")")
+
+            // UI 업데이트
             cell.userNameLabel.text = video.user
             cell.viewsLabel.text = "Views: \(video.views)"
-            cell.durationLabel.text = formatDuration(video.duration)
-            cell.userImage.image = UIImage(systemName: video.userImageSymbol)
-            cell.thumnail.image = UIImage(systemName: video.thumbnailSymbol)
+
+            if let durationSeconds = video.timeStamp?.totalTime {
+                 cell.durationLabel.text = formatDuration(Int(durationSeconds))
+             } else {
+                 cell.durationLabel.text = "Duration: N/A"
+             }
+
+            if let userImageURL = video.userImageURL {
+                cell.userImage.loadImage(from: userImageURL)
+            } else {
+                cell.userImage.image = UIImage(systemName: "person.circle")
+            }
+
+            if let thumbnailURL = video.userImageURL {
+                cell.thumnail.loadImage(from: thumbnailURL)
+            } else {
+                cell.thumnail.image = UIImage(systemName: "photo")
+            }
+
             cell.thumnail.contentMode = .scaleAspectFit
 
             return cell
         }
+
+
 
         // 셀 크기 설정
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
