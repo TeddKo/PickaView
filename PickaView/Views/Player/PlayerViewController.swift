@@ -529,8 +529,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
             scheduleControlsHide()
         }
     }
-    // -------------------------
-
 
     @objc func deviceOrientationDidChange() {
         let orientation = UIDevice.current.orientation
@@ -563,33 +561,44 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     }
 
     // PlayerViewController.swift
+    // 전체화면에서 돌아왔을 때 호출되는 핵심 메서드
     func didDismissFullscreen() {
-        print(">> 복귀: didDismissFullscreen")  // << 이거 추가
+        // 상태를 '일반 모드'로 변경합니다.
         isFullscreenMode = false
 
-        // ✅ 오버레이/레이어 복귀 (반드시!)
+        // 화면 방향 설정을 업데이트 하도록 시스템에 요청.
+        setNeedsUpdateOfSupportedInterfaceOrientations()
+
+        // 화면 방향을 '세로'로 강제 설정.
+        if #available(iOS 16.0, *) {
+            let windowScene = view.window?.windowScene
+            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+        } else {
+            UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+            UIViewController.attemptRotationToDeviceOrientation()
+        }
+
+        // 빌려줬던 playerLayer와 controlsOverlayView를 다시 가져옴.
         if let playerLayer = self.playerLayer {
             playerLayer.removeFromSuperlayer()
             videoContainerView.layer.insertSublayer(playerLayer, at: 0)
             playerLayer.frame = videoContainerView.bounds
         }
+
         controlsOverlayView.removeFromSuperview()
         videoContainerView.addSubview(controlsOverlayView)
-        NSLayoutConstraint.deactivate(controlsOverlayView.constraints)
+        // 제약조건도 다시 설정해줍니다. (이전보다 간결화)
         controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
             controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
             controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
-            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor)
+            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
         ])
-        view.setNeedsLayout()
-        view.layoutIfNeeded()
-        setupGestures()
 
-        // ✅ orientation portrait 복원 (구버전 호환)
-        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
-        UIViewController.attemptRotationToDeviceOrientation()
+        // 세로 모드에 맞는 레이아웃과 제스처로 업데이트.
+        updateConstraintsForOrientation()
+        setupGestures()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -603,8 +612,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return isFullscreenMode ? .landscape : .all
+        return isFullscreenMode ? .landscape : .portrait
     }
+
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
         return isFullscreenMode ? .landscapeRight : .portrait
     }
@@ -613,27 +623,25 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     // MARK: - 전체화면 진입 함수
     // PlayerViewController.swift 안에서
     func presentFullscreen() {
-        print(">> 진입: presentFullscreen")  // << 이거 추가
-        let fullscreenVC = FullscreenPlayerViewController()
-        fullscreenVC.modalPresentationStyle = .fullScreen
-
-        // ✅ 반드시 연결
-        fullscreenVC.playerLayer = self.playerLayer
-        fullscreenVC.controlsOverlayView = self.controlsOverlayView
-        fullscreenVC.delegate = self  // <-- delegate 연결!
+        guard !isFullscreenMode else { return }
         isFullscreenMode = true
 
-        present(fullscreenVC, animated: true) { [weak self] in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
-                if #available(iOS 16.0, *) {
-                    if let scene = fullscreenVC.view.window?.windowScene {
-                        scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight), errorHandler: nil)
-                    }
-                } else {
-                    UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-                    UIViewController.attemptRotationToDeviceOrientation()
-                }
+        let fullscreenVC = FullscreenPlayerViewController()
+        fullscreenVC.modalPresentationStyle = .fullScreen
+        fullscreenVC.playerLayer = self.playerLayer
+        fullscreenVC.controlsOverlayView = self.controlsOverlayView
+        fullscreenVC.delegate = self
+
+        // 화면 방향을 먼저 요청하고, 완료되면 뷰 컨트롤러를 띄움.
+        if #available(iOS 16.0, *) {
+            let windowScene = view.window?.windowScene
+            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { [weak self] _ in
+                self?.present(fullscreenVC, animated: true)
             }
+        } else {
+            UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
+            UIViewController.attemptRotationToDeviceOrientation()
+            present(fullscreenVC, animated: true)
         }
     }
 

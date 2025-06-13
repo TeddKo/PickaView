@@ -70,6 +70,7 @@ class FullscreenPlayerViewController: UIViewController {
     weak var delegate: PlayerViewControllerDelegate?
 
     private var isDismissing = false
+    private var isFullscreenMode = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -136,7 +137,6 @@ class FullscreenPlayerViewController: UIViewController {
         playerLayer?.frame = view.bounds
     }
 
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .landscape }
     override var prefersStatusBarHidden: Bool { true }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
 }
