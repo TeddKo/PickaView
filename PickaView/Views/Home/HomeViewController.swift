@@ -13,8 +13,6 @@ class HomeViewController: UIViewController {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    @IBOutlet weak var searchBar: UISearchBar!
-
 
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
@@ -67,6 +65,12 @@ class HomeViewController: UIViewController {
             }
         }
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        setupSearchBar()
+    }
 
     //화면 회전 시 레이아웃 업데이트
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -75,6 +79,13 @@ class HomeViewController: UIViewController {
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
             self.collectionView.reloadData()
         }, completion: nil)
+    }
+    
+    func setupSearchBar() {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.placeholder = "메모 내용으로 검색해 보세요"
+        searchController.searchResultsUpdater = self
+        navigationItem.searchController = searchController
     }
 }
 
@@ -151,3 +162,14 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
 }
 
+
+extension HomeViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let keyword = searchController.searchBar.text, keyword.count > 0 else {
+            
+            return
+        }
+        
+        print(keyword)
+    }
+}
