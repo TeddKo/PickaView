@@ -87,6 +87,7 @@ class HomeViewController: UIViewController {
         // 셀 크기 설정
         func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
+            //현재 컬렉션 뷰 크기
             let width = collectionView.bounds.width
             let height = collectionView.bounds.height
 
@@ -104,14 +105,16 @@ class HomeViewController: UIViewController {
                 insets = isLandscape ? 10 : 0  // 아이폰 세로는 화면 꽉차게 설정
             }
 
-            let spacing: CGFloat = 10
+            let spacingBetweenViews: CGFloat = 6.33
+            let spacing: CGFloat = 10 // 셀 간 간격
             let totalSpacing = spacing * (itemsPerRow - 1) + insets * 2
-            let itemWidth = (width - totalSpacing) / itemsPerRow
+            let itemWidth = (width - totalSpacing) / itemsPerRow //한 줄에 몇개의 셀을 배치할지에 따라 셀의 너비 계산
 
             let thumbnailHeight = itemWidth * 9 / 16
-            let extraHeight: CGFloat = 80 //수정 필요
+            let userImageHeight = itemWidth / 5  // 유저 이미지높이는 전체 셀 너비의 20퍼센트로 설정
+            let totalHeight = thumbnailHeight + userImageHeight + spacingBetweenViews
 
-            return CGSize(width: itemWidth, height: thumbnailHeight + extraHeight)
+            return CGSize(width: itemWidth, height: totalHeight)
         }
 
         //줄 간격
