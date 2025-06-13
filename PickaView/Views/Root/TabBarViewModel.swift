@@ -13,7 +13,11 @@ final class TabBarViewModel {
 
     init() {
         self.coreDataManager = CoreDataManager()
-        self.pixabayVideoService = PixabayVideoService()
+        do {
+            self.pixabayVideoService = try PixabayVideoService()
+        } catch {
+            fatalError("PixabayVideoService 초기화 실패: \(error)")
+        }
     }
 
     func makeTabViewControllers() -> [UIViewController] {
