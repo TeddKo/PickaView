@@ -7,15 +7,6 @@
 
 import UIKit
 
-struct DummyVideo {
-    let user: String
-    let views: Int
-    let duration: Int
-    let userImageSymbol: String
-    let thumbnailSymbol: String
-}
-
-
 class HomeViewController: UIViewController {
 
     var viewModel: HomeViewModel?
@@ -91,15 +82,6 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! VideoCollectionViewCell
 
         let video = videoList[indexPath.item]
-
-        // 데이터 출력
-        // print("---- Video \(indexPath.item) ----")
-        // print("user: \(video.user ?? "nil")")
-        // print("views: \(video.views)")
-        print("duration: \(video.timeStamp)")
-        // print("userImageURL: \(video.userImageURL ?? "nil")")
-        // print("thumbnailURL: \(video.url ?? "nil")")
-
         // UI 업데이트
         cell.userNameLabel.text = video.user
         cell.viewsLabel.text = "Views: \(video.views)"
