@@ -202,6 +202,10 @@ final class CoreDataManager {
         entity.user = video.user
         entity.userID = String(video.userID)
         entity.userImageURL = video.userImageURL
+        if entity.timeStamp == nil {
+            let stamp = TimeStamp(context: mainContext)
+            entity.timeStamp = stamp
+        }
         entity.timeStamp?.totalTime = Double(video.duration)
     }
     
