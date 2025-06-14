@@ -532,3 +532,75 @@ final class LikeCellView: UIView {
         actionabletagsView.configure(with: [])
     }
 }
+
+
+/// 두 개의 텍스트를 수평으로 배치하는 UI 컴포넌트를 생성하여 스택뷰에 추가.
+final class TwoLabelRowView: UIStackView {
+
+    // MARK: - UI Components
+
+    private let leftLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .body)
+        label.textAlignment = .left
+        label.textColor = .label
+        return label
+    }()
+
+    private let rightLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .body)
+        label.textAlignment = .right
+        label.textColor = .label
+        return label
+    }()
+
+    private let stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        return stackView
+    }()
+
+    // MARK: - Initializer
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupViews()
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // MARK: - Private Methods
+
+    private func setupViews() {
+        addSubview(stackView)
+        stackView.addArrangedSubview(leftLabel)
+        stackView.addArrangedSubview(rightLabel)
+
+        // 오토레이아웃 설정
+        NSLayoutConstraint.activate([
+            stackView.topAnchor.constraint(equalTo: self.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+        ])
+    }
+
+    // MARK: - Public Methods
+
+    /// 뷰의 텍스트를 설정
+    /// - Parameters:
+    ///   - leftText: 왼쪽 텍스트
+    ///   - rightText: 오른쪽 텍스트
+    
+    func configure(leftText: String, rightText: String) {
+        leftLabel.text = leftText
+        rightLabel.text = rightText
+    }
+}

@@ -33,10 +33,10 @@ final class TabBarViewModel {
 //        likeVC.viewModel = likeVM
         likeVC.tabBarItem = UITabBarItem(title: "Like", image: UIImage(systemName: "heart.fill"), tag: 1)
 
-//        let myPageVM = MyPageViewModel(coreDataManager: coreDataManager)
+        let myPageVM = MyPageViewModel(coreDataManager: coreDataManager)
         let myPageStoryboard = UIStoryboard(name: "MyPage", bundle: nil)
         let myPageVC = myPageStoryboard.instantiateViewController(withIdentifier: String(describing: MyPageViewController.self)) as! MyPageViewController
-//        myPageVC.viewModel = myPageVM
+        myPageVC.viewModel = myPageVM
         myPageVC.tabBarItem = UITabBarItem(title: "MyPage", image: UIImage(systemName: "ellipsis"), tag: 2)
         
         return [
