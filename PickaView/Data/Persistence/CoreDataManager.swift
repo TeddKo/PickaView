@@ -55,6 +55,24 @@ final class CoreDataManager {
         }
     }
 
+    /// 모든 Tag 엔티티를 이름 순으로 정렬하여 비동기적으로 가져옵니다.
+    /// - Returns: 이름 오름차순으로 정렬된 Tag 배열
+    func fetchAllTags() async -> [Tag] {
+        return await withCheckedContinuation { continuation in
+            mainContext.perform {
+                let request: NSFetchRequest<Tag> = Tag.fetchRequest()
+                request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+                do {
+                    let tags = try self.mainContext.fetch(request)
+                    continuation.resume(returning: tags)
+                } catch {
+                    print("❌ 태그 fetch 실패: \(error.localizedDescription)")
+                    continuation.resume(returning: [])
+                }
+            }
+        }
+    }
+
     /// 추천 점수를 기준으로 정렬된 Video 리스트를 반환
     /// 내부적으로 sortVideosByRecommendationScore 사용
     func fetchRecommended() -> [Video] {
