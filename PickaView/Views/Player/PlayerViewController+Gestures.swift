@@ -35,6 +35,11 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         controlsOverlayView.addGestureRecognizer(doubleTap)
         singleTap.require(toFail: doubleTap)
 
+        // 아래로 스와이프 → 홈으로 이동
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHome))
+        swipeDown.direction = .down
+        controlsOverlayView.addGestureRecognizer(swipeDown)
+
         // (세로모드일 때만) 위로 스와이프 → 전체화면
         if !isFullscreenMode {
             let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToFullscreen))
@@ -86,6 +91,21 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
         guard isPortrait else { return }
         presentFullscreen()
+    }
+
+    /// 아래로 스와이프 시 홈으로 복귀
+    @objc func handleSwipeDownToHome(_ gesture: UISwipeGestureRecognizer) {
+        if isFullscreenMode {
+            // 전체화면 모드일 경우에는 FullscreenPlayerViewController에서 내려가야 하므로 무시
+            return
+        }
+
+        // 내비게이션에서 푸시된 상태라면 pop, 모달이라면 dismiss
+        if let nav = navigationController {
+            nav.popViewController(animated: true)
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     // MARK: - UIGestureRecognizerDelegate
