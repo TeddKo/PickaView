@@ -38,22 +38,17 @@ final class HomeViewModel {
         return coreDataManager.fetchRecommended()
     }
 
-    // CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
-        /// 메인 스레드에서 `allTags` 프로퍼티에 저장
-        func loadAllTags() async {
-            let tags = await coreDataManager.fetchAllTags()
-            await MainActor.run {
-                self.allTags = tags
-            }
+    /// CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
+    /// 메인 스레드에서 `allTags` 프로퍼티에 저장
+    func loadAllTags() async {
+        let tags = await coreDataManager.fetchAllTags()
+        await MainActor.run {
+            self.allTags = tags
         }
-
-        // 실시간 갱신용(구현 예정)
-            func filterTags(keyword: String) -> [Tag] {
-                return allTags.filter { $0.name?.localizedCaseInsensitiveContains(keyword) == true }
-            }
-
-        func fetchVideosFromCoreData() -> [Video] {
-            return coreDataManager.fetchRecommended()
-        }
-
+    }
+    
+    // 실시간 갱신용(구현 예정)
+    func filterTags(keyword: String) -> [Tag] {
+        return allTags.filter { $0.name?.localizedCaseInsensitiveContains(keyword) == true }
+    }
 }
