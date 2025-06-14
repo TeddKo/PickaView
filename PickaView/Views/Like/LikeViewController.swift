@@ -17,6 +17,10 @@ class LikeViewController: UIViewController {
     
     /** '좋아요' 목록을 표시할 UICollectionView. 스토리보드에서 연결됨. */
     @IBOutlet weak var collectionView: UICollectionView!
+
+    var viewModel: LikeViewModel!
+
+    var selectedIndexPath: IndexPath?
     
     /** 컬렉션뷰에 표시될 '좋아요' 데이터 소스 배열. (현재는 더미 데이터 사용) */
     var likes: [DummyLike] = [
