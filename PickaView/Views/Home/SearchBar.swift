@@ -52,14 +52,13 @@ extension HomeViewController: UISearchBarDelegate {
     //검색 텍스트 입력직전
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         updateTableViewVisibility(isVisible: true)
-
     }
 
-    //검색 텍스트 입력직후
+    // 사용자가 검색 끝내고 나가면 테이블뷰 숨김
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         updateTableViewVisibility(isVisible: false)
-
     }
+
 }
 
 //서치바에서 글자수 제한

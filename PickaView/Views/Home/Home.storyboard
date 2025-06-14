@@ -122,7 +122,7 @@
                                     <constraint firstAttribute="height" constant="154" id="x7F-Ud-Sur"/>
                                 </constraints>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableVIewCell" rowHeight="49" id="K3F-b5-IGE" customClass="SearchTableViewCell" customModule="PickaView" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="tableViewCell" rowHeight="49" id="K3F-b5-IGE" customClass="SearchTableViewCell" customModule="PickaView" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="49"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="K3F-b5-IGE" id="sbR-IH-u49">
@@ -143,6 +143,9 @@
                                                 <constraint firstItem="lxI-84-Z1b" firstAttribute="top" secondItem="sbR-IH-u49" secondAttribute="top" constant="10" id="yQp-vv-UJR"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="tagLabel" destination="lxI-84-Z1b" id="jrV-9I-jIf"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -210,7 +213,7 @@
     <resources>
         <image name="house.fill" catalog="system" width="128" height="104"/>
         <systemColor name="quaternaryLabelColor">
-            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.17647058823529413" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.1764705882" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

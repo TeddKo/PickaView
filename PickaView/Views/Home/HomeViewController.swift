@@ -18,6 +18,8 @@ class HomeViewController: UIViewController {
     
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
+	//가져온 태그목록을 저장하는 배열
+    private var tags: [Tag] = []
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
@@ -45,13 +47,7 @@ class HomeViewController: UIViewController {
         searchBar.searchTextField.delegate = self
         tableView.isHidden = true
         tableViewHeightConstraint.constant = 0
-
         searchBar.searchBarStyle = .minimal
-        //화면 터치하면 키보드 내려가도록 설정
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-          tapGesture.cancelsTouchesInView = false
-          view.addGestureRecognizer(tapGesture)
-
 
         do {
             let coreDataManager = CoreDataManager()
@@ -59,6 +55,15 @@ class HomeViewController: UIViewController {
             viewModel = HomeViewModel(coreDataManager: coreDataManager, pixabayVideoService: pixabayVideoService)
         } catch {
             print("CoreDataManager 초기화 실패: \(error)")
+        }
+
+        //비동기로 view모델에서 모든 태그 가져옴
+        Task {
+            await viewModel?.loadAllTags()
+            await MainActor.run {
+                self.tableView.reloadData()
+
+            }
         }
 
         Task {
@@ -80,17 +85,13 @@ class HomeViewController: UIViewController {
         }
     }
     
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
-    }
-
 
     //화면 회전 시 레이아웃 업데이트
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+        guard isViewLoaded else { return }
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
-            self.collectionView.reloadData()
         }, completion: nil)
     }
 }
@@ -171,23 +172,21 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1 // 기본은 섹션 1개
+        return 1
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10 //
+        return viewModel?.allTags.count ?? 0
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // 기본 템플릿 셀 생성 (임시용)
-        let cell = tableView.dequeueReusableCell(withIdentifier: "tableVIewCell", for: indexPath)
-        cell.textLabel?.text = ""
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? SearchTableViewCell else {
+            return UITableViewCell()
+        }
+        if let tag = viewModel?.allTags[indexPath.row] {
+            cell.tagLabel.text = "#\(tag.name ?? "")"
+        }
         return cell
-    }
-
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        print("셀 선택됨: \(indexPath.row)")
     }
 }
 
