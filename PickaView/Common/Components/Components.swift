@@ -85,8 +85,8 @@ final class MediaContentView: UIView {
         return label
     }()
     
-    init() {
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
         setupLayout()
     }
@@ -179,8 +179,8 @@ final class MediaDateContentView: UIView {
         return label
     }()
     
-    init() {
-        super.init(frame: .zero)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         setupUI()
         setupLayout()
     }
@@ -530,5 +530,42 @@ final class LikeCellView: UIView {
     func resetContents() {
         mediaContentView.resetImage()
         actionabletagsView.configure(with: [])
+    }
+}
+
+
+final class HorizontalTwoItemStackView : UIStackView {
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupView() {
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.axis = .horizontal
+        self.distribution = .equalSpacing
+        
+        NSLayoutConstraint.activate([
+            self.topAnchor.constraint(equalTo: topAnchor),
+            self.leadingAnchor.constraint(equalTo: leadingAnchor),
+            self.trailingAnchor.constraint(equalTo: trailingAnchor),
+            self.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+        
+    }
+    
+    func configure(
+        leftItem: UIView,
+        rightItem: UIView
+    ) {
+        self.addArrangedSubview(leftItem)
+        self.addArrangedSubview(rightItem)
     }
 }
