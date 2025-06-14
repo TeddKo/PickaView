@@ -12,12 +12,14 @@ class HomeViewController: UIViewController {
     var viewModel: HomeViewModel?
 
     @IBOutlet weak var collectionView: UICollectionView!
-
+    @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
-
-
+    @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
+    
     //가져온 비디오리스트를 저장하는 배열
     private var videoList: [Video] = []
+	//가져온 태그목록을 저장하는 배열
+    private var tags: [Tag] = []
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
@@ -41,12 +43,27 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        searchBar.delegate = self
+        searchBar.searchTextField.delegate = self
+        tableView.isHidden = true
+        tableViewHeightConstraint.constant = 0
+        searchBar.searchBarStyle = .minimal
+
         do {
             let coreDataManager = CoreDataManager()
             let pixabayVideoService = try PixabayVideoService()
             viewModel = HomeViewModel(coreDataManager: coreDataManager, pixabayVideoService: pixabayVideoService)
         } catch {
             print("CoreDataManager 초기화 실패: \(error)")
+        }
+
+        //비동기로 view모델에서 모든 태그 가져옴
+        Task {
+            await viewModel?.loadAllTags()
+            await MainActor.run {
+                self.tableView.reloadData()
+
+            }
         }
 
         Task {
@@ -67,13 +84,14 @@ class HomeViewController: UIViewController {
             }
         }
     }
+    
 
     //화면 회전 시 레이아웃 업데이트
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+        guard isViewLoaded else { return }
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
-            self.collectionView.reloadData()
         }, completion: nil)
     }
 }
@@ -150,4 +168,26 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         return isPhonePortrait ? .zero : UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
 }
+
+extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
+
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel?.allTags.count ?? 0
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? SearchTableViewCell else {
+            return UITableViewCell()
+        }
+        if let tag = viewModel?.allTags[indexPath.row] {
+            cell.tagLabel.text = "#\(tag.name ?? "")"
+        }
+        return cell
+    }
+}
+
 
