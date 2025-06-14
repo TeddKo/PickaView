@@ -73,13 +73,6 @@ final class CoreDataManager {
         }
     }
 
-    /// 추천 점수를 기준으로 정렬된 Video 리스트를 반환
-    /// 내부적으로 sortVideosByRecommendationScore 사용
-    func fetchRecommended() -> [Video] {
-        let videos = fetch()
-        return VideoRecommender.sortVideosByRecommendationScore(from: videos)
-    }
-
     // MARK: - Insert / Update
     // 전달받은 비디오 리스트를 Core Data에 저장
     func saveVideos(_ videos: [PixabayVideo]) {
