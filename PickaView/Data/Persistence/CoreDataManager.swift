@@ -72,6 +72,29 @@ final class CoreDataManager {
             }
         }
     }
+    
+    
+    /// 최근 7일(오늘 포함)의 History 엔티티를 날짜 오름차순으로 가져옵니다.
+    /// - Returns: 7일간의 History 배열
+    func fetchHistory() -> [History] {
+        let request: NSFetchRequest<History> = History.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+
+        let calendar = Calendar.current
+        guard let startDate = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: Date())) else {
+            return []
+        }
+        let endDate = calendar.startOfDay(for: Date())
+
+        request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", startDate as NSDate, endDate as NSDate)
+
+        do {
+            return try mainContext.fetch(request)
+        } catch {
+            print("❌ fetch 실패: \(error.localizedDescription)")
+            return []
+        }
+    }
 
     // MARK: - Insert / Update
     // 전달받은 비디오 리스트를 Core Data에 저장
