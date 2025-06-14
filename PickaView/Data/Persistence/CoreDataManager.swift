@@ -72,12 +72,28 @@ final class CoreDataManager {
             }
         }
     }
+    
+    
+    /// 최근 7일(오늘 포함)의 History 엔티티를 날짜 오름차순으로 가져옵니다.
+    /// - Returns: 7일간의 History 배열
+    func fetchHistory() -> [History] {
+        let request: NSFetchRequest<History> = History.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
 
-    /// 추천 점수를 기준으로 정렬된 Video 리스트를 반환
-    /// 내부적으로 sortVideosByRecommendationScore 사용
-    func fetchRecommended() -> [Video] {
-        let videos = fetch()
-        return VideoRecommender.sortVideosByRecommendationScore(from: videos)
+        let calendar = Calendar.current
+        guard let startDate = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: Date())) else {
+            return []
+        }
+        let endDate = calendar.startOfDay(for: Date())
+
+        request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", startDate as NSDate, endDate as NSDate)
+
+        do {
+            return try mainContext.fetch(request)
+        } catch {
+            print("❌ fetch 실패: \(error.localizedDescription)")
+            return []
+        }
     }
 
     // MARK: - Insert / Update
@@ -115,6 +131,35 @@ final class CoreDataManager {
         newVideo.tags = insertTags(from: video.tags)
         newVideo.timeStamp = newStamp
         apply(video, to: newVideo)
+    }
+
+    /// 날짜 기반 시청 기록을 History 엔티티에 저장
+    /// - Parameters:
+    ///   - date: 시청이 발생한 시간 (Date)
+    ///   - duration: 시청 시간 (초 단위)
+    func saveHistory(on date: Date, duration: Double) {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+
+        guard let dayStart = calendar.date(from: components) else { return }
+
+        let request: NSFetchRequest<History> = History.fetchRequest()
+        request.predicate = NSPredicate(format: "date == %@", dayStart as NSDate)
+        request.fetchLimit = 1
+
+        do {
+            if let existing = try mainContext.fetch(request).first {
+                existing.time += duration
+            } else {
+                let newHistory = History(context: mainContext)
+                newHistory.date = dayStart
+                newHistory.time = duration
+            }
+
+            saveContext()
+        } catch {
+            print("❌ 히스토리 저장 실패: \(error.localizedDescription)")
+        }
     }
     
     /// 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
