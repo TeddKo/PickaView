@@ -109,6 +109,35 @@ final class CoreDataManager {
         newVideo.timeStamp = newStamp
         apply(video, to: newVideo)
     }
+
+    /// 날짜 기반 시청 기록을 History 엔티티에 저장
+    /// - Parameters:
+    ///   - date: 시청이 발생한 시간 (Date)
+    ///   - duration: 시청 시간 (초 단위)
+    func saveHistory(on date: Date, duration: Double) {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+
+        guard let dayStart = calendar.date(from: components) else { return }
+
+        let request: NSFetchRequest<History> = History.fetchRequest()
+        request.predicate = NSPredicate(format: "date == %@", dayStart as NSDate)
+        request.fetchLimit = 1
+
+        do {
+            if let existing = try mainContext.fetch(request).first {
+                existing.time += duration
+            } else {
+                let newHistory = History(context: mainContext)
+                newHistory.date = dayStart
+                newHistory.time = duration
+            }
+
+            saveContext()
+        } catch {
+            print("❌ 히스토리 저장 실패: \(error.localizedDescription)")
+        }
+    }
     
     /// 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
     /// - Parameter tagString: 콤마로 구분된 태그 문자열
