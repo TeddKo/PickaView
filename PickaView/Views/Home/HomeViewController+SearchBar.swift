@@ -28,26 +28,35 @@ extension HomeViewController: UISearchBarDelegate {
     }
 
 
-    // 실시간 필터링, 예를 들어 f입력하면 그걸로 시작하는 태그들 보여주기 //일치하는 태그 없으면 없다고 플레이스 홀더 띄우기
+    // 텍스트 바뀔때 실시간으로 태그 목록 필터링
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard let viewModel = viewModel else { return }
 
-        // 무한 호출 방지
-        if searchText.first != "#" && !searchText.isEmpty {
-            searchBar.text = "#\(searchText)"
-            return
+        var keyword = searchText
+        // 맨 앞에 # 있으면 제거
+        if keyword.hasPrefix("#") {
+            keyword = String(keyword.dropFirst())
         }
 
-        let cleanKeyword = searchBar.text?.replacingOccurrences(of: "#", with: "") ?? ""
-        if cleanKeyword.isEmpty {
+        // 필터링할 키워드는 소문자
+        keyword = keyword.lowercased()
+
+        if keyword.isEmpty {
             filteredTags = viewModel.allTags
         } else {
-            filteredTags = viewModel.filterTags(keyword: cleanKeyword)
+            filteredTags = viewModel.allTags.filter { $0.name?.lowercased().hasPrefix(keyword) == true }
         }
+
         tableView.reloadData()
-        updateTableViewVisibility(isVisible: !filteredTags.isEmpty)
+        updateTableViewVisibility(isVisible: true)
+
+        // # 없으면, 한 번만 붙여주기 (무한 루프 방지)
+        if !searchText.hasPrefix("#") && !searchText.isEmpty {
+            searchBar.text = "#" + searchText
+        }
     }
 
+    //검색바 클릭 됐을때 태그와 맞는 비디오 가져옴
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         print("🔍 검색 버튼 클릭됨")
         searchBar.resignFirstResponder()
@@ -71,19 +80,32 @@ extension HomeViewController: UISearchBarDelegate {
         }
 
         // 해당 태그 기반으로 비디오 가져오기
-        let filteredVideos = viewModel?.fetchVideosForTag(validTag.name ?? "") ?? []
-
-        // 컬렉션뷰 업데이트
-        self.videoList = filteredVideos
-        self.collectionView.reloadData()
-
-        // 검색창 초기화
-        searchBar.text = ""
-
-        // 태그 테이블 숨김 처리 (선택사항)
-        updateTableViewVisibility(isVisible: true)
+        applyTagFilter(tagName: validTag.name ?? "")
     }
 
+    //태그가 필터링 되었고 필터된 비디오목록이 있을때만 동작
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        print("❌ 클리어 버튼 눌림")
+        print("isTagSearchActive:", isTagSearchActive)
+
+        if isTagSearchActive, let viewModel = viewModel {
+            let allVideos = viewModel.fetchVideosFromCoreData()
+            print("전체 비디오 개수:", allVideos.count)
+            videoList = allVideos
+            collectionView.reloadData()
+            updateTableViewVisibility(isVisible: false)
+            isTagSearchActive = false
+        } else {
+            print("태그 검색 상태 아님")
+        }
+
+        //키보드 동작은 메인 스레드에서 처리
+        DispatchQueue.main.async {
+            textField.resignFirstResponder()
+        }
+
+        return true
+    }
     //검색 텍스트 입력직전
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // 키보드가 올라올 때 전체 태그 목록 보여주기
@@ -96,9 +118,6 @@ extension HomeViewController: UISearchBarDelegate {
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         updateTableViewVisibility(isVisible: false)
     }
-
-    
-
 }
 
 //서치바에서 글자수 제한
@@ -112,6 +131,6 @@ extension HomeViewController: UITextFieldDelegate {
 
         let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
 
-        return updatedText.count <= 30 // 최대 글자 수 10자
+        return updatedText.count <= 30 // 최대 글자 수 30자
     }
 }
