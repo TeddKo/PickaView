@@ -21,6 +21,32 @@ class HomeViewController: UIViewController {
 	//가져온 태그목록을 저장하는 배열
     private var tags: [Tag] = []
 
+    private var isLoadingNextPage = false
+
+    private func loadNextPageVideos() {
+        guard !isLoadingNextPage else { return }  // 중복 호출 방지
+        guard let viewModel = viewModel else { return }
+
+        isLoadingNextPage = true
+
+        Task {
+            let nextPageVideos = viewModel.loadNextPage()
+            if !nextPageVideos.isEmpty {
+                await MainActor.run {
+                    self.videoList.append(contentsOf: nextPageVideos)
+                    self.collectionView.reloadData()
+                    self.isLoadingNextPage = false
+                }
+            } else {
+                // 더 불러올 비디오가 없으면 isLoadingNextPage 해제
+                await MainActor.run {
+                    self.isLoadingNextPage = false
+                }
+            }
+        }
+    }
+
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
             if let indexPath = collectionView.indexPath(for: cell) {
@@ -67,20 +93,24 @@ class HomeViewController: UIViewController {
         }
 
         Task {
-            if let viewModel = viewModel {
-                // 1. 네트워크에서 영상 가져와 Core Data에 저장
-                await viewModel.fetchAndSaveVideos(query: "")
-
-                // 2. Core Data에서 Video 객체들 fetch
-                let videosFromCoreData = viewModel.fetchVideosFromCoreData()
-
-                await MainActor.run {
-                    // 3. 화면 데이터로 저장 및 리로드
-                    self.videoList = videosFromCoreData
-                    self.collectionView.reloadData()
-                }
-            } else {
+            guard let viewModel = viewModel else {
                 print("viewModel이 아직 초기화되지 않았습니다.")
+                return
+            }
+
+            // 1. 초기에 네트워크 호출 후 데이터를 가져와서 Core Data에 저장
+            await viewModel.fetchAndSaveVideos(query: nil)
+
+            // 2. Core Data에서 정렬된 영상 불러와 내부 상태 갱신
+            viewModel.refreshVideos()
+
+            // 3. 첫 페이지에 해당하는 추천된 영상들 받아오기
+            let videosFromViewModel = viewModel.getCurrentPageVideos()
+
+            // 4. UI 업데이트는 메인 스레드에서
+            await MainActor.run {
+                self.videoList = videosFromViewModel
+                self.collectionView.reloadData()
             }
         }
     }
@@ -190,4 +220,19 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     }
 }
 
+extension HomeViewController: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        // 컬렉션뷰인 경우에만 처리
+        guard scrollView == collectionView else { return }
+
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let height = scrollView.frame.size.height
+
+        // 사용자가 스크롤을 끝에서 100pt 이내로 내렸다면 다음 페이지 로드
+        if offsetY > contentHeight - height - 100 {
+            loadNextPageVideos()
+        }
+    }
+}
 
