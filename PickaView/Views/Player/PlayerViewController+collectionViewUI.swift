@@ -129,4 +129,35 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         
         return isPhonePortrait ? .zero : UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
     }
+    
+    // 셀 선택 시 동작 처리
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // 0번째는 태그 셀이므로 무시
+        guard indexPath.item > 0 else { return }
+
+        let selectedVideo = viewModel.videos[indexPath.item - 1]
+        replaceWithNewVideo(selectedVideo)
+    }
+    
+    /// 현재 플레이어 화면을 닫고, 선택한 비디오로 새로운 PlayerViewController를 모달로 띄웁니다.
+    /// - Parameter video: 새로 재생할 비디오 객체
+    func replaceWithNewVideo(_ video: Video) {
+        guard let presentingVC = self.presentingViewController else { return }
+
+        // 현재 플레이어 화면을 닫은 뒤, 새 비디오로 다시 화면을 구성
+        self.dismiss(animated: false) { [weak self] in
+            guard let self = self else { return }
+            
+            let storyboard = UIStoryboard(name: "Player", bundle: nil)
+            guard let newPlayerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
+                return
+            }
+            newPlayerVC.modalPresentationStyle = .fullScreen
+            
+            let newPlayerVM = PlayerViewModel(video: video, coreDataManager: self.viewModel.getCoreDataManager())
+            newPlayerVC.viewModel = newPlayerVM
+
+            presentingVC.present(newPlayerVC, animated: false)
+        }
+    }
 }
