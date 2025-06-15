@@ -35,8 +35,9 @@ final class HomeViewModel {
     }
 
     func fetchVideosFromCoreData() -> [Video] {
-        return coreDataManager.fetchRecommended()
-    }
+            let allVideos = coreDataManager.fetch()
+            return VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
+        }
 
     /// CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
     /// 메인 스레드에서 `allTags` 프로퍼티에 저장
