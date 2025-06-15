@@ -83,4 +83,8 @@ final class HomeViewModel {
     func fetchVideosForTag(_ tagName: String) -> [Video] {
         return coreDataManager.fetch(tag: tagName)
     }
+    
+    func getCoreDataManager() -> CoreDataManager {
+        return coreDataManager
+    }
 }

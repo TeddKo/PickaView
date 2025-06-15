@@ -207,7 +207,7 @@ extension LikeViewController: UICollectionViewDataSource, UICollectionViewDelega
         guard let selectedVideo = viewModel.video(at: indexPath.item) else { return }
 
         let playerVC = PlayerViewController()
-        playerVC.viewModel = PlayerViewModel(video: selectedVideo)
+        playerVC.viewModel = PlayerViewModel(video: selectedVideo, coreDataManager: viewModel.getCoreDataManager())
         playerVC.modalPresentationStyle = .fullScreen
         present(playerVC, animated: true, completion: nil)
     }

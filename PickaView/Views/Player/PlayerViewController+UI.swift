@@ -26,33 +26,25 @@ extension PlayerViewController {
 
     /// UI 컴포넌트 계층 및 오토레이아웃 세팅, 더미 스크롤 컨텐츠 추가
     func setupUI() {
-        view.addSubview(videoContainerView)
-        view.addSubview(contentScrollView)
+        videoPlayerView.addSubview(videoContainerView)
 
         videoContainerView.addSubview(controlsOverlayView)
         controlsOverlayView.addSubview(playbackControlsStack)
         controlsOverlayView.addSubview(seekerStack)
 
-        let safeArea = view.safeAreaLayoutGuide
-
         // 세로/가로 레이아웃 제약 정의
         portraitConstraints = [
-            videoContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            videoContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            videoContainerView.topAnchor.constraint(equalTo: safeArea.topAnchor),
-            videoContainerView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 9.0/16.0),
-
-            contentScrollView.topAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
-            contentScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            contentScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contentScrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
+            videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
+            videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
+            videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor),
         ]
 
         landscapeConstraints = [
-            videoContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            videoContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            videoContainerView.topAnchor.constraint(equalTo: view.topAnchor),
-            videoContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
+            videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
+            videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
+            videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor)
         ]
 
         // 공통 오토레이아웃 (컨트롤/시커/버튼)
@@ -78,7 +70,6 @@ extension PlayerViewController {
         forwardButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         forwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
 
-        addDummyContentToScrollView()
         updateConstraintsForOrientation()
     }
 
@@ -90,11 +81,11 @@ extension PlayerViewController {
         if isFullscreenMode || isLandscape {
             NSLayoutConstraint.deactivate(portraitConstraints)
             NSLayoutConstraint.activate(landscapeConstraints)
-            contentScrollView.isHidden = true
+            collectionView.isHidden = true
         } else {
             NSLayoutConstraint.deactivate(landscapeConstraints)
             NSLayoutConstraint.activate(portraitConstraints)
-            contentScrollView.isHidden = false
+            collectionView.isHidden = false
         }
     }
 
@@ -154,32 +145,5 @@ extension PlayerViewController {
                 completion()
             })
         }
-    }
-
-    // MARK: - Demo용 Dummy Content
-
-    /// 스크롤뷰에 더미 컨텐츠 추가 (예: 영상 설명)
-    func addDummyContentToScrollView() {
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 10
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        for _ in 1...5 {
-            let dummyView = UIView()
-            dummyView.backgroundColor = .systemGray4
-            dummyView.layer.cornerRadius = 15
-            dummyView.heightAnchor.constraint(equalToConstant: 220).isActive = true
-            stackView.addArrangedSubview(dummyView)
-        }
-
-        contentScrollView.addSubview(stackView)
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentScrollView.topAnchor, constant: 20),
-            stackView.bottomAnchor.constraint(equalTo: contentScrollView.bottomAnchor, constant: -20),
-            stackView.leadingAnchor.constraint(equalTo: contentScrollView.leadingAnchor, constant: 15),
-            stackView.trailingAnchor.constraint(equalTo: contentScrollView.trailingAnchor, constant: -15),
-            stackView.widthAnchor.constraint(equalTo: contentScrollView.widthAnchor, constant: -30)
-        ])
     }
 }

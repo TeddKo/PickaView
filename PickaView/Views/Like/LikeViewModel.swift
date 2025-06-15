@@ -150,4 +150,8 @@ extension LikeViewModel: NSFetchedResultsControllerDelegate {
             changesPublisher.send(pendingChangeSet)
         }
     }
+    
+    func getCoreDataManager() -> CoreDataManager {
+        return coreDataManager
+    }
 }
