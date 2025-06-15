@@ -9,7 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
 
-    var viewModel: HomeViewModel?
+    var viewModel: HomeViewModel!
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
@@ -48,14 +48,6 @@ class HomeViewController: UIViewController {
         tableView.isHidden = true
         tableViewHeightConstraint.constant = 0
         searchBar.searchBarStyle = .minimal
-
-        do {
-            let coreDataManager = CoreDataManager()
-            let pixabayVideoService = try PixabayVideoService()
-            viewModel = HomeViewModel(coreDataManager: coreDataManager, pixabayVideoService: pixabayVideoService)
-        } catch {
-            print("CoreDataManager 초기화 실패: \(error)")
-        }
 
         //비동기로 view모델에서 모든 태그 가져옴
         Task {
