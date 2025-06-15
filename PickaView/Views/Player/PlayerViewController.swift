@@ -164,6 +164,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         )
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        navigationController?.setNavigationBarHidden(true, animated: false)
+        tabBarController?.tabBar.isHidden = true
+    }
+
     /// 뷰가 나타날 때 방향/레이아웃 갱신
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -180,6 +187,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer?.frame = videoContainerView.bounds
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        tabBarController?.tabBar.isHidden = false
     }
 
     // MARK: - Player Controls
