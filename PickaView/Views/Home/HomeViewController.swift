@@ -15,11 +15,18 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
-    
+
     //가져온 비디오리스트를 저장하는 배열
-    private var videoList: [Video] = []
-	//가져온 태그목록을 저장하는 배열
-    private var tags: [Tag] = []
+    var videoList: [Video] = []
+
+    //가져온 태그목록을 저장하는 배열
+    var tags: [Tag] = []
+
+    //필터링된 태그목록 저장하는 배열
+    var filteredTags: [Tag] = []
+
+    //태그에 맞는 비디오 목록이 표시됐는지 bool 타입으로 확인
+    var isTagSearchActive: Bool = false
 
     private var isLoadingNextPage = false
 
@@ -71,9 +78,12 @@ class HomeViewController: UIViewController {
         collectionView.delegate = self
         searchBar.delegate = self
         searchBar.searchTextField.delegate = self
-        tableView.isHidden = true
-        tableViewHeightConstraint.constant = 0
         searchBar.searchBarStyle = .minimal
+        // 서치바에서 자동 대문자 입력 방지
+        (searchBar.value(forKey: "searchField") as? UITextField)?.autocapitalizationType = .none
+
+        // 테이블뷰 초기 상태 숨기기
+        updateTableViewVisibility(isVisible: false)
 
         do {
             let coreDataManager = CoreDataManager()
@@ -114,7 +124,7 @@ class HomeViewController: UIViewController {
             }
         }
     }
-    
+
 
     //화면 회전 시 레이아웃 업데이트
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -199,25 +209,68 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
     }
 }
 
+// 태그 목록을 표시하는 TableView 관련 설정
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
+    // filteredTags를 기준으로 row 개수 리턴
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.allTags.count ?? 0
+        return filteredTags.isEmpty ? 1 : filteredTags.count
     }
 
+    // 셀 구성 - 태그 목록 표시 또는 '검색 결과 없음' 플레이스홀더
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? SearchTableViewCell else {
             return UITableViewCell()
         }
-        if let tag = viewModel?.allTags[indexPath.row] {
+
+        if filteredTags.isEmpty {
+            // 태그가 하나도 없으면 '검색 결과가 없습니다' 메시지
+            cell.tagLabel.text = "검색 결과가 없습니다."
+            cell.tagLabel.textColor = .gray
+            cell.isUserInteractionEnabled = false
+        } else {
+            let tag = filteredTags[indexPath.row]
             cell.tagLabel.text = "#\(tag.name ?? "")"
+            cell.tagLabel.textColor = .label
+            cell.isUserInteractionEnabled = true
         }
         return cell
     }
+
+    // 태그 선택 시 해당 태그로 필터링된 비디오 목록을 컬렉션뷰에 표시
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard !filteredTags.isEmpty else { return }
+        guard let selectedTag = filteredTags[indexPath.row].name else { return }
+        applyTagFilter(tagName: selectedTag)
+    }
+
+    // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
+    func applyTagFilter(tagName: String) {
+        // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
+           let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
+
+           // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
+           videoList = filteredVideos
+
+           // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
+           collectionView.reloadData()
+
+           // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
+           searchBar.text = "#\(tagName)"
+
+           // 5. 검색바에서 키보드 내리기 (포커스 해제)
+           searchBar.resignFirstResponder()
+
+           // 6. 태그 검색 목록 테이블뷰 숨김 처리
+           updateTableViewVisibility(isVisible: false)
+
+           // 7. 태그 검색이 활성화된 상태로 표시
+           isTagSearchActive = true
+       }
 }
 
 extension HomeViewController: UIScrollViewDelegate {
