@@ -58,20 +58,22 @@ struct PixabayVideoService {
     /// Pixabay에서 비디오 목록을 가져옵니다
     /// - Parameter query: 검색어(옵션). 없으면 전체 인기 목록을 불러옵니다
     /// - Returns: [PixabayVideo] 배열
-    func fetchVideos(query: String? = nil) async throws -> [PixabayVideo] {
-        var queryItems: [URLQueryItem] = []
+    func fetchVideos(query: String? = nil, perPage: Int = 100,  page: Int = 5)  async throws -> [PixabayVideo] {
+        var queryItems: [URLQueryItem] = [
+            URLQueryItem(name: "per_page", value: "\(perPage)"),
+            URLQueryItem(name: "page", value: "\(page)")
+        ]
+
         if let q = query {
             queryItems.append(URLQueryItem(name: "q", value: q))
         }
 
         let endpoint = Endpoint(apiKey: apiKey, queryItems: queryItems)
 
-        // URLRequest 생성 실패 시 에러 발생
         guard let request = endpoint.urlRequest else {
             throw NetworkError.invalidURL
         }
 
-        // APIClient를 통해 실제 네트워크 요청 및 결과 반환
         let response: PixabayResponse = try await client.send(request)
         return response.hits
     }

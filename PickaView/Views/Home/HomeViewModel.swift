@@ -9,6 +9,10 @@ import Foundation
 final class HomeViewModel {
     private let coreDataManager: CoreDataManager
     private let pixabayVideoService: PixabayVideoService
+    private var allRecommendedVideos: [Video] = []
+    private(set) var currentPage: Int = 1
+    private let limit: Int = 20
+    private var hasMore = true
     private(set) var allTags: [Tag] = []
 
     init(coreDataManager: CoreDataManager, pixabayVideoService: PixabayVideoService) {
@@ -33,11 +37,24 @@ final class HomeViewModel {
         }
 
     }
+    
+    func refreshVideos() {
+        let allVideos = coreDataManager.fetch()
+        self.allRecommendedVideos = VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
+        self.currentPage = 1
+    }
 
-    func fetchVideosFromCoreData() -> [Video] {
-            let allVideos = coreDataManager.fetch()
-            return VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
-        }
+    func getCurrentPageVideos() -> [Video] {
+        let offset = (currentPage - 1) * limit
+        let end = min(offset + limit, allRecommendedVideos.count)
+        guard offset < end else { return [] }
+        return Array(allRecommendedVideos[offset..<end])
+    }
+
+    func loadNextPage() -> [Video] {
+        currentPage += 1
+        return getCurrentPageVideos()
+    }
 
     /// CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
     /// 메인 스레드에서 `allTags` 프로퍼티에 저장
