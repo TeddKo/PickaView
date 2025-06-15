@@ -8,7 +8,7 @@
 import UIKit
 
 class VideoCollectionViewCell: UICollectionViewCell {
-    
+
     @IBOutlet weak var thumnail: UIImageView!
 
     @IBOutlet weak var durationLabel: UILabel!
@@ -60,7 +60,8 @@ class VideoCollectionViewCell: UICollectionViewCell {
             thumnail.image = UIImage(systemName: "person.circle")
         }
 
-        thumnail.contentMode = .scaleAspectFit
+        thumnail.contentMode = .scaleAspectFill
+        thumnail.clipsToBounds = true // 이미지 넘침 방지
     }
 
 }
