@@ -14,7 +14,27 @@ class PlayerViewHeaderView: UICollectionReusableView {
     @IBOutlet weak var userImageView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var likeButton: UIButton!
+    
+    // Like 버튼 클릭 시 실행될 클로저
+    var onLikeButtonTapped: (() -> Bool)?
 
+    @IBAction func like(_ sender: Any) {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+        let isCurrentlyLiked = onLikeButtonTapped?()
+        likeButton.tintColor = isCurrentlyLiked ?? false ? .main : .systemGray4
+
+        UIView.animate(withDuration: 0.1,
+                       animations: {
+                           self.likeButton.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+                       },
+                       completion: { _ in
+                           UIView.animate(withDuration: 0.1) {
+                               self.likeButton.transform = CGAffineTransform.identity
+                           }
+                       })
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         

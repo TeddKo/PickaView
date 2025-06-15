@@ -70,7 +70,15 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
                 for: indexPath
             ) as! PlayerViewHeaderView
             
+            header.onLikeButtonTapped = { [weak self] in
+                guard let self else {
+                    fatalError("PlayerViewController has been deallocated before like button tapped.")
+                }
+                return self.viewModel.toggleLikeStatus()
+            }
+            
             header.configure(views: viewModel.views, userImageURL: viewModel.userImageURL, user: viewModel.user, isLiked: viewModel.isLiked)
+            
             return header
         }
         return UICollectionReusableView()
@@ -146,7 +154,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
 
         // 현재 플레이어 화면을 닫은 뒤, 새 비디오로 다시 화면을 구성
         self.dismiss(animated: false) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             let storyboard = UIStoryboard(name: "Player", bundle: nil)
             guard let newPlayerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
