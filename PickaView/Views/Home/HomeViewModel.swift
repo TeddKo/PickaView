@@ -35,9 +35,9 @@ final class HomeViewModel {
     }
 
     func fetchVideosFromCoreData() -> [Video] {
-            let allVideos = coreDataManager.fetch()
-            return VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
-        }
+        let allVideos = coreDataManager.fetch()
+        return VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
+    }
 
     /// CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
     /// 메인 스레드에서 `allTags` 프로퍼티에 저장
@@ -47,8 +47,8 @@ final class HomeViewModel {
             self.allTags = tags
         }
     }
-    
-     //실시간 태그목록 갱신용
+
+    // 실시간 갱신용(구현 예정)
     func filterTags(keyword: String) -> [Tag] {
         let trimmed = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
