@@ -5,6 +5,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -120,8 +121,9 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XIJ-Sh-3CW">
                                                     <rect key="frame" x="0.0" y="0.0" width="393" height="303"/>
                                                     <subviews>
-                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bLj-qx-k1w">
+                                                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bLj-qx-k1w">
                                                             <rect key="frame" x="0.0" y="0.0" width="393" height="221"/>
+                                                            <color key="tintColor" name="MainColor"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" secondItem="bLj-qx-k1w" secondAttribute="height" multiplier="16:9" id="m4i-RB-yPq"/>
                                                             </constraints>
@@ -138,6 +140,7 @@
                                                             <subviews>
                                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="701-0t-ylk">
                                                                     <rect key="frame" x="0.0" y="4.3333333333333428" width="65.666666666666671" height="65.333333333333329"/>
+                                                                    <color key="tintColor" name="MainColor"/>
                                                                     <constraints>
                                                                         <constraint firstAttribute="width" secondItem="701-0t-ylk" secondAttribute="height" multiplier="1:1" id="Bsp-oq-6g8"/>
                                                                     </constraints>
@@ -215,6 +218,7 @@
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DVu-VC-ude">
                                                             <rect key="frame" x="0.0" y="10" width="65.666666666666671" height="65.333333333333329"/>
+                                                            <color key="tintColor" name="MainColor"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" secondItem="DVu-VC-ude" secondAttribute="height" multiplier="1:1" id="5bb-4q-nyi"/>
                                                             </constraints>
@@ -294,6 +298,9 @@
     </scenes>
     <resources>
         <image name="heart.fill" catalog="system" width="128" height="107"/>
+        <namedColor name="MainColor">
+            <color red="0.5490196078431373" green="0.0" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="quaternaryLabelColor">
             <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.17647058823529413" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

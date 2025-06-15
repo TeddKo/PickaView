@@ -48,9 +48,9 @@ class PlayerViewCollectionViewCell: UICollectionViewCell {
         if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
             thumbnailImageView.loadImage(from: thumbnailURL)
         } else {
-            thumbnailImageView.image = UIImage(systemName: "person.circle")
+            thumbnailImageView.image = UIImage(systemName: "photo.on.rectangle.angled")
         }
         
-        thumbnailImageView.contentMode = .scaleAspectFit
+        thumbnailImageView.contentMode = .scaleAspectFill
     }
 }

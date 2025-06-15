@@ -43,7 +43,7 @@ class TagCollectionViewCell: UICollectionViewCell {
         tagBackgroundView.layer.borderColor = UIColor(named: "SubColor")?.cgColor
         
         tagBackgroundView.layer.borderWidth = 1.0
-        tagBackgroundView.layer.cornerRadius = 18
+        tagBackgroundView.layer.cornerRadius = 17
         tagBackgroundView.clipsToBounds = true
     }
     
