@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 /**
  사용자가 '좋아요'한 비디오 목록을 표시하는 뷰 컨트롤러.
@@ -22,24 +23,34 @@ class LikeViewController: UIViewController {
 
     var selectedIndexPath: IndexPath?
 
-    /// 뷰 로드 후 초기 설정 및 테스트용 더미 좋아요 주입
+    /// Combine 구독 해제를 위한 cancellables 저장소
+    private var cancellables = Set<AnyCancellable>()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
 
+        // 컬렉션 뷰 설정 (데이터소스 및 델리게이트 지정)
         collectionView.dataSource = self
         collectionView.delegate = self
 
-        // 테스트: CoreData 전체 영상 중 일부를 좋아요 처리
-        let allVideos = viewModel.coreDataManager.fetch()
-        for index in 0..<min(allVideos.count, 100) {
-            viewModel.coreDataManager.updateIsLiked(for: allVideos[index], isLiked: true)
-        }
+        // 테스트용 더미 좋아요 데이터를 CoreData에 주입
+        viewModel.injectTestLikesIfNeeded()
 
-        viewModel.fetchLikedVideos()
-        print("🔥 최종 좋아요 개수: \(viewModel.likeCount)")
-
-        collectionView.reloadData()
+        // ViewModel에서 전달되는 변경사항(FRCChangeSet)을 구독하여,
+        // 변경된 셀만 performBatchUpdates로 반영
+        viewModel.changesPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] changes in
+                self?.collectionView.performBatchUpdates {
+                    self?.collectionView.deleteItems(at: changes.deletions)
+                    self?.collectionView.insertItems(at: changes.insertions)
+                    self?.collectionView.reloadItems(at: changes.updates)
+                    for move in changes.moves {
+                        self?.collectionView.moveItem(at: move.from, to: move.to)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     /**
