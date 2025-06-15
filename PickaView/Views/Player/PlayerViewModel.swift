@@ -9,8 +9,10 @@ import Foundation
 
 final class PlayerViewModel {
     private let video: Video
-    
-    init(video: Video) {
+    private let coreDataManager: CoreDataManager
+
+    init(video: Video, coreDataManager: CoreDataManager) {
+        self.coreDataManager = coreDataManager
         self.video = video
     }
     
@@ -22,12 +24,12 @@ final class PlayerViewModel {
         URL(string: video.thumbnailURL ?? "")
     }
     
-    var userImageURL: URL? {
-        URL(string: video.thumbnailURL ?? "")
+    var userImageURL: String {
+        video.userImageURL ?? ""
     }
 
     var user: String {
-        video.user ?? ""
+        video.user ?? "Anonymous"
     }
 
     var views: String {
@@ -48,5 +50,21 @@ final class PlayerViewModel {
     var tags: [Tag] {
         guard let tagSet = video.tags as? Set<Tag> else { return [] }
         return tagSet.sorted { ($0.name ?? "") < ($1.name ?? "") }
+    }
+    
+    var videos: [Video] {
+        let allVideos = coreDataManager.fetch()
+        let sortedVideos = VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
+        let filteredVideos = sortedVideos.filter { $0 != video }
+        return Array(filteredVideos.prefix(10))
+    }
+    
+    func getCoreDataManager() -> CoreDataManager {
+        return coreDataManager
+    }
+    
+    func toggleLikeStatus() -> Bool {
+        coreDataManager.updateIsLiked(for: video, isLiked: !video.isLiked)
+        return video.isLiked
     }
 }

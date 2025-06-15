@@ -58,7 +58,9 @@ class HomeViewController: UIViewController {
         if let cell = sender as? VideoCollectionViewCell {
             if let indexPath = collectionView.indexPath(for: cell) {
                 if let vc = segue.destination as? PlayerViewController {
-                    vc.viewModel = PlayerViewModel(video: videoList[indexPath.item])
+                    if let viewModel {
+                        vc.viewModel = PlayerViewModel(video: videoList[indexPath.item], coreDataManager: viewModel.getCoreDataManager())
+                    }
                     vc.modalPresentationStyle = .fullScreen
                 }
             }
