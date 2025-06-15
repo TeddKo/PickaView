@@ -103,7 +103,7 @@
                                             <outlet property="userImage" destination="q4Q-wi-Kjt" id="lXm-ZW-135"/>
                                             <outlet property="userNameLabel" destination="rvN-9k-Jin" id="2se-SU-KL1"/>
                                             <outlet property="viewsLabel" destination="eJ6-uL-DHR" id="PGc-ZX-ihl"/>
-                                            <segue destination="HM3-ot-7Zg" kind="modal" identifier="Player" id="Qkq-yH-k78"/>
+                                            <segue destination="HM3-ot-7Zg" kind="presentation" identifier="Player" modalPresentationStyle="fullScreen" id="Qkq-yH-k78"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>

@@ -85,14 +85,6 @@ class HomeViewController: UIViewController {
         // 테이블뷰 초기 상태 숨기기
         updateTableViewVisibility(isVisible: false)
 
-        do {
-            let coreDataManager = CoreDataManager()
-            let pixabayVideoService = try PixabayVideoService()
-            viewModel = HomeViewModel(coreDataManager: coreDataManager, pixabayVideoService: pixabayVideoService)
-        } catch {
-            print("CoreDataManager 초기화 실패: \(error)")
-        }
-
         //비동기로 view모델에서 모든 태그 가져옴
         Task {
             await viewModel?.loadAllTags()
