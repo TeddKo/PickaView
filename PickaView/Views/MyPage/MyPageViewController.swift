@@ -6,6 +6,8 @@
 //
 
 import UIKit
+import DGCharts
+import Combine
 
 /**
  마이페이지 화면을 표시하고 관리하는 뷰 컨트롤러.
@@ -14,10 +16,10 @@ import UIKit
  **/
 class MyPageViewController: UIViewController {
     
+    var viewModel: MyPageViewModel?
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Properties
-    
-    /// 수평 스크롤 리스트를 위한 `UICollectionView`. `setupCollectionView()`에서 초기화됨.
-    private var collectionView: UICollectionView!
     
     /// 컬렉션뷰에 표시할 색상 데이터 소스.
     private var colors: [UIColor] = []
@@ -40,6 +42,11 @@ class MyPageViewController: UIViewController {
         return stackView
     }()
     
+    private let chartView: ChartView = ChartView()
+    
+    private let todayLabelView = TwoLabelRowView()
+    private let weakLabelVeiw = TwoLabelRowView()
+    
     /// 화면 테마 변경을 위한 `UISegmentedControl`. `lazy` 키워드를 통해 첫 사용 시 초기화됨.
     private lazy var colorModeSegment: UISegmentedControl = {
         let segment = UISegmentedControl(items: ["Light", "Dark", "System"])
@@ -53,9 +60,43 @@ class MyPageViewController: UIViewController {
     /// 뷰 컨트롤러의 뷰가 메모리에 로드된 후 호출되는 생명주기 메서드.
     override func viewDidLoad() {
         super.viewDidLoad()
+        let coreDataManager = CoreDataManager()
+        
+        addDummyHistoryData(using: coreDataManager)
+        
+        viewModel = MyPageViewModel(coreDataManager: coreDataManager)
+        
         setupLayout()
+        
         addColors()
         addViewsToStackView()
+        
+        bindViewModel()
+        viewModel?.fetchWeakHistory()
+    }
+    
+    private func bindViewModel() {
+        viewModel?.$weakHistory
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] histories in
+                self?.chartView.setData(with: histories)
+            }
+            .store(in: &cancellables)
+        
+        viewModel?.$todayWatchTimeString
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] todayWatchTimeString in
+                print("todayWatchTimeString is \(todayWatchTimeString)")
+                self?.todayLabelView.configure(leftText: "Today", rightText: todayWatchTimeString)
+            }
+            .store(in: &cancellables)
+        
+        viewModel?.$weakWatchTimeString
+            .sink { [weak self] weakWatchTimeString in
+                print("weakWatchTimeString is \(weakWatchTimeString)")
+                self?.weakLabelVeiw.configure(leftText: "last 7 days", rightText: weakWatchTimeString)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Theme Logic
@@ -82,8 +123,7 @@ class MyPageViewController: UIViewController {
     private func addViewsToStackView() {
         addSegmentedController()
         addChartView()
-        horizontalStackTwoTextView(leftText: "Today", rightText: "2 hours 8 minutes")
-        horizontalStackTwoTextView(leftText: "last 7 days", rightText: "25hours 8 minutes")
+        addLabelView()
         addFullWidthCollectionView()
     }
     
@@ -101,15 +141,32 @@ class MyPageViewController: UIViewController {
         mainVerticalStackView.addArrangedSubview(colorModeSegment)
     }
     
+    private func addDummyHistoryData(using coreDataManager: CoreDataManager) {
+        let calendar = Calendar.current
+        for i in 0..<7 {
+            guard let date = calendar.date(byAdding: .day, value: -i, to: Date()) else { continue }
+            // 0분 ~ 180분 사이의 임의의 시청 시간(초 단위) 생성
+            let randomDurationInSeconds = Double.random(in: 0...180) * 60
+            coreDataManager.saveHistory(on: date, duration: randomDurationInSeconds)
+        }
+        print("✅ 7일간의 더미 시청 기록을 추가했습니다.")
+    }
+    
     /// 시청 시간 차트 UI를 구성하고 스택뷰에 추가.
     private func addChartView() {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 16
+        let stackView: UIStackView = {
+            let stackView = UIStackView()
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+            stackView.axis = .vertical
+            stackView.spacing = 16
+            
+            view.addSubview(stackView)
+            
+            return stackView
+        }()
         
-        let chartView = UIView()
-        chartView.backgroundColor = .systemGray4
+        
+        chartView.backgroundColor = .systemBackground
         
         let label = UILabel()
         label.text = "Watch Time"
@@ -123,52 +180,50 @@ class MyPageViewController: UIViewController {
         // 차트 뷰의 높이를 부모 뷰 너비의 45%로 설정.
         chartView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45).isActive = true
     }
-    
-    /**
-     두 개의 텍스트를 수평으로 배치하는 UI 컴포넌트를 생성하여 스택뷰에 추가.
-     - Parameters:
-     - leftText: 왼쪽에 표시될 텍스트.
-     - rightText: 오른쪽에 표시될 텍스트.
-     **/
-    private func horizontalStackTwoTextView(leftText: String, rightText: String) {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.distribution = .fillEqually
+   
+    private func addLabelView() {
+        todayLabelView.configure(leftText: "Today", rightText: "0m")
+        weakLabelVeiw.configure(leftText: "Last 7 days", rightText: "0m")
         
-        let leftLabel = UILabel()
-        leftLabel.text = leftText
-        leftLabel.font = .preferredFont(forTextStyle: .body)
-        leftLabel.textAlignment = .left
-        
-        let rightLabel = UILabel()
-        rightLabel.text = rightText
-        rightLabel.font = .preferredFont(forTextStyle: .body)
-        rightLabel.textAlignment = .right
-        
-        stackView.wrappedPaddingContainer(
-            stackView: mainVerticalStackView,
-            horizontalPadding: 20
-        )
-        
-        stackView.addArrangedSubview(leftLabel)
-        stackView.addArrangedSubview(rightLabel)
+        mainVerticalStackView.addArrangedSubview(todayLabelView)
+        mainVerticalStackView.addArrangedSubview(weakLabelVeiw)
     }
     
     /// 수평 스크롤 컬렉션뷰를 구성하고 스택뷰에 추가.
     private func addFullWidthCollectionView() {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 15
+        let stack: UIStackView = {
+            let stack = UIStackView()
+            stack.distribution = .fillProportionally
+            stack.spacing = 20
+            stack.distribution = .fill
+            stack.axis = .vertical
+            return stack
+        }()
         
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.register(RandomColorCollectionViewCell.self, forCellWithReuseIdentifier: RandomColorCollectionViewCell.identifier)
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.backgroundColor = .clear
+        let horizontaLabelButtonView = HorizontalLabelButtonView()
         
-        mainVerticalStackView.addArrangedSubview(collectionView)
+        let layout: UICollectionViewFlowLayout = {
+            let layout = UICollectionViewFlowLayout()
+            layout.scrollDirection = .horizontal
+            layout.minimumLineSpacing = 15
+            return layout
+        }()
+        
+        let collectionView: UICollectionView = {
+            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+            collectionView.translatesAutoresizingMaskIntoConstraints = false
+            collectionView.showsHorizontalScrollIndicator = false
+            collectionView.register(RandomColorCollectionViewCell.self, forCellWithReuseIdentifier: RandomColorCollectionViewCell.identifier)
+            collectionView.dataSource = self
+            collectionView.delegate = self
+            collectionView.backgroundColor = .clear
+            return collectionView
+        }()
+        
+        stack.addArrangedSubview(horizontaLabelButtonView)
+        stack.addArrangedSubview(collectionView)
+        
+        mainVerticalStackView.addArrangedSubview(stack)
         
         // 컬렉션뷰의 높이를 부모 뷰 너비의 20%로 설정.
         collectionView.heightAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.2).isActive = true
@@ -209,17 +264,9 @@ extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSo
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        // 아이패드에서는 뷰가 너무 커보일 수 있으므로, 기기에 따라 비율을 다르게 적용
-        let widthPercentage: CGFloat
-        if traitCollection.horizontalSizeClass == .compact {
-            widthPercentage = 0.3 // 아이폰
-        } else {
-            widthPercentage = 0.2 // 아이패드
-        }
-        
+        let isPad = traitCollection.userInterfaceIdiom == .pad
+        let widthPercentage: CGFloat = isPad ? 0.2 : 0.3
         let itemWidth = collectionView.bounds.width * widthPercentage
-        
-        // 셀 높이를 컬렉션뷰의 높이와 동일하게 설정.
         let itemHeight = collectionView.bounds.height
         
         return CGSize(width: itemWidth, height: itemHeight)
@@ -232,7 +279,7 @@ extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSo
         insetForSectionAt section: Int
     ) -> UIEdgeInsets {
         // 상하 여백을 0으로 설정하여 셀이 컬렉션뷰의 높이를 완전히 채우도록 함.
-        return UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
+        return UIEdgeInsets.init(horizontal: 20)
     }
     
     func collectionView(
