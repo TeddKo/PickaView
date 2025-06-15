@@ -47,8 +47,22 @@ final class HomeViewModel {
         }
     }
     
-    // 실시간 갱신용(구현 예정)
+     //실시간 태그목록 갱신용
     func filterTags(keyword: String) -> [Tag] {
-        return allTags.filter { $0.name?.localizedCaseInsensitiveContains(keyword) == true }
+        let trimmed = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return allTags // 아무 키워드도 없으면 전체 태그 반환
+        }
+
+        let lowercasedKeyword = trimmed.lowercased()
+
+        return allTags.filter { tag in
+            guard let name = tag.name?.lowercased() else { return false }
+            return name.hasPrefix(lowercasedKeyword)
+        }
+    }
+
+    func fetchVideosForTag(_ tagName: String) -> [Video] {
+        return coreDataManager.fetch(tag: tagName)
     }
 }

@@ -17,10 +17,10 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
     
     //가져온 비디오리스트를 저장하는 배열
-    private var videoList: [Video] = []
+     var videoList: [Video] = []
 	//가져온 태그목록을 저장하는 배열
-    private var tags: [Tag] = []
-
+    var tags: [Tag] = []
+    var filteredTags: [Tag] = []
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
             if let indexPath = collectionView.indexPath(for: cell) {
@@ -172,22 +172,48 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
+           return 1
+       }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel?.allTags.count ?? 0
-    }
+       // filteredTags를 기준으로 row 개수 리턴
+       func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+           return filteredTags.isEmpty ? 1 : filteredTags.count
+       }
 
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? SearchTableViewCell else {
-            return UITableViewCell()
-        }
-        if let tag = viewModel?.allTags[indexPath.row] {
-            cell.tagLabel.text = "#\(tag.name ?? "")"
-        }
-        return cell
-    }
-}
+       func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+           guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCell", for: indexPath) as? SearchTableViewCell else {
+               return UITableViewCell()
+           }
+
+           if filteredTags.isEmpty {
+               // 태그가 하나도 없으면 '검색 결과가 없습니다' 메시지
+               cell.tagLabel.text = "검색 결과가 없습니다"
+               cell.tagLabel.textColor = .gray
+               cell.isUserInteractionEnabled = false
+           } else {
+               let tag = filteredTags[indexPath.row]
+               cell.tagLabel.text = "#\(tag.name ?? "")"
+               cell.tagLabel.textColor = .label
+               cell.isUserInteractionEnabled = true
+           }
+           return cell
+       }
+
+       func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+           guard !filteredTags.isEmpty else { return }
+           guard let selectedTag = filteredTags[indexPath.row].name else { return }
+
+           // 선택된 태그 기반으로 비디오 가져오기
+           let filteredVideos = viewModel?.fetchVideosForTag(selectedTag) ?? []
+
+           self.videoList = filteredVideos
+           self.collectionView.reloadData()
+
+           searchBar.text = "#\(selectedTag)"
+           searchBar.resignFirstResponder()
+
+           updateTableViewVisibility(isVisible: false)
+       }
+   }
 
 
