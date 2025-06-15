@@ -20,6 +20,9 @@ protocol PlayerViewControllerDelegate: AnyObject {
 /// 영상 재생 및 플레이어 UI를 담당하는 뷰 컨트롤러
 class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var videoPlayerView: UIView!
+    
     var viewModel: PlayerViewModel!
 
     // MARK: - Player Properties
@@ -130,13 +133,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
         return slider
-    }()
-
-    /// 영상 이외의 부가 정보 영역(예: 설명)
-    let contentScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
     }()
 
     // MARK: - LifeCycle
