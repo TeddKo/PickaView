@@ -149,7 +149,7 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         }
 
         if isLoading {
-            cell.showSkeleton() // 로딩 중이면 스켈레톤 보여줌
+            cell.configure(with: nil)
         } else {
             let video = videoList[indexPath.item]
             cell.configure(with: video)
