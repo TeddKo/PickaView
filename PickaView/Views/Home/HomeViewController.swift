@@ -18,18 +18,21 @@ class HomeViewController: UIViewController {
 
     //가져온 비디오리스트를 저장하는 배열
     var videoList: [Video] = []
-
     //가져온 태그목록을 저장하는 배열
     var tags: [Tag] = []
-
     //필터링된 태그목록 저장하는 배열
     var filteredTags: [Tag] = []
-
+    // 로딩 중인지 확인하는 bool 타입 변수
+    var isLoading: Bool = true
     //태그에 맞는 비디오 목록이 표시됐는지 bool 타입으로 확인
     var isTagSearchActive: Bool = false
 
+    //서치바에서 x	버튼 누르면 기존 비디오 배열을 보여준다
+    var originalVideoList: [Video] = []
+
     private var isLoadingNextPage = false
 
+    // 테이블뷰의 가시성 업데이트
     private func loadNextPageVideos() {
         guard !isLoadingNextPage else { return }  // 중복 호출 방지
         guard let viewModel = viewModel else { return }
@@ -52,7 +55,6 @@ class HomeViewController: UIViewController {
             }
         }
     }
-
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
@@ -78,7 +80,10 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        setupPullToRefresh()
         searchBar.delegate = self
+        isLoading = true
+        collectionView.reloadData()
         searchBar.searchTextField.delegate = self
         searchBar.searchBarStyle = .minimal
         // 서치바에서 자동 대문자 입력 방지
@@ -113,6 +118,7 @@ class HomeViewController: UIViewController {
 
             // 4. UI 업데이트는 메인 스레드에서
             await MainActor.run {
+                self.isLoading = false
                 self.videoList = videosFromViewModel
                 self.collectionView.reloadData()
             }
@@ -128,6 +134,33 @@ class HomeViewController: UIViewController {
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
         }, completion: nil)
     }
+
+    private func setupPullToRefresh() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+
+    @objc private func refresh() {
+        Task {
+            guard let viewModel = viewModel else { return }
+
+            // Core Data에서 새로 로딩
+            viewModel.refreshVideos()
+
+            // 추천 점수로 정렬된 첫 페이지만 가져오기
+            let refreshedVideos = viewModel.getCurrentPageVideos()
+
+            // UI 업데이트
+            await MainActor.run {
+                self.videoList = refreshedVideos
+                self.originalVideoList = refreshedVideos  // 리프레시 시 기존비디오배열도 업데이트
+                self.collectionView.reloadData()
+                self.collectionView.refreshControl?.endRefreshing()
+            }
+        }
+        print("리프레쉬")
+    }
 }
 
 //UICollectionView 설정
@@ -135,20 +168,24 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 
     //셀은 비디오 개수 만큼 반환
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return videoList.count
+        return isLoading ? 10 : videoList.count
     }
-
     // 코어데이터에서 불러온 정보 각 셀에 저장
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? VideoCollectionViewCell else {
             fatalError("Failed to dequeue VideoCollectionViewCell")
         }
 
-        let video = videoList[indexPath.item]
-        cell.configure(with: video)
+        // 로딩 중일 때는 스켈레톤 뷰를 보여주고, 로딩이 끝나면 실제 데이터를 보여줌
+        if isLoading {
+            cell.configure(with: nil)
+        } else {
+            // 비디오 데이터가 로딩된 경우 셀을 구성
+            let video = videoList[indexPath.item]
+            cell.configure(with: video)
+        }
         return cell
     }
-
 
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -244,27 +281,29 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
+		//필터 적용 전에 원래 보이던 비디오 리스트 저장
+      
         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
-           let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
+        let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
 
-           // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
-           videoList = filteredVideos
+        // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
+        videoList = filteredVideos
 
-           // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
-           collectionView.reloadData()
+        // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
+        collectionView.reloadData()
 
-           // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
-           searchBar.text = "#\(tagName)"
+        // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
+        searchBar.text = "#\(tagName)"
 
-           // 5. 검색바에서 키보드 내리기 (포커스 해제)
-           searchBar.resignFirstResponder()
+        // 5. 검색바에서 키보드 내리기 (포커스 해제)
+        searchBar.resignFirstResponder()
 
-           // 6. 태그 검색 목록 테이블뷰 숨김 처리
-           updateTableViewVisibility(isVisible: false)
+        // 6. 태그 검색 목록 테이블뷰 숨김 처리
+        updateTableViewVisibility(isVisible: false)
 
-           // 7. 태그 검색이 활성화된 상태로 표시
-           isTagSearchActive = true
-       }
+        // 7. 태그 검색이 활성화된 상태로 표시
+        isTagSearchActive = true
+    }
 }
 
 extension HomeViewController: UIScrollViewDelegate {
