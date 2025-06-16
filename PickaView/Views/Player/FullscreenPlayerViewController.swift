@@ -109,4 +109,16 @@ class FullscreenPlayerViewController: UIViewController {
 
     /// 시스템 제스처 연기 (모든 엣지)
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .landscape
+    }
+
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return .landscapeRight
+    }
+
+    override var shouldAutorotate: Bool {
+        return true
+    }
 }
