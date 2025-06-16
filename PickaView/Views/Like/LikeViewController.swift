@@ -206,7 +206,8 @@ extension LikeViewController: UICollectionViewDataSource, UICollectionViewDelega
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let selectedVideo = viewModel.video(at: indexPath.item) else { return }
 
-        let playerVC = PlayerViewController()
+        let playerStoryboard = UIStoryboard(name: "Player", bundle: nil)
+        let playerVC = playerStoryboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as! PlayerViewController
         playerVC.viewModel = PlayerViewModel(video: selectedVideo, coreDataManager: viewModel.getCoreDataManager())
         playerVC.modalPresentationStyle = .fullScreen
         present(playerVC, animated: true, completion: nil)

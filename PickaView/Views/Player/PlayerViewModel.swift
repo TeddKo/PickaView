@@ -12,8 +12,8 @@ final class PlayerViewModel {
     private let coreDataManager: CoreDataManager
 
     init(video: Video, coreDataManager: CoreDataManager) {
-        self.coreDataManager = coreDataManager
         self.video = video
+        self.coreDataManager = coreDataManager
     }
     
     var videoURL: URL? {
