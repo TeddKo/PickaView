@@ -28,6 +28,9 @@ class HomeViewController: UIViewController {
     //태그에 맞는 비디오 목록이 표시됐는지 bool 타입으로 확인
     var isTagSearchActive: Bool = false
 
+    //서치바에서 x	버튼 누르면 기존 비디오 배열을 보여준다
+    var originalVideoList: [Video] = []
+
     private var isLoadingNextPage = false
 
     private func loadNextPageVideos() {
@@ -140,18 +143,16 @@ class HomeViewController: UIViewController {
         Task {
             guard let viewModel = viewModel else { return }
 
-            // 1. 네트워크에서 새 영상 받아서 Core Data에 저장
-            await viewModel.fetchAndSaveVideos()  // CoreData에 최신화
-
-            // 2. 그 다음 CoreData에서 가져와 추천 점수로 정렬
+            // Core Data에서 새로 로딩
             viewModel.refreshVideos()
 
-            // 3. 정렬된 결과 중 첫 페이지만 보여줌
+            // 추천 점수로 정렬된 첫 페이지만 가져오기
             let refreshedVideos = viewModel.getCurrentPageVideos()
 
-            // 4. UI 업데이트
+            // UI 업데이트
             await MainActor.run {
                 self.videoList = refreshedVideos
+                self.originalVideoList = refreshedVideos  // 리프레시 시 기존비디오배열도 업데이트
                 self.collectionView.reloadData()
                 self.collectionView.refreshControl?.endRefreshing()
             }
@@ -274,11 +275,14 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
-        // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
-           let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
+		//필터 적용 전에 원래 보이던 비디오 리스트 저장
+        originalVideoList = videoList
 
-           // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
-           videoList = filteredVideos
+         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
+         let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
+
+         // 2. 필터링된 비디오들로 교체
+         videoList = filteredVideos
 
            // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
            collectionView.reloadData()

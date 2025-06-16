@@ -88,36 +88,22 @@ extension HomeViewController: UISearchBarDelegate {
         print("❌ 클리어 버튼 눌림")
         print("isTagSearchActive:", isTagSearchActive)
 
-        if isTagSearchActive, let viewModel = viewModel {
-            // 1. Core Data에서 최신 비디오 리스트 갱신
-            viewModel.refreshVideos()
+        if isTagSearchActive {
+            // 원래 비디오 목록 복원
+            videoList = originalVideoList
 
-            // 2. 뷰모델에서 현재 페이지 비디오를 가져옴
-            let allVideos = viewModel.getCurrentPageVideos()
-
-            print("전체 비디오 개수:", allVideos.count)
-
-            // 3. 화면에 표시할 배열에 할당
-            videoList = allVideos
-
-            // 4. 컬렉션 뷰 리로드 및 테이블 뷰 숨김
             collectionView.reloadData()
             updateTableViewVisibility(isVisible: false)
-
-            // 5. 태그 검색 비활성화 처리
             isTagSearchActive = false
-        } else {
-            print("태그 검색 상태 아님")
         }
 
-        // 키보드 내리기 처리 (메인 스레드에서)
         DispatchQueue.main.async {
             textField.resignFirstResponder()
         }
 
         return true
     }
-    
+
     //검색 텍스트 입력직전
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         // 키보드가 올라올 때 전체 태그 목록 보여주기
