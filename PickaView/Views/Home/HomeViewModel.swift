@@ -61,6 +61,7 @@ final class HomeViewModel {
     /// CoreDataManager를 통해 모든 태그를 비동기적으로 가져옴
     /// 메인 스레드에서 `allTags` 프로퍼티에 저장
     func loadAllTags() async {
+        print("loadAllTags() 호출됨")
         let tags = await coreDataManager.fetchAllTags()
         await MainActor.run {
             self.allTags = tags
