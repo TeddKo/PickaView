@@ -95,7 +95,7 @@ final class CoreDataManager {
         }
     }
 
-    // MARK: - Insert / Update
+    // MARK: - Save
     
     /// 전달받은 비디오 리스트를 Core Data에 저장
     /// - Parameter videos: 네트워크 요청으로 받은 Video
@@ -125,17 +125,6 @@ final class CoreDataManager {
         saveContext()
     }
 
-    /// 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
-    /// - Parameter video: 저장할 PixabayVideo 데이터
-    private func insert(_ video: PixabayVideo) {
-        let newVideo = Video(context: mainContext)
-        let newStamp = TimeStamp(context: mainContext)
-        newVideo.id = Int64(video.id)
-        newVideo.tags = insertTags(from: video.tags)
-        newVideo.timeStamp = newStamp
-        apply(video, to: newVideo)
-    }
-
     /// 날짜 기반 시청 기록을 History 엔티티에 저장
     /// - Parameters:
     ///   - date: 시청이 발생한 시간 (Date)
@@ -163,6 +152,20 @@ final class CoreDataManager {
         } catch {
             print("❌ 히스토리 저장 실패: \(error.localizedDescription)")
         }
+    }
+    
+    // MARK: - Insert / Update
+    
+    /// 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
+    /// - Parameter video: 저장할 PixabayVideo 데이터
+    private func insert(_ video: PixabayVideo) {
+        let newVideo = Video(context: mainContext)
+        let newStamp = TimeStamp(context: mainContext)
+        newVideo.id = Int64(video.id)
+        newVideo.isLiked = false
+        newVideo.tags = insertTags(from: video.tags)
+        newVideo.timeStamp = newStamp
+        apply(video, to: newVideo)
     }
     
     /// 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
@@ -197,13 +200,13 @@ final class CoreDataManager {
     func update(entity: Video, with video: PixabayVideo) {
         guard entity.url != video.videos.medium.url ||
               entity.thumbnailURL != video.videos.medium.thumbnail ||
-              entity.isLiked != false || // since apply resets this
               entity.views != Int64(video.views) ||
               entity.comments != Int64(video.comments) ||
               entity.downloads != Int64(video.downloads) ||
               entity.user != video.user ||
               entity.userID != String(video.userID) ||
-              entity.userImageURL != video.userImageURL
+              entity.userImageURL != video.userImageURL ||
+              entity.timeStamp?.totalTime != Double(video.duration)
         else {
             return
         }
@@ -262,7 +265,6 @@ final class CoreDataManager {
     private func apply(_ video: PixabayVideo, to entity: Video) {
         entity.url = video.videos.medium.url
         entity.thumbnailURL = video.videos.medium.thumbnail
-        entity.isLiked = false
         entity.views = Int64(video.views)
         entity.comments = Int64(video.comments)
         entity.downloads = Int64(video.downloads)
@@ -271,6 +273,8 @@ final class CoreDataManager {
         entity.userImageURL = video.userImageURL
         entity.timeStamp?.totalTime = Double(video.duration)
     }
+    
+    // MARK: - Delete
     
     /// id를 통해 특정 Video 객체를 직접 삭제
     /// - Parameter id: 삭제할 Video의 고유 ID
@@ -304,7 +308,7 @@ final class CoreDataManager {
         }
     }
 
-    // MARK: - Save
+    // MARK: - SaveContext
     
     /// mainContext에 변경사항이 있을 때 저장 수행
     @discardableResult
