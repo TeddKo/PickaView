@@ -23,7 +23,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
 
-    var viewModel: PlayerViewModel!
+    var viewModel: PlayerViewModel?
 
     // MARK: - Player Properties
 
@@ -158,9 +158,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 뷰가 로드될 때 초기 세팅
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        if let videoURL = viewModel.videoURL {
-            setupPlayer(with: videoURL.absoluteString)
+        
+        if let viewModel, let videoURL = viewModel.videoURL {
+            setupPlayer(with: videoURL)
         } else {
             print("Invalid video URL")
         }
@@ -299,6 +299,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     @objc func playerDidFinishPlaying() {
         guard let player = self.player else { return }
         isPlaying = false
+        viewModel?.pauseWatching()
         let playImage = UIImage(systemName: "arrow.clockwise")
         playPauseButton.setImage(playImage, for: .normal)
         player.seek(to: .zero)
