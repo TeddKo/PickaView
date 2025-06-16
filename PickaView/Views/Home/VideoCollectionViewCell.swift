@@ -52,56 +52,62 @@ class VideoCollectionViewCell: UICollectionViewCell {
         durationLabel.text = nil
     }
 
+    // MARK: - Configuration , 셀을 비디오 데이터로 구성
     func configure(with video: Video?) {
-        if let video = video {
-            // 데이터가 있을 때는 스켈레톤 숨기고, 데이터 바인딩
-            contentView.hideSkeleton()
-            contentView.isUserInteractionEnabled = true
+        let isSkeleton = (video == nil)
 
-            userNameLabel.text = video.user
-            viewsLabel.text = "Views: \(video.views)"
+        contentView.isUserInteractionEnabled = !isSkeleton
 
-            if let durationSeconds = video.timeStamp?.totalTime {
-                durationLabel.text = Int(durationSeconds).toDurationString()
-            } else {
-                durationLabel.text = "Duration: N/A"
-            }
-
-            if let userImageURL = video.userImageURL, !userImageURL.isEmpty {
-                userImage.loadImage(from: userImageURL)
-            } else {
-                userImage.image = UIImage(systemName: "person.circle")
-            }
-
-            if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
-                thumnail.loadImage(from: thumbnailURL)
-            } else {
-                thumnail.image = UIImage(systemName: "person.circle")
-            }
-
-            thumnail.contentMode = .scaleAspectFill
-            thumnail.clipsToBounds = true
-
+        if isSkeleton {
+            showSkeleton()
         } else {
-            // 데이터가 없으면 애니메이션 스켈레톤 보여주기
-            contentView.isUserInteractionEnabled = false
-
-            let gradient = SkeletonGradient(
-                baseColor: UIColor(red: 0.8, green: 0.8, blue: 0.85, alpha: 1),
-                secondaryColor: UIColor(red: 0.65, green: 0.65, blue: 0.7, alpha: 1)
-            )
-            let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
-
-            contentView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation)
-            contentView.layoutIfNeeded()
-
-            // 데이터 초기화
-            userNameLabel.text = nil
-            viewsLabel.text = nil
-            durationLabel.text = nil
-            userImage.image = nil
-            thumnail.image = nil
+            hideSkeleton()
+            // 비디오 데이터가 있을 때만 바인딩
+            bindData(video!)
         }
     }
 
+    // Skeleton 뷰 표시
+    private func showSkeleton() {
+        contentView.showAnimatedGradientSkeleton()
+        contentView.layoutIfNeeded()
+
+        userNameLabel.text = nil
+        viewsLabel.text = nil
+        durationLabel.text = nil
+        userImage.image = nil
+        thumnail.image = nil
+    }
+
+    // Skeleton 뷰 숨기기
+    private func hideSkeleton() {
+        contentView.hideSkeleton()
+    }
+
+    //  MARK: - Data Binding , 셀에 비디오 데이터를 바인딩
+    private func bindData(_ video: Video) {
+        userNameLabel.text = video.user
+        viewsLabel.text = "Views: \(video.views)"
+
+        if let durationSeconds = video.timeStamp?.totalTime {
+            durationLabel.text = Int(durationSeconds).toDurationString()
+        } else {
+            durationLabel.text = "Duration: N/A"
+        }
+
+        if let userImageURL = video.userImageURL, !userImageURL.isEmpty {
+            userImage.loadImage(from: userImageURL)
+        } else {
+            userImage.image = UIImage(systemName: "person.circle")
+        }
+
+        if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
+            thumnail.loadImage(from: thumbnailURL)
+        } else {
+            thumnail.image = UIImage(systemName: "person.circle")
+        }
+
+        thumnail.contentMode = .scaleAspectFill
+        thumnail.clipsToBounds = true
+    }
 }
