@@ -33,50 +33,61 @@ extension UIImageView {
     /// - Parameter urlString: 로드할 이미지의 URL 주소.
     
     func loadImage(from urlString: String) {
-        self.image = nil
-        guard let url = URL(string: urlString) else {
-            print("Error: Invalid URL string.")
-            return
-        }
-        self.currentURL = url
-        let cacheKey = urlString as NSString
+    self.image = nil
+    // 스켈레톤 뷰를 활성화하여 로딩 중임을 표시
+    self.isSkeletonable = true
+    self.showAnimatedGradientSkeleton()
 
-        if let cachedImage = ImageCacheManager.shared.object(forKey: cacheKey) {
-            self.image = cachedImage
-            return
-        }
-        
-        let targetSize = self.bounds.size
-
-        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-            guard let self = self else { return }
-
-            if self.currentURL != url {
-                return
-            }
-
-            if let error = error {
-                print("Error loading image: \(error.localizedDescription)")
-                return
-            }
-
-            guard let data = data, let image = UIImage(data: data) else {
-                print("Error: No data or could not create image.")
-                return
-            }
-
-            let resizedImage = targetSize == .zero ? image : self.resizeImage(image, to: targetSize)
-            
-            ImageCacheManager.shared.setObject(resizedImage, forKey: cacheKey)
-
-            DispatchQueue.main.async {
-                if self.currentURL == url {
-                    self.image = resizedImage
-                }
-            }
-        }
-        task.resume()
+    guard let url = URL(string: urlString) else {
+        print("Error: Invalid URL string.")
+        self.hideSkeleton()
+        return
     }
+    
+    self.currentURL = url
+    let cacheKey = urlString as NSString
+
+    if let cachedImage = ImageCacheManager.shared.object(forKey: cacheKey) {
+        DispatchQueue.main.async {
+            self.hideSkeleton()
+            self.image = cachedImage
+        }
+        return
+    }
+
+    let targetSize = self.bounds.size
+
+    let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+        guard let self = self else { return }
+
+        if self.currentURL != url {
+            DispatchQueue.main.async { self.hideSkeleton() }
+            return
+        }
+
+        if let error = error {
+            print("Error loading image: \(error.localizedDescription)")
+            DispatchQueue.main.async { self.hideSkeleton() }
+            return
+        }
+
+        guard let data = data, let image = UIImage(data: data) else {
+            print("Error: No data or could not create image.")
+            return
+        }
+
+        let resizedImage = targetSize == .zero ? image : self.resizeImage(image, to: targetSize)
+        ImageCacheManager.shared.setObject(resizedImage, forKey: cacheKey)
+
+        DispatchQueue.main.async {
+            if self.currentURL == url {
+                self.hideSkeleton()
+                self.image = resizedImage
+            }
+        }
+    }
+    task.resume()
+}
 
   
     /// 주어진 `UIImage`를 목표 크기로 리사이징하는 private 헬퍼 메서드.
