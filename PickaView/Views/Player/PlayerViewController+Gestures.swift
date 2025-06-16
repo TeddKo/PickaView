@@ -46,6 +46,11 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
             swipeUp.direction = .up
             controlsOverlayView.addGestureRecognizer(swipeUp)
         }
+        
+        // 길게 누르면 2배속
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        longPress.delegate = self
+        controlsOverlayView.addGestureRecognizer(longPress)
     }
 
     // MARK: - 제스처 핸들러
@@ -79,6 +84,25 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
             seek(by: -10)
         } else {
             seek(by: 10)
+        }
+    }
+
+    /// 길게 누르면 2배속, 떼면 1배속 (재생 중일 때만 적용)
+    @objc func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard let player, player.rate != 0 else { return } // 재생 중일 때만 처리
+
+        switch gesture.state {
+        case .began:
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            generator.impactOccurred()
+            player.rate = 2.0
+            rateTwoView.isHidden = false
+        case .ended, .cancelled, .failed:
+            player.rate = 1.0
+            rateTwoView.isHidden = true
+        default:
+            break
         }
     }
 
