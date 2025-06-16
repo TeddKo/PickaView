@@ -245,7 +245,14 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 재생/일시정지 버튼 클릭 핸들러
     @objc func playPauseButtonTapped() {
         guard let player = self.player else { return }
+        
         animateButtonTap(playPauseButton) {
+            if !self.isPlaying,
+               let player = self.player,
+               player.currentItem?.currentTime() == player.currentItem?.duration {
+                player.seek(to: .zero)
+            }
+            
             self.isPlaying.toggle()
             self.setPlayPauseImage(isPlaying: self.isPlaying)
 
@@ -297,13 +304,18 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
     @objc func playerDidFinishPlaying() {
-        guard let player = self.player else { return }
         isPlaying = false
-        let playImage = UIImage(systemName: "arrow.clockwise")
+        let playImage = UIImage(systemName: "arrow.clockwise", withConfiguration: symbolConfig)
         playPauseButton.setImage(playImage, for: .normal)
-        player.seek(to: .zero)
-        progressSlider.value = 0
-        currentTimeLabel.text = "00:00"
+        areControlsVisible = true
+        cancelControlsHide()
+        
+        UIView.animate(withDuration: 0.3) {
+                self.playbackControlsStack.alpha = 1.0
+                self.seekerStack.alpha = 1.0
+                self.fullscreenButton.alpha = 1.0
+                self.dismissButton.alpha = 1.0
+            }
     }
 
     /// 컨트롤 자동 숨김 타이머 재설정
