@@ -119,6 +119,8 @@ final class CoreDataManager {
             }
         }
         
+        deleteTags()
+        
         saveContext()
     }
 
@@ -282,6 +284,22 @@ final class CoreDataManager {
             }
         } catch {
             print("❌ 삭제할 비디오 fetch 실패: \(error.localizedDescription)")
+        }
+    }
+    
+    func deleteTags() {
+        let request: NSFetchRequest<Tag> = Tag.fetchRequest()
+        do {
+            let tags = try mainContext.fetch(request)
+            for tag in tags {
+                if let videos = tag.videos, videos.count == 0 {
+                    mainContext.delete(tag)
+                }
+            }
+            
+            saveContext()
+        } catch {
+            print("❌ 태그 삭제 실패: \(error.localizedDescription)")
         }
     }
 
