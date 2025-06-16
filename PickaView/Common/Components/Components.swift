@@ -247,8 +247,8 @@ final class ActionableTagsView: UIView {
         let button = UIButton()
         
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 32, weight: .medium, scale: .default)
-        let symbolImage = UIImage(systemName: "smiley.fill", withConfiguration: symbolConfig)
-        
+        let symbolImage = UIImage(systemName: "heart.fill", withConfiguration: symbolConfig)
+
         button.setImage(symbolImage, for: .normal)
         button.tintColor = .systemPurple
         button.translatesAutoresizingMaskIntoConstraints = false

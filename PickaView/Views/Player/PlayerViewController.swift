@@ -22,7 +22,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
-    
+
     var viewModel: PlayerViewModel!
 
     // MARK: - Player Properties
@@ -114,6 +114,20 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         return button
     }()
 
+    /// 전체화면 버튼
+    lazy var fullscreenButton: UIButton = {
+        let button = createButton(systemName: "arrow.down.backward.and.arrow.up.forward.rectangle", useSmallConfig: true)
+        button.addTarget(self, action: #selector(handleFullscreenButtonTapped(_:)), for: .touchUpInside)
+        return button
+    }()
+
+    /// 닫기 버튼
+    lazy var dismissButton: UIButton = {
+        let button = createButton(systemName: "chevron.down", useSmallConfig: true)
+        button.addTarget(self, action: #selector(handleDismissButtonTapped(_:)), for: .touchUpInside)
+        return button
+    }()
+
     /// 현재 재생 위치 라벨
     lazy var currentTimeLabel: UILabel = {
         createTimeLabel(text: "00:00")
@@ -128,10 +142,14 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     lazy var progressSlider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 0
-        slider.tintColor = .red
-        slider.thumbTintColor = .red
+        slider.tintColor = .main
+        slider.thumbTintColor = .main
         slider.translatesAutoresizingMaskIntoConstraints = false
         slider.addTarget(self, action: #selector(sliderValueChanged(_:)), for: .valueChanged)
+
+        let smallThumb = UIImage.circle(diameter: 18, color: .main)
+        slider.setThumbImage(smallThumb, for: .normal)
+
         return slider
     }()
 
@@ -148,6 +166,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         }
         setupUI()
         setPlayPauseImage(isPlaying: true)
+        fullscreenButton.alpha = 1.0
+        dismissButton.alpha = 1.0
         setupGestures()
         addPlayerObservers()
 
@@ -218,6 +238,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         UIView.animate(withDuration: 0.3) {
             self.playbackControlsStack.alpha = 0.0
             self.seekerStack.alpha = 0.0
+            self.fullscreenButton.alpha = 0.0
+            self.dismissButton.alpha = 0.0
         }
     }
 
@@ -235,6 +257,18 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
                 player.pause()
                 self.cancelControlsHide()
             }
+        }
+    }
+
+    @objc func handleFullscreenButtonTapped(_ sender: UIButton) {
+        animateButtonTap(sender) {
+            self.presentFullscreen()
+        }
+    }
+
+    @objc func handleDismissButtonTapped(_ sender: UIButton) {
+        animateButtonTap(sender) {
+            self.handleSwipeDownToHome(UISwipeGestureRecognizer())
         }
     }
 
@@ -314,16 +348,18 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
         fullscreenVC.delegate = self
 
-        // iOS 16 이상은 windowScene geometryUpdate 사용
-        if #available(iOS 16.0, *) {
-            let windowScene = view.window?.windowScene
-            windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: .landscape)) { [weak self] _ in
-                self?.present(fullscreenVC, animated: true)
+        self.present(fullscreenVC, animated: true) {
+            if #available(iOS 16.0, *) {
+                if let windowScene = fullscreenVC.view.window?.windowScene {
+                    let orientationPrefs = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
+                    windowScene.requestGeometryUpdate(orientationPrefs) { [weak self] _ in
+                        self?.present(fullscreenVC, animated: true)
+                    }
+                }
+            } else {
+                UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
+                UIViewController.attemptRotationToDeviceOrientation()
             }
-        } else {
-            UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
-            UIViewController.attemptRotationToDeviceOrientation()
-            present(fullscreenVC, animated: true)
         }
     }
 

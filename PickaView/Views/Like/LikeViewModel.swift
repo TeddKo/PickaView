@@ -43,14 +43,14 @@ final class LikeViewModel: NSObject, ObservableObject {
     /// 변경된 셀 정보가 담긴 퍼블리셔. ViewController에서 이걸 구독하여 셀 업데이트 처리
     let changesPublisher = PassthroughSubject<FRCChangeSet, Never>()
 
-    /// 좋아요된 비디오 목록. @Published로 UI 갱신 트리거
+    /// 좋아요된 비디오 목록
     var likedVideos: [Video] = []
 
     // MARK: - Init
 
     init(coreDataManager: CoreDataManager) {
         self.coreDataManager = coreDataManager
-        self.context = coreDataManager.persistentContainer.viewContext
+        self.context = coreDataManager.mainContext
         super.init()
         setupFRC()
     }
