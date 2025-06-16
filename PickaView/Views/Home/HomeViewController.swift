@@ -24,7 +24,8 @@ class HomeViewController: UIViewController {
 
     //필터링된 태그목록 저장하는 배열
     var filteredTags: [Tag] = []
-
+    // 로딩 중인지 확인하는 bool 타입 변수
+    var isLoading: Bool = true
     //태그에 맞는 비디오 목록이 표시됐는지 bool 타입으로 확인
     var isTagSearchActive: Bool = false
 
@@ -79,6 +80,9 @@ class HomeViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         searchBar.delegate = self
+        // 로딩 중이므로 스켈레톤 보여주기
+        isLoading = true
+        collectionView.reloadData()
         searchBar.searchTextField.delegate = self
         searchBar.searchBarStyle = .minimal
         // 서치바에서 자동 대문자 입력 방지
@@ -113,6 +117,7 @@ class HomeViewController: UIViewController {
 
             // 4. UI 업데이트는 메인 스레드에서
             await MainActor.run {
+                self.isLoading = false
                 self.videoList = videosFromViewModel
                 self.collectionView.reloadData()
             }
@@ -135,21 +140,23 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
 
     //셀은 비디오 개수 만큼 반환
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return videoList.count
+        return isLoading ? 10 : videoList.count
     }
-
     // 코어데이터에서 불러온 정보 각 셀에 저장
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as? VideoCollectionViewCell else {
             fatalError("Failed to dequeue VideoCollectionViewCell")
         }
 
-        let video = videoList[indexPath.item]
-        cell.configure(with: video)
+        if isLoading {
+            cell.showSkeleton() // 로딩 중이면 스켈레톤 보여줌
+        } else {
+            let video = videoList[indexPath.item]
+            cell.configure(with: video)
+        }
+
         return cell
     }
-
-
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
@@ -245,26 +252,26 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
-           let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
+        let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
 
-           // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
-           videoList = filteredVideos
+        // 2. 현재 비디오 리스트를 필터링된 비디오들로 교체
+        videoList = filteredVideos
 
-           // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
-           collectionView.reloadData()
+        // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
+        collectionView.reloadData()
 
-           // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
-           searchBar.text = "#\(tagName)"
+        // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
+        searchBar.text = "#\(tagName)"
 
-           // 5. 검색바에서 키보드 내리기 (포커스 해제)
-           searchBar.resignFirstResponder()
+        // 5. 검색바에서 키보드 내리기 (포커스 해제)
+        searchBar.resignFirstResponder()
 
-           // 6. 태그 검색 목록 테이블뷰 숨김 처리
-           updateTableViewVisibility(isVisible: false)
+        // 6. 태그 검색 목록 테이블뷰 숨김 처리
+        updateTableViewVisibility(isVisible: false)
 
-           // 7. 태그 검색이 활성화된 상태로 표시
-           isTagSearchActive = true
-       }
+        // 7. 태그 검색이 활성화된 상태로 표시
+        isTagSearchActive = true
+    }
 }
 
 extension HomeViewController: UIScrollViewDelegate {
