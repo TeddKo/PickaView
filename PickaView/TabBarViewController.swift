@@ -14,8 +14,6 @@ class TabBarViewController: UITabBarController {
         super.viewDidLoad()
         setupTabBarAppearance()
         ThemeManager.shared.applyTheme()
-        print("initial")
-
         viewControllers = viewModel.makeTabViewControllers()
     }
 
