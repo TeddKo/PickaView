@@ -55,7 +55,7 @@ final class CoreDataManager {
         }
     }
 
-    /// 모든 Tag 엔티티를 이름 순으로 정렬하여 비동기적으로 가져옵니다.
+    /// 모든 Tag 엔티티를 이름 순으로 정렬하여 fetch
     /// - Returns: 이름 오름차순으로 정렬된 Tag 배열
     func fetchAllTags() async -> [Tag] {
         return await withCheckedContinuation { continuation in
@@ -73,8 +73,7 @@ final class CoreDataManager {
         }
     }
     
-    
-    /// 최근 7일(오늘 포함)의 History 엔티티를 날짜 오름차순으로 가져옵니다.
+    /// 최근 7일(오늘 포함)의 History 엔티티를 날짜 오름차순으로 fetch
     /// - Returns: 7일간의 History 배열
     func fetchHistory() -> [History] {
         let request: NSFetchRequest<History> = History.fetchRequest()
@@ -96,8 +95,10 @@ final class CoreDataManager {
         }
     }
 
-    // MARK: - Insert / Update
-    // 전달받은 비디오 리스트를 Core Data에 저장
+    // MARK: - Save
+    
+    /// 전달받은 비디오 리스트를 Core Data에 저장
+    /// - Parameter videos: 네트워크 요청으로 받은 Video
     func saveVideos(_ videos: [PixabayVideo]) {
         let existingVideos: [Video] = fetch()
         let existingVideoDict = Dictionary(uniqueKeysWithValues: existingVideos.map { ($0.id, $0) })
@@ -119,18 +120,9 @@ final class CoreDataManager {
             }
         }
         
+        deleteTags()
+        
         saveContext()
-    }
-
-    /// 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
-    /// - Parameter video: 저장할 PixabayVideo 데이터
-    private func insert(_ video: PixabayVideo) {
-        let newVideo = Video(context: mainContext)
-        let newStamp = TimeStamp(context: mainContext)
-        newVideo.id = Int64(video.id)
-        newVideo.tags = insertTags(from: video.tags)
-        newVideo.timeStamp = newStamp
-        apply(video, to: newVideo)
     }
 
     /// 날짜 기반 시청 기록을 History 엔티티에 저장
@@ -162,6 +154,20 @@ final class CoreDataManager {
         }
     }
     
+    // MARK: - Insert / Update
+    
+    /// 새 비디오 엔티티를 Core Data에 생성하고 속성 세팅
+    /// - Parameter video: 저장할 PixabayVideo 데이터
+    private func insert(_ video: PixabayVideo) {
+        let newVideo = Video(context: mainContext)
+        let newStamp = TimeStamp(context: mainContext)
+        newVideo.id = Int64(video.id)
+        newVideo.isLiked = false
+        newVideo.tags = insertTags(from: video.tags)
+        newVideo.timeStamp = newStamp
+        apply(video, to: newVideo)
+    }
+    
     /// 태그 문자열에서 Tag 객체들을 생성하거나 기존 것을 찾아 NSSet으로 반환
     /// - Parameter tagString: 콤마로 구분된 태그 문자열
     /// - Returns: NSSet 형태의 Tag 집합
@@ -187,21 +193,20 @@ final class CoreDataManager {
         return tagSet as NSSet
     }
 
-    /// 기존 Core Data 엔티티에 새 비디오 데이터로 속성 업데이트
+    /// 기존 Core Data 엔티티에 새 비디오 데이터로 속성 업데이트, 변경 사항이 없으면 업데이트하지 않음
     /// - Parameters:
     ///   - entity: 기존 Video 객체
     ///   - video: 새로운 PixabayVideo 데이터
-    /// 변경 사항이 없으면 업데이트하지 않음
     func update(entity: Video, with video: PixabayVideo) {
         guard entity.url != video.videos.medium.url ||
               entity.thumbnailURL != video.videos.medium.thumbnail ||
-              entity.isLiked != false || // since apply resets this
               entity.views != Int64(video.views) ||
               entity.comments != Int64(video.comments) ||
               entity.downloads != Int64(video.downloads) ||
               entity.user != video.user ||
               entity.userID != String(video.userID) ||
-              entity.userImageURL != video.userImageURL
+              entity.userImageURL != video.userImageURL ||
+              entity.timeStamp?.totalTime != Double(video.duration)
         else {
             return
         }
@@ -219,7 +224,7 @@ final class CoreDataManager {
         saveContext()
     }
 
-    /// 영상 시청 시작 시간과 전체 재생 시간을 저장
+    /// 영상 시청 시작 시간을 저장
     /// - Parameters:
     ///   - video: 대상 Video 객체
     ///   - totalTime: 영상 전체 시간
@@ -260,7 +265,6 @@ final class CoreDataManager {
     private func apply(_ video: PixabayVideo, to entity: Video) {
         entity.url = video.videos.medium.url
         entity.thumbnailURL = video.videos.medium.thumbnail
-        entity.isLiked = false
         entity.views = Int64(video.views)
         entity.comments = Int64(video.comments)
         entity.downloads = Int64(video.downloads)
@@ -269,6 +273,8 @@ final class CoreDataManager {
         entity.userImageURL = video.userImageURL
         entity.timeStamp?.totalTime = Double(video.duration)
     }
+    
+    // MARK: - Delete
     
     /// id를 통해 특정 Video 객체를 직접 삭제
     /// - Parameter id: 삭제할 Video의 고유 ID
@@ -284,9 +290,27 @@ final class CoreDataManager {
             print("❌ 삭제할 비디오 fetch 실패: \(error.localizedDescription)")
         }
     }
+    
+    /// Video가 없는 Tag 삭제
+    func deleteTags() {
+        let request: NSFetchRequest<Tag> = Tag.fetchRequest()
+        do {
+            let tags = try mainContext.fetch(request)
+            for tag in tags {
+                if let videos = tag.videos, videos.count == 0 {
+                    mainContext.delete(tag)
+                }
+            }
+            
+            saveContext()
+        } catch {
+            print("❌ 태그 삭제 실패: \(error.localizedDescription)")
+        }
+    }
 
-    // MARK: - Save
-     // mainContext에 변경사항이 있을 때 저장 수행
+    // MARK: - SaveContext
+    
+    /// mainContext에 변경사항이 있을 때 저장 수행
     @discardableResult
     func saveContext() -> Bool {
         guard mainContext.hasChanges else { return true }
