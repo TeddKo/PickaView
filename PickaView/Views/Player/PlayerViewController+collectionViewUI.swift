@@ -15,6 +15,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
     
     // 각 인덱스에 맞는 셀 구성: 0번은 가로 스크롤 태그 셀, 나머지는 비디오 셀
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let viewModel else { fatalError("viewModel nil") }
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: String(describing: HorizontalCollectionViewCell.self),
@@ -64,6 +65,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
                         viewForSupplementaryElementOfKind kind: String,
                         at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
+            guard let viewModel else { fatalError("viewModel nil") }
             let header = collectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
                 withReuseIdentifier: String(describing: PlayerViewHeaderView.self),
@@ -71,10 +73,10 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
             ) as! PlayerViewHeaderView
             
             header.onLikeButtonTapped = { [weak self] in
-                guard let self else {
+                guard let self, let viewModel = self.viewModel else {
                     fatalError("PlayerViewController has been deallocated before like button tapped.")
                 }
-                return self.viewModel.toggleLikeStatus()
+                return viewModel.toggleLikeStatus()
             }
             
             header.configure(views: viewModel.views, userImageURL: viewModel.userImageURL, user: viewModel.user, isLiked: viewModel.isLiked)
@@ -141,6 +143,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
     // 셀 선택 시 동작 처리
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 0번째는 태그 셀이므로 무시
+        guard let viewModel else { return }
         guard indexPath.item > 0 else { return }
 
         let selectedVideo = viewModel.videos[indexPath.item - 1]
@@ -154,7 +157,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
 
         // 현재 플레이어 화면을 닫은 뒤, 새 비디오로 다시 화면을 구성
         self.dismiss(animated: false) { [weak self] in
-            guard let self else { return }
+            guard let self, let viewModel = self.viewModel else { return }
             
             let storyboard = UIStoryboard(name: "Player", bundle: nil)
             guard let newPlayerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
@@ -162,7 +165,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
             }
             newPlayerVC.modalPresentationStyle = .fullScreen
             
-            let newPlayerVM = PlayerViewModel(video: video, coreDataManager: self.viewModel.getCoreDataManager())
+            let newPlayerVM = PlayerViewModel(video: video, coreDataManager: viewModel.getCoreDataManager())
             newPlayerVC.viewModel = newPlayerVM
 
             presentingVC.present(newPlayerVC, animated: false)

@@ -228,12 +228,12 @@ final class CoreDataManager {
     /// - Parameters:
     ///   - video: 대상 Video 객체
     ///   - totalTime: 영상 전체 시간
-    func updateStartTime(for video: Video) {
+    func updateStartTime(for video: Video, time: Date) {
         if video.timeStamp == nil {
             let stamp = TimeStamp(context: mainContext)
             video.timeStamp = stamp
         }
-        video.timeStamp?.startDate = Date()
+        video.timeStamp?.startDate = time
         
         saveContext()
     }
@@ -241,7 +241,7 @@ final class CoreDataManager {
     /// Tag Score 계산
     /// - Parameters:
     ///   - video: Tag 점수를 업데이트할 Video 객체
-    func updateTagScores(for video: Video, watchTime: Double) {
+    func updateTagScores(for video: Video, watchTime: TimeInterval) {
         guard let tags = video.tags as? Set<Tag> else { return }
         guard let timeStamp = video.timeStamp, timeStamp.totalTime > 0 else { return }
 
@@ -317,7 +317,6 @@ final class CoreDataManager {
 
         do {
             try mainContext.save()
-            print("✅ 저장 성공")
             return true
         } catch {
             print("❌ 저장 실패: \(error.localizedDescription)")

@@ -23,7 +23,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
 
-    var viewModel: PlayerViewModel!
+    var viewModel: PlayerViewModel?
 
     // MARK: - Player Properties
 
@@ -53,6 +53,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 전체화면 모드 여부
     var isFullscreenMode: Bool = false
+    
+    /// 전체화면에서 돌아오는 상태 추적 변수
+    var isReturningFromFullscreen: Bool = false
 
     /// 전체화면 dismiss 델리게이트
     weak var delegate: PlayerViewControllerDelegate?
@@ -158,9 +161,12 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 뷰가 로드될 때 초기 세팅
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
-        if let videoURL = viewModel.videoURL {
-            setupPlayer(with: videoURL.absoluteString)
+        
+        // 백그라운드 실행 금지
+        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .moviePlayback, options: [])
+        
+        if let viewModel, let videoURL = viewModel.videoURL {
+            setupPlayer(with: videoURL)
         } else {
             print("Invalid video URL")
         }
@@ -178,6 +184,14 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
             name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
+        
+        // 앱이 백그라운드로 진입할 때 알림 등록
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -191,11 +205,26 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateConstraintsForOrientation()
+        
+        if player?.currentItem?.status == .readyToPlay {
+            if isReturningFromFullscreen {
+                isReturningFromFullscreen = false
+            } else {
+                viewModel?.updateStartTime()
+                viewModel?.startWatching()
+            }
+        }
     }
 
     /// 뷰가 사라질 때 전체화면 delegate 호출
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+
+        delegate?.didDismissFullscreen()
+
+        if !isReturningFromFullscreen, isBeingDismissed || isMovingFromParent {
+            viewModel?.stopAndSaveWatching()
+        }
     }
 
     /// 뷰의 크기 변경시 AVPlayerLayer 리사이즈
@@ -245,15 +274,18 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 재생/일시정지 버튼 클릭 핸들러
     @objc func playPauseButtonTapped() {
         guard let player = self.player else { return }
-        animateButtonTap(playPauseButton) {
+        animateButtonTap(playPauseButton) { [weak self] in
+            guard let self = self else { return }
             self.isPlaying.toggle()
             self.setPlayPauseImage(isPlaying: self.isPlaying)
 
             if self.isPlaying {
                 player.play()
+                self.viewModel?.startWatching()
                 self.scheduleControlsHide()
             } else {
                 player.pause()
+                self.viewModel?.pauseWatching()
                 self.cancelControlsHide()
             }
         }
@@ -299,6 +331,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     @objc func playerDidFinishPlaying() {
         guard let player = self.player else { return }
         isPlaying = false
+        viewModel?.pauseWatching()
         let playImage = UIImage(systemName: "arrow.clockwise")
         playPauseButton.setImage(playImage, for: .normal)
         player.seek(to: .zero)
@@ -338,10 +371,11 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 전체화면 모드 진입
     func presentFullscreen() {
+        guard let viewModel else { return }
         guard !isFullscreenMode else { return }
         isFullscreenMode = true
 
-        let fullscreenVC = FullscreenPlayerViewController()
+        let fullscreenVC = FullscreenPlayerViewController(viewModel: viewModel)
         fullscreenVC.modalPresentationStyle = .fullScreen
         fullscreenVC.playerLayer = self.playerLayer
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
@@ -437,6 +471,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 자동회전 허용 여부
     override var shouldAutorotate: Bool { true }
+    
+    // MARK: - App Background Handling
+
+    @objc private func appDidEnterBackground() {
+        playPauseButtonTapped()
+        viewModel?.pauseWatching()
+    }
 
     // MARK: - Deinit
 
