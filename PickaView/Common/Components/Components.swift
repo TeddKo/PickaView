@@ -17,7 +17,7 @@ final class TagView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .preferredFont(forTextStyle: .footnote)
         label.adjustsFontForContentSizeCategory = true
-        label.textColor = .secondaryLabel
+        label.textColor = .label
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
         return label
     }()
@@ -40,8 +40,10 @@ final class TagView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = .systemGray5
-        layer.cornerRadius = 12
+        backgroundColor = .tagBackground
+        layer.borderWidth = 1.0
+        layer.borderColor = UIColor(named: "SubColor")?.cgColor
+        layer.cornerRadius = 17
         translatesAutoresizingMaskIntoConstraints = false
         
         addSubview(tagLabel)
@@ -49,10 +51,10 @@ final class TagView: UIView {
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            tagLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            tagLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            tagLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            tagLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10)
+            tagLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
+            tagLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
+            tagLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            tagLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12)
         ])
     }
 }
@@ -242,7 +244,8 @@ final class MediaDateContentView: UIView {
  상단의 액션 버튼과 하단의 태그 목록을 포함하는 뷰.
  */
 final class ActionableTagsView: UIView {
-
+    private var buttonAction: (() -> Void)?
+    
     private lazy var likeButton: UIButton = {
         let button = UIButton()
         
@@ -262,23 +265,46 @@ final class ActionableTagsView: UIView {
         super.init(frame: frame)
         setupUI()
         setupLayout()
+        likeButton.addTarget(
+            self,
+            action: #selector(handleButtonTap),
+            for: .touchUpInside
+        )
     }
     
     required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+        setupLayout()
+        likeButton.addTarget(
+            self,
+            action: #selector(handleButtonTap),
+            for: .touchUpInside
+        )
         fatalError("init(coder:) has not been implemented")
+        
     }
 
     /**
      태그 목록을 주어진 문자열 배열로 설정함.
      - Parameter tags: 표시할 태그 문자열의 배열.
      */
-    func configure(with tags: [String]) {
+    func configure(with tags: Set<Tag>) {
         tagsView.configure(with: tags)
     }
     
     private func setupUI() {
         addSubview(likeButton)
         addSubview(tagsView)
+    }
+    
+    @objc private func handleButtonTap() {
+        guard let buttonAction = buttonAction else { return }
+        buttonAction()
+    }
+    
+    func setButtonTapAction(action: @escaping () -> Void) {
+        self.buttonAction = action
     }
     
     private func setupLayout() {
@@ -335,11 +361,12 @@ final class HorizontalTagsView: UIView {
      기존에 표시되던 모든 태그를 제거하고 새로운 태그로 교체.
      - Parameter tags: 표시할 태그 문자열의 배열.
      */
-    func configure(with tags: [String]) {
+    func configure(with tags: Set<Tag>) {
         tagsHStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        for tagName in tags {
-            let tagView = TagView(title: tagName)
+        for tag in tags {
+            guard let name = tag.name else { continue }
+            let tagView = TagView(title: name)
             tagsHStack.addArrangedSubview(tagView)
         }
     }
@@ -405,7 +432,7 @@ final class MediaHistoryCellView: UIView {
         date: Date,
         thumbnailURL: String,
         videoLength: Double,
-        tags: [String]
+        tags: Set<Tag>
     ) {
         mediaDateContentView
             .configure(
@@ -432,9 +459,9 @@ final class MediaHistoryCellView: UIView {
             mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor),
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.6),
+            mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
             mediaDateContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
-            tagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4)
+            tagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }
     
@@ -472,7 +499,14 @@ final class LikeCellView: UIView {
     }
     
     required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupUI()
+        setupLayout()
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setButtonAction(action: @escaping () -> Void) {
+        actionabletagsView.setButtonTapAction(action: action)
     }
     
     /**
@@ -484,10 +518,9 @@ final class LikeCellView: UIView {
        - tags: 표시할 태그 문자열의 배열.
      */
     func configure(
-        date: Date,
         thumbnailURL: String,
         videoLength: Double,
-        tags: [String]
+        tags: Set<Tag>
     ) {
         mediaContentView
             .configure(
@@ -505,6 +538,10 @@ final class LikeCellView: UIView {
         addSubview(mainHStack)
     }
     
+    func setButtonTapAction(_ action: @escaping () -> Void) {
+        actionabletagsView.setButtonTapAction(action: action)
+    }
+    
     private func setupLayout() {
         translatesAutoresizingMaskIntoConstraints = false
         
@@ -515,6 +552,7 @@ final class LikeCellView: UIView {
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             mediaContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
+            mediaContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
             actionabletagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }
@@ -564,5 +602,79 @@ final class HorizontalTwoItemStackView : UIStackView {
     ) {
         self.addArrangedSubview(leftItem)
         self.addArrangedSubview(rightItem)
+    }
+}
+
+
+final class EmptyView: UIView {
+    
+    private let stackView: UIStackView = {
+        let stack = UIStackView()
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 16
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        return stack
+    }()
+    
+    private let imageView = UIImageView()
+    
+    private let titleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .largeTitle)
+        label.textColor = .label
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.font = .preferredFont(forTextStyle: .body)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        return label
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupLayout()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupLayout()
+    }
+    
+    private func setupLayout() {
+        self.addSubview(stackView)
+        
+        stackView.addArrangedSubview(imageView)
+        stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(descriptionLabel)
+        
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+        ])
+        
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.3),
+            imageView.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 0.3),
+        ])
+    }
+    
+    func configure(
+        systemName: String,
+        title: String,
+        description: String
+    ) {
+        imageView.image = UIImage(systemName: systemName)
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        imageView.tintColor = .main
+        titleLabel.text = title
+        descriptionLabel.text = description
     }
 }

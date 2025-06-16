@@ -26,21 +26,6 @@
             </objects>
             <point key="canvasLocation" x="1324.4274809160304" y="-209.1549295774648"/>
         </scene>
-        <!--My Page Histories View Controller-->
-        <scene sceneID="KuM-nR-668">
-            <objects>
-                <viewController id="bQj-vl-R59" customClass="MyPageHistoriesViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="a03-4Q-nkW">
-                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="fdj-rL-NRP"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fXP-bQ-bNo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2549" y="-209"/>
-        </scene>
         <!--MyPage-->
         <scene sceneID="eXe-1e-hZc">
             <objects>

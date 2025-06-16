@@ -9,19 +9,23 @@ import Foundation
 import CoreData
 
 enum FRCFactory {
-    static func makeVideoFRC(context: NSManagedObjectContext,
-                             predicate: NSPredicate? = nil,
-                             sortDescriptors: [NSSortDescriptor] = [NSSortDescriptor(key: "id", ascending: true)],
-                             cacheName: String? = nil,
-                             delegate: NSFetchedResultsControllerDelegate? = nil) -> NSFetchedResultsController<Video> {
+    static func makeVideoFRC(
+        context: NSManagedObjectContext,
+        predicate: NSPredicate? = nil,
+        sortDescriptors: [NSSortDescriptor] = [NSSortDescriptor(key: "id",ascending: true)],
+        cacheName: String? = nil,
+        delegate: NSFetchedResultsControllerDelegate? = nil
+    ) -> NSFetchedResultsController<Video> {
         let fetchRequest: NSFetchRequest<Video> = Video.fetchRequest()
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = sortDescriptors
         
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                             managedObjectContext: context,
-                                             sectionNameKeyPath: nil,
-                                             cacheName: cacheName)
+        let frc = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: cacheName
+        )
         
         frc.delegate = delegate
         

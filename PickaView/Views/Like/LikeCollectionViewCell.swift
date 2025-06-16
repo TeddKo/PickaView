@@ -30,14 +30,18 @@ class LikeCollectionViewCell: UICollectionViewCell {
         ])
     }
     
-    func configure(like: DummyLike) {
+    func configure(with video: Video) {
+        guard let timestamp = video.timeStamp, let tags = video.tags as? Set<Tag>, let thumbnailURL = video.thumbnailURL else { return }
         likeCellView
             .configure(
-                date: like.date,
-                thumbnailURL: like.thumbnailURL,
-                videoLength: like.videoLength,
-                tags: like.tags
+                thumbnailURL: thumbnailURL,
+                videoLength: timestamp.totalTime,
+                tags: tags
             )
+    }
+    
+    func setButtonAction(action: @escaping () -> Void) {
+        likeCellView.setButtonAction(action: action)
     }
     
     override func prepareForReuse() {
@@ -45,12 +49,4 @@ class LikeCollectionViewCell: UICollectionViewCell {
         
         likeCellView.resetContents()
     }
-}
-
-
-struct DummyLike {
-    let date: Date
-    let thumbnailURL: String
-    let videoLength: Double
-    let tags: [String]
 }
