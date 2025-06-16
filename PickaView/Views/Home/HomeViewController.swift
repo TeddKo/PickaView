@@ -69,13 +69,6 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let cell = collectionView.cellForItem(at: indexPath) {
-            performSegue(withIdentifier: "Player", sender: cell)
-        }
-    }
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
