@@ -196,7 +196,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 뷰가 사라질 때 전체화면 delegate 호출
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        delegate?.didDismissFullscreen()
     }
 
     /// 뷰의 크기 변경시 AVPlayerLayer 리사이즈
