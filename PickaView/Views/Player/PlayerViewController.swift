@@ -22,7 +22,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
-
+    @IBOutlet weak var rateTwoView: UIView!
+    
     var viewModel: PlayerViewModel!
 
     // MARK: - Player Properties
@@ -170,6 +171,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         dismissButton.alpha = 1.0
         setupGestures()
         addPlayerObservers()
+        
+        // rateTwoView를 playerLayer 위, controlsOverlayView 아래에 위치
+        videoContainerView.addSubview(rateTwoView)
+        videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
+
+        // Apply rounded corners to rateTwoLabel
+        rateTwoView.layer.cornerRadius = 8
 
         // 기기 방향 변화 알림 등록
         NotificationCenter.default.addObserver(

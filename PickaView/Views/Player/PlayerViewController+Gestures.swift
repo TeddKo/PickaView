@@ -77,8 +77,43 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
     /// 더블 탭: 왼쪽/오른쪽 10초 skip
     /// - Parameter recognizer: UITapGestureRecognizer
     @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+        
+        hideControls()
+        
         let location = recognizer.location(in: controlsOverlayView)
         let midX = controlsOverlayView.bounds.midX
+        
+        // 아이콘 생성
+        let iconName = location.x < midX ? "backward.fill" : "forward.fill"
+        let iconView = UIImageView(image: UIImage(systemName: iconName))
+        iconView.tintColor = .white
+        iconView.contentMode = .scaleAspectFit
+        iconView.alpha = 0.0
+        iconView.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+
+        // 중앙 위치 계산 (좌/우) - videoContainerView 기준
+        let containerBounds = videoContainerView.bounds
+        let centerY = containerBounds.midY
+        let centerX = location.x < midX ? containerBounds.width * 0.25 : containerBounds.width * 0.75
+        iconView.center = CGPoint(x: centerX, y: centerY)
+
+        videoContainerView.insertSubview(iconView, belowSubview: controlsOverlayView)
+
+        // 애니메이션 처리
+        UIView.animate(withDuration: 0.15, animations: {
+            iconView.alpha = 1.0
+            iconView.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { _ in
+            UIView.animate(withDuration: 0.3, delay: 0.2, options: [], animations: {
+                iconView.alpha = 0.0
+                iconView.transform = .identity
+            }, completion: { _ in
+                iconView.removeFromSuperview()
+            })
+        }
 
         if location.x < midX {
             seek(by: -10)
