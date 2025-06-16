@@ -38,6 +38,10 @@ class VideoCollectionViewCell: UICollectionViewCell {
         //유저 이미지 둥글게 처리
         userImage.layer.cornerRadius = userImage.frame.width / 2
         userImage.clipsToBounds = true
+
+        //영상길이 레이블 커스텀
+        durationLabel.layer.cornerRadius = 4
+        durationLabel.layer.masksToBounds = true
     }
     override func prepareForReuse() {
         super.prepareForReuse()

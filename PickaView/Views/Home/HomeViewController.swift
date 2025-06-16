@@ -27,6 +27,9 @@ class HomeViewController: UIViewController {
     //태그에 맞는 비디오 목록이 표시됐는지 bool 타입으로 확인
     var isTagSearchActive: Bool = false
 
+    //서치바에서 x	버튼 누르면 기존 비디오 배열을 보여준다
+    var originalVideoList: [Video] = []
+
     private var isLoadingNextPage = false
 
     // 테이블뷰의 가시성 업데이트
@@ -77,6 +80,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        setupPullToRefresh()
         searchBar.delegate = self
         isLoading = true
         collectionView.reloadData()
@@ -129,6 +133,33 @@ class HomeViewController: UIViewController {
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
         }, completion: nil)
+    }
+
+    private func setupPullToRefresh() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+
+    @objc private func refresh() {
+        Task {
+            guard let viewModel = viewModel else { return }
+
+            // Core Data에서 새로 로딩
+            viewModel.refreshVideos()
+
+            // 추천 점수로 정렬된 첫 페이지만 가져오기
+            let refreshedVideos = viewModel.getCurrentPageVideos()
+
+            // UI 업데이트
+            await MainActor.run {
+                self.videoList = refreshedVideos
+                self.originalVideoList = refreshedVideos  // 리프레시 시 기존비디오배열도 업데이트
+                self.collectionView.reloadData()
+                self.collectionView.refreshControl?.endRefreshing()
+            }
+        }
+        print("리프레쉬")
     }
 }
 
@@ -250,6 +281,8 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
+		//필터 적용 전에 원래 보이던 비디오 리스트 저장
+      
         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
         let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
 

@@ -37,7 +37,9 @@ final class HomeViewModel {
         }
 
     }
+
     
+
     func refreshVideos() {
         let allVideos = coreDataManager.fetch()
         self.allRecommendedVideos = VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
