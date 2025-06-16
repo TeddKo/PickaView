@@ -67,10 +67,8 @@ final class MediaContentView: UIView {
         image.translatesAutoresizingMaskIntoConstraints = false
         image.backgroundColor = .systemGray4
         image.contentMode = .scaleAspectFill
-        image.layer.cornerRadius = 12
         image.clipsToBounds = true
-        // `contentMode`가 중복 선언되어 있어 마지막 .scaleAspectFit이 적용됩니다. 의도한 설정이 맞는지 확인이 필요합니다.
-        image.contentMode = .scaleAspectFit
+        image.layer.cornerRadius = 12
         return image
     }()
     
@@ -516,9 +514,8 @@ final class LikeCellView: UIView {
             mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor),
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            mediaContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.6),
-            mediaContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
-            actionabletagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4)
+            mediaContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
+            actionabletagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }
     
