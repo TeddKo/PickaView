@@ -158,12 +158,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 뷰가 로드될 때 초기 세팅
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        
         if let videoURL = viewModel.videoURL {
             setupPlayer(with: videoURL.absoluteString)
         } else {
             print("Invalid video URL")
         }
+        
         setupUI()
         setPlayPauseImage(isPlaying: true)
         fullscreenButton.alpha = 1.0
@@ -185,6 +186,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(true, animated: false)
         tabBarController?.tabBar.isHidden = true
+        fullscreenButton.isHidden = false
+        dismissButton.isHidden = false
     }
 
     /// 뷰가 나타날 때 방향/레이아웃 갱신
@@ -209,6 +212,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(false, animated: false)
         tabBarController?.tabBar.isHidden = false
+        fullscreenButton.isHidden = true
+        dismissButton.isHidden = true
     }
 
     // MARK: - Player Controls
