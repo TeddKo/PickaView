@@ -23,7 +23,9 @@ class VideoCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.isSkeletonable = true       // 셀 자체에 추가
+        // 스켈레톤 뷰 설정
+        self.isSkeletonable = true
+        // contentView 설정
         contentView.isSkeletonable = true
 
         [thumnail, userImage, userNameLabel, viewsLabel, durationLabel].forEach {
