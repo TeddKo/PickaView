@@ -207,8 +207,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         updateConstraintsForOrientation()
         
         if player?.currentItem?.status == .readyToPlay {
-            print("readyToPlay")
-
             if isReturningFromFullscreen {
                 isReturningFromFullscreen = false
             } else {

@@ -111,6 +111,7 @@ final class PlayerViewModel {
         watchTimer?.invalidate()
         watchTimer = nil
         coreDataManager.updateTagScores(for: video, watchTime: watchedSeconds)
+        coreDataManager.saveHistory(on: Date(), duration: watchedSeconds)
         watchedSeconds = 0
     }
 }
