@@ -69,13 +69,6 @@ class HomeViewController: UIViewController {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let cell = collectionView.cellForItem(at: indexPath) {
-            performSegue(withIdentifier: "Player", sender: cell)
-        }
-    }
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
@@ -92,12 +85,20 @@ class HomeViewController: UIViewController {
         // 테이블뷰 초기 상태 숨기기
         updateTableViewVisibility(isVisible: false)
 
-        //비동기로 view모델에서 모든 태그 가져옴
+        // 비동기로 view모델에서 모든 태그 가져옴
         Task {
-            await viewModel?.loadAllTags()
-            await MainActor.run {
-                self.tableView.reloadData()
+            // 1. 비디오 + 태그 저장
+            await viewModel?.fetchAndSaveVideos()
 
+            // 2. 저장된 태그 로드
+            await viewModel?.loadAllTags()
+
+            // 3. UI에 반영
+            await MainActor.run {
+                self.tags = viewModel?.allTags ?? []
+                self.filteredTags = self.tags
+                self.tableView.reloadData()
+                print("로드된 태그 개수: \(self.tags.count)")
             }
         }
 
@@ -281,8 +282,9 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
-		//필터 적용 전에 원래 보이던 비디오 리스트 저장
-      
+        //필터 적용 전에 원래 보이던 비디오 리스트 저장
+        originalVideoList = videoList
+
         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
         let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
 
