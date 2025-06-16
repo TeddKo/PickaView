@@ -338,10 +338,11 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 전체화면 모드 진입
     func presentFullscreen() {
+        guard let viewModel else { return }
         guard !isFullscreenMode else { return }
         isFullscreenMode = true
 
-        let fullscreenVC = FullscreenPlayerViewController()
+        let fullscreenVC = FullscreenPlayerViewController(viewModel: viewModel)
         fullscreenVC.modalPresentationStyle = .fullScreen
         fullscreenVC.playerLayer = self.playerLayer
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
