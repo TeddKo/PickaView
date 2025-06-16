@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0EA2B32DF81B1E005AA031 /* DGCharts */; };
+		B565D31D2DFFD4C9008E1659 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = B565D31C2DFFD4C9008E1659 /* SkeletonView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B565D31D2DFFD4C9008E1659 /* SkeletonView in Frameworks */,
 				8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,6 +86,7 @@
 			name = PickaView;
 			packageProductDependencies = (
 				8D0EA2B32DF81B1E005AA031 /* DGCharts */,
+				B565D31C2DFFD4C9008E1659 /* SkeletonView */,
 			);
 			productName = PickaView;
 			productReference = 8D20CDCA2DF1728900D1D063 /* PickaView.app */;
@@ -115,6 +118,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */,
+				B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D20CDCB2DF1728900D1D063 /* Products */;
@@ -360,6 +364,14 @@
 				minimumVersion = 5.1.0;
 			};
 		};
+		B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -367,6 +379,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */;
 			productName = DGCharts;
+		};
+		B565D31C2DFFD4C9008E1659 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
