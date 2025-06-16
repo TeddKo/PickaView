@@ -8,16 +8,29 @@
 import Foundation
 
 final class PlayerViewModel {
+    
+    // MARK: - Properties
+    
     private let video: Video
     private let coreDataManager: CoreDataManager
+    
+    /// 사용자가 실제로 영상을 재생한 시간(초)을 누적해서 저장
+    /// 1초마다 증가하도록 타이머로 제어
+    private var watchedSeconds: TimeInterval = 0
+    private var watchTimer: Timer?
 
+    // MARK: - Init
+    
     init(video: Video, coreDataManager: CoreDataManager) {
         self.video = video
         self.coreDataManager = coreDataManager
     }
     
-    var videoURL: URL? {
-        URL(string: video.url ?? "")
+    // MARK: - Computed Properties (UI Binding)
+    
+    var videoURL: String? {
+        guard let urlString = video.url else { return nil }
+        return urlString
     }
 
     var thumbnailURL: URL? {
@@ -59,6 +72,8 @@ final class PlayerViewModel {
         return Array(filteredVideos.prefix(10))
     }
     
+    // MARK: - CoreData Update
+    
     func getCoreDataManager() -> CoreDataManager {
         return coreDataManager
     }
@@ -66,5 +81,36 @@ final class PlayerViewModel {
     func toggleLikeStatus() -> Bool {
         coreDataManager.updateIsLiked(for: video, isLiked: !video.isLiked)
         return video.isLiked
+    }
+    
+    func updateStartTime() {
+        let now = Date()
+        coreDataManager.updateStartTime(for: video, time: now)
+    }
+    
+    // MARK: - Watch Time Tracking
+    
+    func startWatching() {
+        startTimer()
+    }
+
+    func pauseWatching() {
+        watchTimer?.invalidate()
+        watchTimer = nil
+    }
+
+    private func startTimer() {
+        watchTimer?.invalidate()
+        watchTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            self.watchedSeconds += 1
+        }
+    }
+
+    func stopAndSaveWatching() {
+        watchTimer?.invalidate()
+        watchTimer = nil
+        coreDataManager.updateTagScores(for: video, watchTime: watchedSeconds)
+        watchedSeconds = 0
     }
 }
