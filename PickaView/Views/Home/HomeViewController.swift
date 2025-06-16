@@ -18,10 +18,8 @@ class HomeViewController: UIViewController {
 
     //가져온 비디오리스트를 저장하는 배열
     var videoList: [Video] = []
-
     //가져온 태그목록을 저장하는 배열
     var tags: [Tag] = []
-
     //필터링된 태그목록 저장하는 배열
     var filteredTags: [Tag] = []
     // 로딩 중인지 확인하는 bool 타입 변수
@@ -31,6 +29,7 @@ class HomeViewController: UIViewController {
 
     private var isLoadingNextPage = false
 
+    // 테이블뷰의 가시성 업데이트
     private func loadNextPageVideos() {
         guard !isLoadingNextPage else { return }  // 중복 호출 방지
         guard let viewModel = viewModel else { return }
@@ -53,7 +52,6 @@ class HomeViewController: UIViewController {
             }
         }
     }
-
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? VideoCollectionViewCell {
@@ -80,7 +78,6 @@ class HomeViewController: UIViewController {
         collectionView.dataSource = self
         collectionView.delegate = self
         searchBar.delegate = self
-        // 로딩 중이므로 스켈레톤 보여주기
         isLoading = true
         collectionView.reloadData()
         searchBar.searchTextField.delegate = self
@@ -148,15 +145,17 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
             fatalError("Failed to dequeue VideoCollectionViewCell")
         }
 
+        // 로딩 중일 때는 스켈레톤 뷰를 보여주고, 로딩이 끝나면 실제 데이터를 보여줌
         if isLoading {
             cell.configure(with: nil)
         } else {
+            // 비디오 데이터가 로딩된 경우 셀을 구성
             let video = videoList[indexPath.item]
             cell.configure(with: video)
         }
-
         return cell
     }
+
     // 셀 크기 설정
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
 
