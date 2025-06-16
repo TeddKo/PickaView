@@ -78,6 +78,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         collectionView.dataSource = self
         collectionView.delegate = self
+        setupPullToRefresh()
         searchBar.delegate = self
         searchBar.searchTextField.delegate = self
         searchBar.searchBarStyle = .minimal
@@ -127,6 +128,35 @@ class HomeViewController: UIViewController {
         coordinator.animate(alongsideTransition: { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
         }, completion: nil)
+    }
+
+    private func setupPullToRefresh() {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        collectionView.refreshControl = refreshControl
+    }
+
+    @objc private func refresh() {
+        Task {
+            guard let viewModel = viewModel else { return }
+
+            // 1. 네트워크에서 새 영상 받아서 Core Data에 저장
+            await viewModel.fetchAndSaveVideos()  // CoreData에 최신화
+
+            // 2. 그 다음 CoreData에서 가져와 추천 점수로 정렬
+            viewModel.refreshVideos()
+
+            // 3. 정렬된 결과 중 첫 페이지만 보여줌
+            let refreshedVideos = viewModel.getCurrentPageVideos()
+
+            // 4. UI 업데이트
+            await MainActor.run {
+                self.videoList = refreshedVideos
+                self.collectionView.reloadData()
+                self.collectionView.refreshControl?.endRefreshing()
+            }
+        }
+        print("리프레쉬")
     }
 }
 
