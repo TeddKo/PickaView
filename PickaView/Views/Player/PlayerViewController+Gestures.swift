@@ -58,6 +58,8 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         UIView.animate(withDuration: 0.3) {
             self.playbackControlsStack.alpha = alpha
             self.seekerStack.alpha = alpha
+            self.fullscreenButton.alpha = alpha
+            self.dismissButton.alpha = alpha
         }
 
         if areControlsVisible && isPlaying {

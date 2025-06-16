@@ -31,6 +31,8 @@ extension PlayerViewController {
         videoContainerView.addSubview(controlsOverlayView)
         controlsOverlayView.addSubview(playbackControlsStack)
         controlsOverlayView.addSubview(seekerStack)
+        controlsOverlayView.addSubview(fullscreenButton)
+        controlsOverlayView.addSubview(dismissButton)
 
         // 세로/가로 레이아웃 제약 정의
         portraitConstraints = [
@@ -59,7 +61,13 @@ extension PlayerViewController {
 
             seekerStack.leadingAnchor.constraint(equalTo: controlsOverlayView.leadingAnchor, constant: 16),
             seekerStack.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
-            seekerStack.bottomAnchor.constraint(equalTo: controlsOverlayView.bottomAnchor, constant: -10)
+            seekerStack.bottomAnchor.constraint(equalTo: controlsOverlayView.bottomAnchor, constant: -16),
+
+            fullscreenButton.bottomAnchor.constraint(equalTo: seekerStack.topAnchor),
+            fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
+
+            dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
+            dismissButton.leadingAnchor.constraint(equalTo: controlsOverlayView.leadingAnchor, constant: 16)
         ])
 
         // 버튼 고정 크기 설정
@@ -69,6 +77,10 @@ extension PlayerViewController {
         backwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         forwardButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         forwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        fullscreenButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        fullscreenButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        dismissButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        dismissButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
 
         updateConstraintsForOrientation()
     }
@@ -145,5 +157,22 @@ extension PlayerViewController {
                 completion()
             })
         }
+    }
+}
+
+extension UIImage {
+    /// 원형 이미지 생성
+    static func circle(diameter: CGFloat, color: UIColor) -> UIImage {
+        let rect = CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter))
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
+
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(color.cgColor)
+        context?.fillEllipse(in: rect)
+
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return image ?? UIImage()
     }
 }

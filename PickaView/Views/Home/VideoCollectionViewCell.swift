@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SkeletonView
 
 class VideoCollectionViewCell: UICollectionViewCell {
 
@@ -22,6 +23,17 @@ class VideoCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        // 스켈레톤 뷰 설정
+        self.isSkeletonable = true
+        // contentView 설정
+        contentView.isSkeletonable = true
+
+        [thumnail, userImage, userNameLabel, viewsLabel, durationLabel].forEach {
+            $0?.isSkeletonable = true
+            contentView.backgroundColor = .clear
+        }
+        contentView.isSkeletonable = true
+        contentView.backgroundColor = .clear
 
         //유저 이미지 둥글게 처리
         userImage.layer.cornerRadius = userImage.frame.width / 2
@@ -33,6 +45,8 @@ class VideoCollectionViewCell: UICollectionViewCell {
     }
     override func prepareForReuse() {
         super.prepareForReuse()
+        // 재사용 시 스켈레톤 제거
+        contentView.hideSkeleton()
 
         // 이전 내용 초기화 (재사용 오류 방지)
         thumnail.image = nil
@@ -42,7 +56,40 @@ class VideoCollectionViewCell: UICollectionViewCell {
         durationLabel.text = nil
     }
 
-    func configure(with video: Video) {
+    // MARK: - Configuration , 셀을 비디오 데이터로 구성
+    func configure(with video: Video?) {
+        let isSkeleton = (video == nil)
+
+        contentView.isUserInteractionEnabled = !isSkeleton
+
+        if isSkeleton {
+            showSkeleton()
+        } else {
+            hideSkeleton()
+            // 비디오 데이터가 있을 때만 바인딩
+            bindData(video!)
+        }
+    }
+
+    // Skeleton 뷰 표시
+    private func showSkeleton() {
+        contentView.showAnimatedGradientSkeleton()
+        contentView.layoutIfNeeded()
+
+        userNameLabel.text = nil
+        viewsLabel.text = nil
+        durationLabel.text = nil
+        userImage.image = nil
+        thumnail.image = nil
+    }
+
+    // Skeleton 뷰 숨기기
+    private func hideSkeleton() {
+        contentView.hideSkeleton()
+    }
+
+    //  MARK: - Data Binding , 셀에 비디오 데이터를 바인딩
+    private func bindData(_ video: Video) {
         userNameLabel.text = video.user
         viewsLabel.text = "Views: \(video.views)"
 
@@ -65,6 +112,6 @@ class VideoCollectionViewCell: UICollectionViewCell {
         }
 
         thumnail.contentMode = .scaleAspectFill
-        thumnail.clipsToBounds = true // 이미지 넘침 방지
+        thumnail.clipsToBounds = true
     }
 }
