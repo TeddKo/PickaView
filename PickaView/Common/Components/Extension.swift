@@ -36,7 +36,6 @@ extension UIImageView {
     self.image = nil
     // 스켈레톤 뷰를 활성화하여 로딩 중임을 표시
     self.isSkeletonable = true
-    self.showAnimatedGradientSkeleton()
 
     guard let url = URL(string: urlString) else {
         print("Error: Invalid URL string.")
