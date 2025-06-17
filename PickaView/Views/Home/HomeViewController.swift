@@ -161,7 +161,7 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
                 let refreshedVideos = viewModel.getCurrentPageVideos()
                 self.videoList = refreshedVideos
                 self.originalVideoList = refreshedVideos
-
+                //  performWithoutAnimation 사용하여 애니메이션 없이 컬렉션 뷰 업데이트
                 UIView.performWithoutAnimation {
                     self.collectionView.reloadSections(IndexSet(integer: 0))
                 }
