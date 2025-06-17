@@ -46,6 +46,11 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
             swipeUp.direction = .up
             controlsOverlayView.addGestureRecognizer(swipeUp)
         }
+        
+        // 길게 누르면 2배속
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress(_:)))
+        longPress.delegate = self
+        controlsOverlayView.addGestureRecognizer(longPress)
     }
 
     // MARK: - 제스처 핸들러
@@ -72,13 +77,67 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
     /// 더블 탭: 왼쪽/오른쪽 10초 skip
     /// - Parameter recognizer: UITapGestureRecognizer
     @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+        
+        hideControls()
+        
         let location = recognizer.location(in: controlsOverlayView)
         let midX = controlsOverlayView.bounds.midX
+        
+        // 아이콘 생성
+        let iconName = location.x < midX ? "backward.fill" : "forward.fill"
+        let iconView = UIImageView(image: UIImage(systemName: iconName))
+        iconView.tintColor = .white
+        iconView.contentMode = .scaleAspectFit
+        iconView.alpha = 0.0
+        iconView.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+
+        // 중앙 위치 계산 (좌/우) - videoContainerView 기준
+        let containerBounds = videoContainerView.bounds
+        let centerY = containerBounds.midY
+        let centerX = location.x < midX ? containerBounds.width * 0.25 : containerBounds.width * 0.75
+        iconView.center = CGPoint(x: centerX, y: centerY)
+
+        videoContainerView.insertSubview(iconView, belowSubview: controlsOverlayView)
+
+        // 애니메이션 처리
+        UIView.animate(withDuration: 0.15, animations: {
+            iconView.alpha = 1.0
+            iconView.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+        }) { _ in
+            UIView.animate(withDuration: 0.3, delay: 0.2, options: [], animations: {
+                iconView.alpha = 0.0
+                iconView.transform = .identity
+            }, completion: { _ in
+                iconView.removeFromSuperview()
+            })
+        }
 
         if location.x < midX {
             seek(by: -10)
         } else {
             seek(by: 10)
+        }
+    }
+
+    /// 길게 누르면 2배속, 떼면 1배속 (재생 중일 때만 적용)
+    @objc func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard let player, player.rate != 0 else { return } // 재생 중일 때만 처리
+
+        switch gesture.state {
+        case .began:
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.prepare()
+            generator.impactOccurred()
+            player.rate = 2.0
+            rateTwoView.isHidden = false
+        case .ended, .cancelled, .failed:
+            player.rate = 1.0
+            rateTwoView.isHidden = true
+        default:
+            break
         }
     }
 

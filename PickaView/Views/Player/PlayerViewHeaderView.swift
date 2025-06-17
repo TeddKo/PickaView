@@ -19,7 +19,9 @@ class PlayerViewHeaderView: UICollectionReusableView {
     var onLikeButtonTapped: (() -> Bool)?
 
     @IBAction func like(_ sender: Any) {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
 
         let isCurrentlyLiked = onLikeButtonTapped?()
         likeButton.tintColor = isCurrentlyLiked ?? false ? .main : .systemGray4
