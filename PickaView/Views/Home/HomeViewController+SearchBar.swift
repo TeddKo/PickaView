@@ -58,7 +58,7 @@ extension HomeViewController: UISearchBarDelegate {
 
     //검색바 클릭 됐을때 태그와 맞는 비디오 가져옴
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+    
         searchBar.resignFirstResponder()
 
         guard let keyword = searchBar.text, !keyword.isEmpty else {
@@ -83,7 +83,7 @@ extension HomeViewController: UISearchBarDelegate {
     }
 
     //태그가 필터링 되었고 필터된 비디오목록이 있을때만 동작
-    func textFieldShouldClear(_ textField: UITextField) -> Bool
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
 
         if isTagSearchActive {
 
