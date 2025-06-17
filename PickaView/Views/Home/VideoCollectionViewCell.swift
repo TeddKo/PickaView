@@ -103,12 +103,14 @@ class VideoCollectionViewCell: UICollectionViewCell {
             userImage.loadImage(from: userImageURL)
         } else {
             userImage.image = UIImage(systemName: "person.circle")
+            userImage.tintColor = UIColor(named: "MainColor")
         }
 
         if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
             thumnail.loadImage(from: thumbnailURL)
         } else {
             thumnail.image = UIImage(systemName: "person.circle")
+            thumnail.tintColor = UIColor(named: "MainColor")
         }
 
         thumnail.contentMode = .scaleAspectFill
