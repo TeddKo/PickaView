@@ -82,6 +82,7 @@ final class TwoLabelRowView: UIView {
 }
 
 final class HorizontalLabelButtonView: UIView {
+    private var buttonAction: (() -> Void)?
     
     private let horizontalTwoItemStackView: HorizontalTwoItemStackView = {
        let stackView = HorizontalTwoItemStackView()
@@ -118,11 +119,13 @@ final class HorizontalLabelButtonView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupLayout()
+        button.addTarget(self, action: #selector(handleButtonTap), for: .touchUpInside)
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setupLayout()
+        button.addTarget(self, action: #selector(handleButtonTap), for: .touchUpInside)
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -139,4 +142,13 @@ final class HorizontalLabelButtonView: UIView {
         horizontalTwoItemStackView.addArrangedSubview(titleLabel)
         horizontalTwoItemStackView.addArrangedSubview(button)
     }
+    
+    @objc private func handleButtonTap() {
+        guard let buttonAction else { return }
+        buttonAction()
+    }
+    
+    func setButtonTapAction(action: @escaping () -> Void) {
+            self.buttonAction = action
+        }
 }

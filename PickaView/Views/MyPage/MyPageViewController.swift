@@ -21,9 +21,6 @@ class MyPageViewController: UIViewController {
 
     // MARK: - Properties
     
-    /// 컬렉션뷰에 표시할 색상 데이터 소스.
-    private var colors: [UIColor] = []
-    
     /// 화면 전체 스크롤을 담당하는 `UIScrollView`.
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -40,6 +37,32 @@ class MyPageViewController: UIViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         return stackView
+    }()
+    
+    private let layout: UICollectionViewFlowLayout = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 15
+        return layout
+    }()
+    
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.register(MyPageWatchedVideoCollectionViewCell.self, forCellWithReuseIdentifier: MyPageWatchedVideoCollectionViewCell.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.backgroundColor = .clear
+        return collectionView
+    }()
+    
+    private let emptyHistoryLabel: UILabel = {
+       let label = UILabel()
+        label.text = "history data is empty"
+        label.textColor = .label
+        label.textAlignment = .center
+        return label
     }()
     
     private let chartView: ChartView = ChartView()
@@ -62,39 +85,65 @@ class MyPageViewController: UIViewController {
         super.viewDidLoad()
         let coreDataManager = CoreDataManager()
         
-        addDummyHistoryData(using: coreDataManager)
-        
         viewModel = MyPageViewModel(coreDataManager: coreDataManager)
         
         setupLayout()
         
-        addColors()
         addViewsToStackView()
         
         bindViewModel()
         viewModel?.fetchWeakHistory()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let viewModel = viewModel else { return }
+        
+        viewModel.refreshFRC()
+        viewModel.fetchWeakHistory()
+    }
+    
     private func bindViewModel() {
-        viewModel?.$weakHistory
+        guard let viewModel = viewModel else { return }
+        
+        viewModel.$weakHistory
             .receive(on: DispatchQueue.main)
+            .removeDuplicates()
             .sink { [weak self] histories in
                 self?.chartView.setData(with: histories)
             }
             .store(in: &cancellables)
         
-        viewModel?.$todayWatchTimeString
+        viewModel.$todayWatchTimeString
             .receive(on: DispatchQueue.main)
+            .removeDuplicates()
             .sink { [weak self] todayWatchTimeString in
                 print("todayWatchTimeString is \(todayWatchTimeString)")
                 self?.todayLabelView.configure(leftText: "Today", rightText: todayWatchTimeString)
             }
             .store(in: &cancellables)
         
-        viewModel?.$weakWatchTimeString
+        viewModel.$weakWatchTimeString
+            .receive(on: DispatchQueue.main)
+            .removeDuplicates()
             .sink { [weak self] weakWatchTimeString in
                 print("weakWatchTimeString is \(weakWatchTimeString)")
                 self?.weakLabelVeiw.configure(leftText: "last 7 days", rightText: weakWatchTimeString)
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$watchedVideos
+            .receive(on: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] videos in
+                guard let self = self else { return }
+                print("current watched videos is \(videos)")
+                if videos.isEmpty {
+                    self.collectionView.backgroundView = self.emptyHistoryLabel
+                } else {
+                    self.collectionView.backgroundView = nil
+                }
+                self.collectionView.reloadData()
             }
             .store(in: &cancellables)
     }
@@ -112,13 +161,6 @@ class MyPageViewController: UIViewController {
     
     // MARK: - UI Configuration
     
-    /// `colors` 배열에 50개의 무작위 `UIColor` 인스턴스를 생성하여 추가함.
-    private func addColors() {
-        for _ in 0..<50 {
-            colors.append(generateRandomColor())
-        }
-    }
-    
     /// `mainVerticalStackView`에 화면을 구성하는 모든 UI 컴포넌트를 순서대로 추가.
     private func addViewsToStackView() {
         addSegmentedController()
@@ -127,29 +169,10 @@ class MyPageViewController: UIViewController {
         addFullWidthCollectionView()
     }
     
-    /**
-     무작위 RGB 값을 가진 `UIColor` 객체를 생성하여 반환.
-     - Returns: 생성된 `UIColor` 객체.
-     **/
-    private func generateRandomColor() -> UIColor {
-        return UIColor(red: .random(in: 0...1), green: .random(in: 0...1), blue: .random(in: 0...1), alpha: 1.0)
-    }
-    
     /// 화면 설정(테마) 관련 UI 컴포넌트를 구성하고 스택뷰에 추가.
     private func addSegmentedController() {
         colorModeSegment.selectedSegmentIndex = ThemeManager.shared.currentThemeIndex
         mainVerticalStackView.addArrangedSubview(colorModeSegment)
-    }
-    
-    private func addDummyHistoryData(using coreDataManager: CoreDataManager) {
-        let calendar = Calendar.current
-        for i in 0..<7 {
-            guard let date = calendar.date(byAdding: .day, value: -i, to: Date()) else { continue }
-            // 0분 ~ 180분 사이의 임의의 시청 시간(초 단위) 생성
-            let randomDurationInSeconds = Double.random(in: 0...180) * 60
-            coreDataManager.saveHistory(on: date, duration: randomDurationInSeconds)
-        }
-        print("✅ 7일간의 더미 시청 기록을 추가했습니다.")
     }
     
     /// 시청 시간 차트 UI를 구성하고 스택뷰에 추가.
@@ -202,26 +225,21 @@ class MyPageViewController: UIViewController {
         
         let horizontaLabelButtonView = HorizontalLabelButtonView()
         
-        let layout: UICollectionViewFlowLayout = {
-            let layout = UICollectionViewFlowLayout()
-            layout.scrollDirection = .horizontal
-            layout.minimumLineSpacing = 15
-            return layout
-        }()
         
-        let collectionView: UICollectionView = {
-            let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-            collectionView.translatesAutoresizingMaskIntoConstraints = false
-            collectionView.showsHorizontalScrollIndicator = false
-            collectionView.register(RandomColorCollectionViewCell.self, forCellWithReuseIdentifier: RandomColorCollectionViewCell.identifier)
-            collectionView.dataSource = self
-            collectionView.delegate = self
-            collectionView.backgroundColor = .clear
-            return collectionView
-        }()
         
         stack.addArrangedSubview(horizontaLabelButtonView)
         stack.addArrangedSubview(collectionView)
+        
+        horizontaLabelButtonView.setButtonTapAction { [weak self] in
+            let storyboard = UIStoryboard(name: "MyPageHistories", bundle: nil)
+           
+            guard let self = self, let watchedVideos = self.viewModel?.watchedVideos, let historiesVC = storyboard.instantiateViewController(withIdentifier: "MyPageHistoriesViewController") as? MyPageHistoriesViewController else { return }
+            
+            historiesVC.watchedVideos = watchedVideos
+            historiesVC.coreDataManager = self.viewModel?.getCoreDataManager()
+            
+            self.navigationController?.show(historiesVC, sender: self)
+        }
         
         mainVerticalStackView.addArrangedSubview(stack)
         
@@ -286,11 +304,15 @@ extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSo
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
     ) {
-        let historiesViewController = MyPageHistoriesViewController()
+        guard let selectedVideo = viewModel?.watchedVideos[indexPath.item] else { return }
+        guard let viewModel = viewModel else { return }
         
-        historiesViewController.selectedIndexPath = indexPath
+        let storyboard = UIStoryboard(name: "Player", bundle: nil)
+        guard let playerVC = storyboard.instantiateViewController(withIdentifier: "PlayerViewController") as? PlayerViewController else { return }
         
-        self.navigationController?.pushViewController(historiesViewController, animated: true)
+        playerVC.viewModel = PlayerViewModel(video: selectedVideo, coreDataManager: viewModel.getCoreDataManager())
+        playerVC.modalPresentationStyle = .fullScreen
+        present(playerVC, animated: true, completion: nil)
     }
     
     /// 섹션에 표시할 아이템의 총 개수를 반환.
@@ -298,7 +320,7 @@ extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSo
         _ collectionView: UICollectionView,
         numberOfItemsInSection section: Int
     ) -> Int {
-        return colors.count
+        return viewModel?.watchedVideos.count ?? 0
     }
     
     /// 특정 `indexPath`에 해당하는 셀을 생성하고 구성하여 반환.
@@ -307,13 +329,15 @@ extension MyPageViewController: UICollectionViewDelegate, UICollectionViewDataSo
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: RandomColorCollectionViewCell.identifier,
+            withReuseIdentifier: MyPageWatchedVideoCollectionViewCell.identifier,
             for: indexPath
-        ) as? RandomColorCollectionViewCell else {
+        ) as? MyPageWatchedVideoCollectionViewCell else {
             return UICollectionViewCell()
         }
         
-        cell.configure(with: colors[indexPath.item])
+        if let video = viewModel?.watchedVideos[indexPath.item] {
+            cell.configure(with: video)
+        }
         return cell
     }
 }

@@ -8,76 +8,138 @@
 import UIKit
 
 class MyPageHistoriesViewController: UIViewController {
+    @IBOutlet weak var historiesColletionView: UICollectionView!
     
-    var selectedIndexPath: IndexPath?
-    
-    /// 화면 전체 스크롤을 담당하는 `UIScrollView`.
-    private let scrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        return scrollView
-    }()
-    
-    /// 모든 UI 컴포넌트를 수직으로 정렬하는 메인 `UIStackView`.
-    private let mainVerticalStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.spacing = 36
-        stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
-        return stackView
-    }()
+    var coreDataManager: CoreDataManager?
+    var watchedVideos: [Video] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        setupLayout()
-        addViewsToStackView()
+        emptyView()
     }
     
-    private func addViewsToStackView() {
-        addMedialView()
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard isViewLoaded else { return }
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            guard let self else { return }
+            self.historiesColletionView.collectionViewLayout.invalidateLayout()
+        }
     }
     
-    /// 기본 UI 컴포넌트(스크롤뷰, 스택뷰)의 제약조건을 설정.
-    private func setupLayout() {
-        view.addSubview(scrollView)
-        scrollView.addSubview(mainVerticalStackView)
-        
-        NSLayoutConstraint.activate([
-            // 스크롤뷰를 safeArea에 맞춤.
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            // 메인 스택뷰를 스크롤뷰의 콘텐츠 영역에 맞춤.
-            mainVerticalStackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
-            mainVerticalStackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
-            mainVerticalStackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
-            mainVerticalStackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
-            
-            // 스택뷰의 너비를 스크롤뷰의 프레임 너비와 일치시켜 수직 스크롤만 가능하도록 제한.
-            mainVerticalStackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor)
-        ])
+    private func emptyView() {
+        if watchedVideos.isEmpty {
+            let emptyView = EmptyView()
+            emptyView
+                .configure(
+                    systemName: "video.slash",
+                    title: "No watch history yet",
+                    description: "Tap a video\n to start building your history"
+                )
+            self.historiesColletionView.backgroundView = emptyView
+        } else {
+            self.historiesColletionView.backgroundView = nil
+        }
+        self.historiesColletionView.reloadData()
+    }
+}
+
+extension MyPageHistoriesViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return watchedVideos.count
     }
     
-    private func addMedialView() {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "HistoriesCollectionViewCell",
+            for: indexPath
+        ) as? MyPageHistoriesCollectionViewCell else {
+            return UICollectionViewCell()
+        }
         
-        let mediaCell = MediaHistoryCellView()
+        if !watchedVideos.isEmpty {
+            let video = watchedVideos[indexPath.item]
+            cell.configure(width: video)
+        }
+        return cell
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
         
-        mediaCell.configure(
-            date: .now,
-            thumbnailURL: "https://picsum.photos/300/200",
-            videoLength: 500,
-            tags: ["테스트", "테스트", "테스트"]
+        // 다른 델리게이트 메서드로부터 여백과 간격 값을 가져옴
+        let insets = self.collectionView(
+            collectionView,
+            layout: collectionViewLayout,
+            insetForSectionAt: indexPath.section
+        )
+        let interitemSpacing = self.collectionView(
+            collectionView,
+            layout: collectionViewLayout,
+            minimumInteritemSpacingForSectionAt: indexPath.section
         )
         
-        mediaCell
-            .wrappedPaddingContainer(
-                stackView: mainVerticalStackView,
-                horizontalPadding: 20
-            )
+        let isPad = traitCollection.userInterfaceIdiom == .pad
+        let isPortrait = view.bounds.width < view.bounds.height
+        
+        // 한 줄에 표시할 아이템 개수 결정
+        let itemsPerRow: CGFloat = isPad ? (isPortrait ? 2 : 3) : (isPortrait ? 1 : 2)
+        
+        // 여백과 아이템 간 간격을 모두 합산하여 수평 방향의 총 여백을 계산
+        let totalHorizontalSpacing = insets.left + insets.right + (interitemSpacing * (itemsPerRow - 1))
+        
+        // 컬렉션뷰의 전체 너비에서 총 수평 여백을 뺀 후, 아이템 개수로 나누어 각 아이템의 너비를 계산
+        let itemWidth = (collectionView.bounds.width - totalHorizontalSpacing) / itemsPerRow
+        let itemHeight = itemWidth * 0.4
+        
+        return CGSize(width: itemWidth, height: itemHeight)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        return .init(horizontal: 16)
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        let isPhonePortrait = traitCollection.userInterfaceIdiom == .phone && view.bounds.width < view.bounds.height
+        // 아이폰 세로 모드에서는 간격 없음, 그 외에는 16의 간격을 줌
+        return isPhonePortrait ? 0 : 16
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
+        return 24
+    }
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        didSelectItemAt indexPath: IndexPath
+    ) {
+        guard let coreDataManager = self.coreDataManager, watchedVideos.indices.contains(indexPath.item) else { return }
+        let selectedVideo = watchedVideos[indexPath.item]
+        
+        let storyboard = UIStoryboard(name: "Player", bundle: nil)
+        guard let playerVC = storyboard.instantiateViewController(withIdentifier: "PlayerViewController") as? PlayerViewController else { return }
+        
+        playerVC.viewModel = PlayerViewModel(video: selectedVideo, coreDataManager: coreDataManager)
+        playerVC.modalPresentationStyle = .fullScreen
+        present(playerVC, animated: true, completion: nil)
     }
 }
