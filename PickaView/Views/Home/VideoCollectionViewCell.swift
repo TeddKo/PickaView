@@ -97,7 +97,7 @@ class VideoCollectionViewCell: UICollectionViewCell {
     //  MARK: - Data Binding , 셀에 비디오 데이터를 바인딩
     private func bindData(_ video: Video) {
         userNameLabel.text = video.user
-        viewsLabel.text = "Views: \(video.views)"
+        viewsLabel.text = video.views.formattedViews()
 
         if let durationSeconds = video.timeStamp?.totalTime {
             durationLabel.text = Int(durationSeconds).toDurationString()
@@ -123,3 +123,5 @@ class VideoCollectionViewCell: UICollectionViewCell {
         thumnail.clipsToBounds = true
     }
 }
+
+
