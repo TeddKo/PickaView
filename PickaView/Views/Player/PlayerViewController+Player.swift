@@ -94,6 +94,17 @@ extension PlayerViewController {
         let newTime = CMTimeGetSeconds(currentTime) + seconds
         let time = CMTime(value: Int64(newTime), timescale: 1)
         player.seek(to: time)
+        
+        viewModel?.pauseWatching()
+        
+        Task { [weak self] in
+            guard let self = self else { return }
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            if self.isPlaying {
+                self.viewModel?.startWatching()
+            }
+        }
+        
         resetControlsHideTimer()
     }
 
