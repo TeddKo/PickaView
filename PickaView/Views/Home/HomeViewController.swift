@@ -143,6 +143,7 @@ class HomeViewController: UIViewController {
     }
 
     @objc private func refresh() {
+        
         Task {
             guard let viewModel = viewModel else { return }
 
@@ -158,6 +159,11 @@ class HomeViewController: UIViewController {
                 self.originalVideoList = refreshedVideos  // 리프레시 시 기존비디오배열도 업데이트
                 self.collectionView.reloadData()
                 self.collectionView.refreshControl?.endRefreshing()
+
+                // 햅틱
+                let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+                feedbackGenerator.prepare()
+                feedbackGenerator.impactOccurred()
             }
         }
         print("리프레쉬")
@@ -294,6 +300,11 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
         // 3. 비디오 리스트가 바뀌었으니 컬렉션뷰를 새로고침해서 화면에 반영
         collectionView.reloadData()
 
+        collectionView.setContentOffset(.zero, animated: false) //스크롤 최상단으로 이동
+
+        isTagSearchActive = true
+        collectionView.bounces = false
+
         // 4. 검색바에 #과 태그 이름을 붙여서 보여줌
         searchBar.text = "#\(tagName)"
 
@@ -312,6 +323,11 @@ extension HomeViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         // 컬렉션뷰인 경우에만 처리
         guard scrollView == collectionView else { return }
+
+        //태그된 상태 감지 하면 페이징 금지
+        if isTagSearchActive {
+            return
+        }
 
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height

@@ -89,11 +89,18 @@ extension HomeViewController: UISearchBarDelegate {
         print("isTagSearchActive:", isTagSearchActive)
 
         if isTagSearchActive {
+
             // 원래 비디오 목록 복원
             videoList = originalVideoList
 
             collectionView.reloadData()
+
+            collectionView.setContentOffset(.zero, animated: false)
+
+            collectionView.bounces = true
+
             updateTableViewVisibility(isVisible: false)
+
             isTagSearchActive = false
         }
 
