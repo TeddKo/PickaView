@@ -7,38 +7,61 @@
 
 import UIKit
 
-class TabBarViewController: UITabBarController {
+// 스크롤 최상단 이동을 위한 프로토콜 정의
+protocol ScrollToTopCapable {
+    func scrollToTop()
+}
+
+class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     private let viewModel = TabBarViewModel()
+    private var lastSelectedIndex: Int = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTabBarAppearance()
+        // UITabBarController가 탭 선택 이벤트가 발생했을 때 didSelect를 호출
+        delegate = self
         ThemeManager.shared.applyTheme()
+        setupTabBarAppearance()
         viewControllers = viewModel.makeTabViewControllers()
     }
 
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-
         // 여러 번 호출하지 않도록 변수화 하여 한 번만 호출 후 캐싱 처리
         let mainColor = UIColor(named: "MainColor") ?? .systemBlue
         let unselectedColor = UIColor.gray
 
-        // 선택된 아이템 스타일
-        let selectedAppearance = appearance.stackedLayoutAppearance.selected
-        selectedAppearance.iconColor = mainColor
-        selectedAppearance.titleTextAttributes = [.foregroundColor: mainColor]
+        let selected = appearance.stackedLayoutAppearance.selected
+        selected.iconColor = mainColor
+        selected.titleTextAttributes = [.foregroundColor: mainColor]
 
-        // 선택되지 않은 아이템 스타일
-        let normalAppearance = appearance.stackedLayoutAppearance.normal
-        normalAppearance.iconColor = unselectedColor
-        normalAppearance.titleTextAttributes = [.foregroundColor: unselectedColor]
+        let normal = appearance.stackedLayoutAppearance.normal
+        normal.iconColor = unselectedColor
+        normal.titleTextAttributes = [.foregroundColor: unselectedColor]
 
-        // iOS 15 이상 대응 -> 스크롤 엣지 설정
         tabBar.standardAppearance = appearance
+        // iOS 15 이상 대응 -> 스크롤 엣지 설정
         if #available(iOS 15.0, *) {
             tabBar.scrollEdgeAppearance = appearance
         }
+    }
+    // UITabBarControllerDelegate 메서드 추가
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        guard let index = tabBarController.viewControllers?.firstIndex(of: viewController) else { return }
+        // 선택된 인덱스가 마지막으로 선택된 인덱스와 같을 때만 스크롤 최상단으로 이동
+        if index == lastSelectedIndex {
+            switch viewController {
+            case let nav as UINavigationController:
+                if let topVC = nav.topViewController as? ScrollToTopCapable {
+                    topVC.scrollToTop()
+                }
+            case let vc as ScrollToTopCapable:
+                vc.scrollToTop()
+            default:
+                break
+            }
+        }
+        lastSelectedIndex = index
     }
 }
