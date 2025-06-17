@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, ScrollToTopCapable {
 
     var viewModel: HomeViewModel?
 
@@ -15,6 +15,13 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
+    
+    // 탭 바에서 스크롤 최상단으로 이동하는 메서드 (ScrollToTopCapable 프로토콜 채택)
+    func scrollToTop() {
+        guard let collectionView = self.collectionView else { return }
+        let topOffset = CGPoint(x: 0, y: -collectionView.adjustedContentInset.top)
+        collectionView.setContentOffset(topOffset, animated: true)
+    }
 
     //가져온 비디오리스트를 저장하는 배열
     var videoList: [Video] = []
@@ -143,7 +150,7 @@ class HomeViewController: UIViewController {
     }
 
     @objc private func refresh() {
-        
+
         Task {
             guard let viewModel = viewModel else { return }
 
