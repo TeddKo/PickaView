@@ -28,7 +28,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-
+        // // 여러 번 호출하지 않도록 변수화 하여 한 번만 호출 후 캐싱 처리
         let mainColor = UIColor(named: "MainColor") ?? .systemBlue
         let unselectedColor = UIColor.gray
 
@@ -41,7 +41,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         normal.titleTextAttributes = [.foregroundColor: unselectedColor]
 
         tabBar.standardAppearance = appearance
-
+        // iOS 15 이상 대응 -> 스크롤 엣지 설정
         if #available(iOS 15.0, *) {
             tabBar.scrollEdgeAppearance = appearance
         }
