@@ -35,7 +35,7 @@ class MyPageViewController: UIViewController {
         stackView.axis = .vertical
         stackView.spacing = 36
         stackView.isLayoutMarginsRelativeArrangement = true
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: 0, bottom: 100, right: 0)
         return stackView
     }()
     
@@ -90,6 +90,9 @@ class MyPageViewController: UIViewController {
     /// UI 레이아웃 설정, 뷰모델 바인딩 등 초기화 작업을 수행함.
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         
         setupLayout()
         addViewsToStackView()
@@ -250,7 +253,7 @@ class MyPageViewController: UIViewController {
         scrollView.addSubview(mainVerticalStackView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
