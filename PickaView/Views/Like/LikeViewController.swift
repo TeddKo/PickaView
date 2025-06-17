@@ -64,6 +64,16 @@ class LikeViewController: UIViewController {
         })
     }
     
+    
+    /// 뷰의 레이아웃이 변경된 후 호출됨.
+    ///
+    /// 뷰의 최종 크기가 확정된 시점이므로, 컬렉션 뷰 레이아웃을 무효화하여
+    /// 셀 크기를 정확하게 다시 계산하도록 함.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     /// 뷰가 화면에 나타나기 직전에 호출되는 생명주기 메서드.
     ///
     /// 데이터를 최신 상태로 새로고침하고 첫 페이지를 다시 로드함.
@@ -258,10 +268,16 @@ extension LikeViewController: UICollectionViewDelegateFlowLayout, NSFetchedResul
     
     /// FRC가 감지한 CoreData의 콘텐츠 변경이 완료되었을 때 호출됨.
     ///
-    /// 데이터가 변경되면, 페이징을 초기화하고 첫 페이지부터 다시 로드함.
+    /// 데이터가 변경되면, 현재 페이지네이션 상태를 유지하면서 UI를 갱신함.
     /// - Parameter controller: 콘텐츠 변경을 보고하는 FRC(Fetched Results Controller).
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        loadInitialData()
+        guard let viewModel = self.viewModel, let allLikedVideos = controller.fetchedObjects as? [Video] else { return }
+        
+        let visibleItemsCount = viewModel.currentPage * 20
+        
+        self.videos = Array(allLikedVideos.prefix(visibleItemsCount))
+        
+        updateUI(animated: true)
     }
     
     /// 사용자가 스크롤할 때 호출되는 델리게이트 메서드.
