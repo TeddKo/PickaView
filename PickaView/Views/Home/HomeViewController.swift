@@ -63,19 +63,6 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
         }
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let cell = sender as? VideoCollectionViewCell {
-            if let indexPath = collectionView.indexPath(for: cell) {
-                if let vc = segue.destination as? PlayerViewController {
-                    if let viewModel {
-                        vc.viewModel = PlayerViewModel(video: videoList[indexPath.item], coreDataManager: viewModel.getCoreDataManager())
-                    }
-                    vc.modalPresentationStyle = .fullScreen
-                }
-            }
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.dataSource = self
@@ -248,6 +235,38 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         
         return isPhonePortrait ? .zero : UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let viewModel else { return }
+        let selectedVideo = videoList[indexPath.item]
+        let vm = PlayerViewModel(video: selectedVideo, coreDataManager: viewModel.getCoreDataManager())
+
+        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
+
+        // 스토리보드에서 PlayerViewController 인스턴스 생성
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        let viewController: UIViewController
+
+        if isLandscape {
+            guard let ipadVC = storyboard.instantiateViewController(withIdentifier: String(describing: IPadLandscapeViewController.self)) as? IPadLandscapeViewController else {
+                return
+            }
+            
+            ipadVC.viewModel = vm
+            viewController = ipadVC
+        } else {
+            guard let playerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
+                return
+            }
+            
+            playerVC.viewModel = vm
+            viewController = playerVC
+        }
+
+        viewController.modalPresentationStyle = .fullScreen
+        present(viewController, animated: true)
+    }
 }
 
 // 태그 목록을 표시하는 TableView 관련 설정
@@ -342,4 +361,3 @@ extension HomeViewController: UIScrollViewDelegate {
         }
     }
 }
-
