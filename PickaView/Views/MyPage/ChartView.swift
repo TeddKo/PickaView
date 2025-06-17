@@ -34,6 +34,8 @@ final class ChartView: BarChartView {
         self.rightAxis.enabled = false
         self.doubleTapToZoomEnabled = false
         self.pinchZoomEnabled = false
+        self.highlightPerTapEnabled = false
+        self.dragEnabled = false
         self.leftAxis.axisMinimum = 0
         
         self.legend.enabled = true
