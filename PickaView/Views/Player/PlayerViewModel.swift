@@ -46,12 +46,9 @@ final class PlayerViewModel {
     }
 
     var views: String {
-        let numberFormatter = NumberFormatter()
-        numberFormatter.numberStyle = .decimal
-        let formattedViews = numberFormatter.string(from: NSNumber(value: video.views)) ?? "\(video.views)"
-        return "\(formattedViews) views"
+        return video.views.formattedViews()
     }
-    
+
     var isLiked: Bool {
         video.isLiked
     }
