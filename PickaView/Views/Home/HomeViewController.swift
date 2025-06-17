@@ -10,8 +10,6 @@ import UIKit
 class HomeViewController: UIViewController, ScrollToTopCapable {
 
     var viewModel: HomeViewModel?
-
-    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -79,7 +77,8 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        titleLabel.font = UIFont.boldSystemFont(ofSize: titleLabel.font.pointSize)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         collectionView.dataSource = self
         collectionView.delegate = self
         setupPullToRefresh()
