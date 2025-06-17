@@ -36,4 +36,32 @@ enum FRCFactory {
         }
         return frc
     }
+    
+    static func makeHistoryFRC(
+        context: NSManagedObjectContext,
+        predicate: NSPredicate? = nil,
+        sortDescriptors: [NSSortDescriptor] = [NSSortDescriptor(key: "date", ascending: true)],
+        cachName: String? = nil,
+        delegate: NSFetchedResultsControllerDelegate? = nil
+    ) -> NSFetchedResultsController<History> {
+        let fetchRequest: NSFetchRequest<History> = History.fetchRequest()
+        fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = sortDescriptors
+        
+        let frc = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: context,
+            sectionNameKeyPath: nil,
+            cacheName: cachName
+        )
+        
+        frc.delegate = delegate
+        
+        do {
+            try frc.performFetch()
+        } catch {
+            print("❌ NSFetchedResultsController fetch 실패: \(error.localizedDescription)")
+        }
+        return frc
+    }
 }
