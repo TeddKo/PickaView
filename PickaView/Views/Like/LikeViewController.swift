@@ -41,7 +41,8 @@ class LikeViewController: UIViewController {
     /// 데이터 소스를 설정하고, FRC의 delegate를 지정하며, 초기 데이터를 로드함.
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         configureDataSource()
         
         guard let viewModel = viewModel else { return }

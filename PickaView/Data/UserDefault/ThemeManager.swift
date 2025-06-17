@@ -39,7 +39,14 @@ final class ThemeManager {
     ///
     /// 앱이 시작될 때 `TabBarViewController`에서 호출됨.
     func applyTheme() {
-        let themeIndex = UserDefaults.standard.integer(forKey: themeKey)
+        var themeIndex: Int
+        
+        if UserDefaults.standard.object(forKey: themeKey) == nil {
+            themeIndex = ThemeOption.system.rawValue
+        } else {
+            themeIndex = UserDefaults.standard.integer(forKey: themeKey)
+        }
+        
         guard let theme = ThemeOption(rawValue: themeIndex) else { return }
         
         let style: UIUserInterfaceStyle
