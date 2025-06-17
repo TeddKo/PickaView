@@ -90,7 +90,7 @@ class VideoCollectionViewCell: UICollectionViewCell {
 
     // Skeleton 뷰 숨기기
     private func hideSkeleton() {
-        contentView.hideSkeleton()
+        contentView.hideSkeleton(reloadDataAfter: false, transition: .none)
     }
 
     //  MARK: - Data Binding , 셀에 비디오 데이터를 바인딩
