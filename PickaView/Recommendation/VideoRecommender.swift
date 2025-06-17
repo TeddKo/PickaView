@@ -16,7 +16,6 @@ enum VideoRecommender {
             let score = RecommendationScorer.calculateRecommendationScore(for: video)
             return (video, score)
         }
-        
         return scoredVideos.sorted { $0.1 > $1.1 }.map { $0.0 }
     }
 }

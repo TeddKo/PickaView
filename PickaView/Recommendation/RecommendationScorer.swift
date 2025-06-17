@@ -19,9 +19,12 @@ enum RecommendationScorer {
         
         let likeBoost = video.isLiked ? 5.0 : 0.0
 
-        let popularityScore = calculatePopularityScore(viewCount: video.views, downloadCount: video.downloads, commentCount: video.comments)
-
-        return userTagValue * 0.5 + likeBoost * 0.2 + popularityScore * 0.3
+        let popularityScore = calculatePopularityScore(
+            viewCount: video.views,
+            downloadCount: video.downloads,
+            commentCount: video.comments
+        )
+        return userTagValue * 0.6 + likeBoost * 0.1 + popularityScore * 0.3
     }
     
     /// 지정된 날짜(기본값 7일)를 기준으로 점수가 지수적으로 감소
@@ -29,7 +32,10 @@ enum RecommendationScorer {
     ///   - date: 기준 날짜
     ///   - baseDays: 감쇠 기준일
     /// - Returns: 0 과 1 사이의 감쇠 가중치 계수
-    static func decayWeight(for date: Date?, baseDays: Double = 7.0) -> Double {
+    static func decayWeight(
+        for date: Date?,
+        baseDays: Double = 7.0
+    ) -> Double {
         guard let date = date else { return 0.0 }
         let daysAgo = Date().timeIntervalSince(date) / (60 * 60 * 24)
         return exp(-daysAgo / baseDays)
@@ -41,7 +47,11 @@ enum RecommendationScorer {
     ///   - downloadCount: 다운로드 수
     ///   - commentCount: 댓글 수
     /// - Returns: 로그 기반의 가중 합산 점수
-    static func calculatePopularityScore(viewCount: Int64, downloadCount: Int64, commentCount: Int64) -> Double {
+    static func calculatePopularityScore(
+        viewCount: Int64,
+        downloadCount: Int64,
+        commentCount: Int64
+    ) -> Double {
         let viewScore = log(Double(viewCount) + 1)
         let commentScore = log(Double(commentCount) + 1)
         let downloadScore = log(Double(downloadCount) + 1)
