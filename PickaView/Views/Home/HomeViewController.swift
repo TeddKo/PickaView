@@ -158,24 +158,18 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
             viewModel.refreshVideos()
             // UI 업데이트
             await MainActor.run {
-                let refreshedVideos = viewModel.getCurrentPageVideos()
-                self.videoList = refreshedVideos
-                self.originalVideoList = refreshedVideos
-                //  performWithoutAnimation 사용하여 애니메이션 없이 컬렉션 뷰 업데이트
-                UIView.performWithoutAnimation {
-                    self.collectionView.reloadSections(IndexSet(integer: 0))
-                }
+                   let refreshedVideos = viewModel.getCurrentPageVideos()
+                   self.videoList = refreshedVideos
+                   self.originalVideoList = refreshedVideos  // 리프레시 시 기존 비디오 배열도 업데이트
+                   self.collectionView.reloadData()
+                   self.collectionView.refreshControl?.endRefreshing()
 
-                if self.collectionView.refreshControl?.isRefreshing == true {
-                    self.collectionView.hideSkeleton()
-                }
+                   // 햅틱
+                   let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
+                   feedbackGenerator.prepare()
+                   feedbackGenerator.impactOccurred()
+               }
 
-                self.collectionView.refreshControl?.endRefreshing()
-
-                let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
-                feedbackGenerator.prepare()
-                feedbackGenerator.impactOccurred()
-            }
         }
     }
 }
