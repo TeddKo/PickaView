@@ -67,7 +67,7 @@ class MyPageViewModel: NSObject, ObservableObject {
             try historyFRC?.performFetch()
             updateAllData()
         } catch {
-            print("FRC performFetch failed: \(error)")
+            fatalError("FRC performFetch failed: \(error)")
         }
     }
     
