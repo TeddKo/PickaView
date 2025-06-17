@@ -33,6 +33,11 @@ extension PlayerViewController {
         controlsOverlayView.addSubview(seekerStack)
         controlsOverlayView.addSubview(fullscreenButton)
         controlsOverlayView.addSubview(dismissButton)
+  
+        videoContainerView.addSubview(rateTwoView)
+        videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
+
+        rateTwoView.layer.cornerRadius = 8
 
         // 세로/가로 레이아웃 제약 정의
         portraitConstraints = [
@@ -67,7 +72,7 @@ extension PlayerViewController {
             fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
 
             dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
-            dismissButton.leadingAnchor.constraint(equalTo: controlsOverlayView.leadingAnchor, constant: 16)
+            dismissButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16)
         ])
 
         // 버튼 고정 크기 설정
