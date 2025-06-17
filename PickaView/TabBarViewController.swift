@@ -18,6 +18,7 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // UITabBarController가 탭 선택 이벤트가 발생했을 때 didSelect를 호출
         delegate = self
         ThemeManager.shared.applyTheme()
         setupTabBarAppearance()
@@ -63,5 +64,4 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         }
         lastSelectedIndex = index
     }
-
 }
