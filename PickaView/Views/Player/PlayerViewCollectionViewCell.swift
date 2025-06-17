@@ -28,7 +28,7 @@ class PlayerViewCollectionViewCell: UICollectionViewCell {
     /// - Parameter video: 표시할 비디오 데이터
     func configure(with video: Video) {
         usernameLabel.text = video.user
-        viewsLabel.text = "Views: \(video.views)"
+        viewsLabel.text = video.views.formattedViews()
         
         // 총 재생 시간을 포맷팅하여 표시
         if let durationSeconds = video.timeStamp?.totalTime {
