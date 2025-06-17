@@ -171,6 +171,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         } else {
             print("Invalid video URL")
         }
+        
         setupUI()
         setPlayPauseImage(isPlaying: true)
         fullscreenButton.alpha = 1.0
@@ -207,6 +208,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(true, animated: false)
         tabBarController?.tabBar.isHidden = true
+        fullscreenButton.isHidden = false
+        dismissButton.isHidden = false
     }
 
     /// 뷰가 나타날 때 방향/레이아웃 갱신
@@ -246,6 +249,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(false, animated: false)
         tabBarController?.tabBar.isHidden = false
+        fullscreenButton.isHidden = true
+        dismissButton.isHidden = true
     }
 
     // MARK: - Player Controls
@@ -282,8 +287,16 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 재생/일시정지 버튼 클릭 핸들러
     @objc func playPauseButtonTapped() {
         guard let player = self.player else { return }
+  
         animateButtonTap(playPauseButton) { [weak self] in
             guard let self = self else { return }
+                                           
+            if !self.isPlaying,
+               let player = self.player,
+               player.currentItem?.currentTime() == player.currentItem?.duration {
+                player.seek(to: .zero)
+            }
+                                           
             self.isPlaying.toggle()
             self.setPlayPauseImage(isPlaying: self.isPlaying)
 
@@ -337,14 +350,19 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
     @objc func playerDidFinishPlaying() {
-        guard let player = self.player else { return }
         isPlaying = false
         viewModel?.pauseWatching()
-        let playImage = UIImage(systemName: "arrow.clockwise")
+        let playImage = UIImage(systemName: "arrow.clockwise", withConfiguration: symbolConfig)
         playPauseButton.setImage(playImage, for: .normal)
-        player.seek(to: .zero)
-        progressSlider.value = 0
-        currentTimeLabel.text = "00:00"
+        areControlsVisible = true
+        cancelControlsHide()
+        
+        UIView.animate(withDuration: 0.3) {
+                self.playbackControlsStack.alpha = 1.0
+                self.seekerStack.alpha = 1.0
+                self.fullscreenButton.alpha = 1.0
+                self.dismissButton.alpha = 1.0
+            }
     }
 
     /// 컨트롤 자동 숨김 타이머 재설정

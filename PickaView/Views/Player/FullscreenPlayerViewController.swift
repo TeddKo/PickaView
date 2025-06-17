@@ -39,6 +39,9 @@ class FullscreenPlayerViewController: UIViewController {
     /// (옵션) 전체화면 모드 여부
     private var isFullscreenMode = false
 
+    var exitFullscreenButton: UIButton = UIButton()
+    var dismissButton: UIButton = UIButton()
+
     // MARK: - Lifecycle
 
     /// 뷰가 메모리에 올라왔을 때 호출
@@ -66,6 +69,21 @@ class FullscreenPlayerViewController: UIViewController {
             ])
         }
 
+        exitFullscreenButton.translatesAutoresizingMaskIntoConstraints = false
+        exitFullscreenButton.setImage(UIImage(systemName: "arrow.up.forward.and.arrow.down.backward.rectangle"), for: .normal)
+        exitFullscreenButton.tintColor = .white
+        exitFullscreenButton.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
+        controlsOverlayView?.addSubview(exitFullscreenButton)
+        
+        if let overlay = controlsOverlayView {
+            NSLayoutConstraint.activate([
+                exitFullscreenButton.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -16),
+                exitFullscreenButton.bottomAnchor.constraint(equalTo: overlay.bottomAnchor, constant: -37),
+                exitFullscreenButton.widthAnchor.constraint(equalToConstant: 25),
+                exitFullscreenButton.heightAnchor.constraint(equalToConstant: 25)
+            ])
+        }
+
         // 스와이프 다운 제스처(뷰/오버레이에 모두 등록)
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
         swipeDown.direction = .down
@@ -79,6 +97,16 @@ class FullscreenPlayerViewController: UIViewController {
             name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        exitFullscreenButton.isHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        exitFullscreenButton.isHidden = true
     }
 
     /// 레이아웃이 변경될 때마다 AVPlayerLayer 크기 갱신

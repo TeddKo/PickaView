@@ -24,7 +24,7 @@ extension PlayerViewController {
 
     // MARK: - UI 초기 세팅
 
-    /// UI 컴포넌트 계층 및 오토레이아웃 세팅, 더미 스크롤 컨텐츠 추가
+    /// UI 컴포넌트 계층 및 오토레이아웃 세팅
     func setupUI() {
         videoPlayerView.addSubview(videoContainerView)
 
@@ -63,7 +63,7 @@ extension PlayerViewController {
             seekerStack.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
             seekerStack.bottomAnchor.constraint(equalTo: controlsOverlayView.bottomAnchor, constant: -16),
 
-            fullscreenButton.bottomAnchor.constraint(equalTo: seekerStack.topAnchor),
+            fullscreenButton.bottomAnchor.constraint(equalTo: seekerStack.topAnchor, constant: -5),
             fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
 
             dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
@@ -128,7 +128,8 @@ extension PlayerViewController {
         let imageName = isPlaying ? "pause.fill" : "play.fill"
         let img = UIImage(systemName: imageName, withConfiguration: symbolConfig)
         playPauseButton.setImage(img, for: .normal)
-        playPauseButton.imageEdgeInsets = isPlaying ? UIEdgeInsets(top: -8, left: -8, bottom: -8, right: -8) : .zero
+        playPauseButton.configuration = .plain()
+        playPauseButton.configuration?.imagePadding = isPlaying ? 8 : 0
     }
 
     /// 시간 라벨 생성 (monospaced font)

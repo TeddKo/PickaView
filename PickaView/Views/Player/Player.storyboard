@@ -55,9 +55,13 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
+<<<<<<< feature/dismiss-fullscreen-btn
+                                    <constraint firstAttribute="width" secondItem="K5S-xl-3OB" secondAttribute="height" multiplier="16:9" priority="750" id="Lbo-f3-1RB"/>
+=======
                                     <constraint firstItem="DS6-vJ-IHs" firstAttribute="centerX" secondItem="K5S-xl-3OB" secondAttribute="centerX" id="03X-jH-E26"/>
                                     <constraint firstAttribute="width" secondItem="K5S-xl-3OB" secondAttribute="height" multiplier="16:9" id="Lbo-f3-1RB"/>
                                     <constraint firstItem="DS6-vJ-IHs" firstAttribute="top" secondItem="K5S-xl-3OB" secondAttribute="top" constant="30" id="il4-e6-mQM"/>
+>>>>>>> dev
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="NV6-1e-jJs">
