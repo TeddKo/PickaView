@@ -9,7 +9,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Setting-->
+        <!--MyPage-->
         <scene sceneID="g9e-EM-NR9">
             <objects>
                 <viewController storyboardIdentifier="MyPageViewController" id="oSK-Jy-vbr" customClass="MyPageViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
@@ -19,7 +19,7 @@
                         <viewLayoutGuide key="safeArea" id="ByT-wo-zUn"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Setting" id="cbF-DS-Ep1"/>
+                    <navigationItem key="navigationItem" title="MyPage" id="cbF-DS-Ep1"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2ab-kp-XHZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
