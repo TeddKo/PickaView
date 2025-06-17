@@ -15,7 +15,7 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableViewHeightConstraint: NSLayoutConstraint!
-    
+
     // 탭 바에서 스크롤 최상단으로 이동하는 메서드 (ScrollToTopCapable 프로토콜 채택)
     func scrollToTop() {
         guard let collectionView = self.collectionView else { return }
@@ -154,19 +154,24 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
 
         Task {
             guard let viewModel = viewModel else { return }
-
             // Core Data에서 새로 로딩
             viewModel.refreshVideos()
-
             // UI 업데이트
             await MainActor.run {
                 let refreshedVideos = viewModel.getCurrentPageVideos()
                 self.videoList = refreshedVideos
-                self.originalVideoList = refreshedVideos  // 리프레시 시 기존 비디오 배열도 업데이트
-                self.collectionView.reloadData()
+                self.originalVideoList = refreshedVideos
+
+                UIView.performWithoutAnimation {
+                    self.collectionView.reloadSections(IndexSet(integer: 0))
+                }
+
+                if self.collectionView.refreshControl?.isRefreshing == true {
+                    self.collectionView.hideSkeleton()
+                }
+
                 self.collectionView.refreshControl?.endRefreshing()
 
-                // 햅틱
                 let feedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
                 feedbackGenerator.prepare()
                 feedbackGenerator.impactOccurred()
