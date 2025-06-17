@@ -11,15 +11,17 @@ import UIKit
 /// 썸네일, 영상 길이, 업로더 정보(이미지, 이름), 조회수를 표시
 class PlayerViewCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var thumbnailImageView: UIImageView!
-    @IBOutlet weak var totalTimeLabel: UILabel!
     @IBOutlet weak var userImageView: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var viewsLabel: UILabel!
+    @IBOutlet weak var durationView: UIView!
+    @IBOutlet weak var durationLabel: UILabel!
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        // 프로필 이미지를 원형으로 설정
+        durationView.layer.cornerRadius = 4
+        
         userImageView.layer.cornerRadius = userImageView.frame.width / 2
         userImageView.clipsToBounds = true
     }
@@ -32,9 +34,9 @@ class PlayerViewCollectionViewCell: UICollectionViewCell {
         
         // 총 재생 시간을 포맷팅하여 표시
         if let durationSeconds = video.timeStamp?.totalTime {
-            totalTimeLabel.text = Int(durationSeconds).toDurationString()
+            durationLabel.text = Int(durationSeconds).toDurationString()
         } else {
-            totalTimeLabel.text = "Duration: N/A"
+            durationLabel.text = "Duration: N/A"
         }
         
         // 사용자 이미지 설정, 없으면 기본 이미지 사용

@@ -179,13 +179,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         setupGestures()
         addPlayerObservers()
         
-        // rateTwoView를 playerLayer 위, controlsOverlayView 아래에 위치
-        videoContainerView.addSubview(rateTwoView)
-        videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
-
-        // Apply rounded corners to rateTwoLabel
-        rateTwoView.layer.cornerRadius = 8
-
         // 기기 방향 변화 알림 등록
         NotificationCenter.default.addObserver(
             self,

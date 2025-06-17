@@ -33,6 +33,11 @@ extension PlayerViewController {
         controlsOverlayView.addSubview(seekerStack)
         controlsOverlayView.addSubview(fullscreenButton)
         controlsOverlayView.addSubview(dismissButton)
+  
+        videoContainerView.addSubview(rateTwoView)
+        videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
+
+        rateTwoView.layer.cornerRadius = 8
 
         // 세로/가로 레이아웃 제약 정의
         portraitConstraints = [
