@@ -142,21 +142,20 @@ class HomeViewController: UIViewController {
         collectionView.refreshControl = refreshControl
     }
 
+    //화면 땡겼을 때 비디오 배열 추천 영상으로 새로고침
     @objc private func refresh() {
-        
+
         Task {
             guard let viewModel = viewModel else { return }
 
             // Core Data에서 새로 로딩
             viewModel.refreshVideos()
 
-            // 추천 점수로 정렬된 첫 페이지만 가져오기
-            let refreshedVideos = viewModel.getCurrentPageVideos()
-
             // UI 업데이트
             await MainActor.run {
+                let refreshedVideos = viewModel.getCurrentPageVideos()
                 self.videoList = refreshedVideos
-                self.originalVideoList = refreshedVideos  // 리프레시 시 기존비디오배열도 업데이트
+                self.originalVideoList = refreshedVideos  // 리프레시 시 기존 비디오 배열도 업데이트
                 self.collectionView.reloadData()
                 self.collectionView.refreshControl?.endRefreshing()
 
@@ -166,7 +165,6 @@ class HomeViewController: UIViewController {
                 feedbackGenerator.impactOccurred()
             }
         }
-        print("리프레쉬")
     }
 }
 
@@ -267,7 +265,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
         if filteredTags.isEmpty {
             // 태그가 하나도 없으면 '검색 결과가 없습니다' 메시지
-            cell.tagLabel.text = "검색 결과가 없습니다."
+            cell.tagLabel.text = "No results found."
             cell.tagLabel.textColor = .gray
             cell.isUserInteractionEnabled = false
         } else {

@@ -40,7 +40,6 @@ class VideoCollectionViewCell: UICollectionViewCell {
         //영상길이 레이블 커스텀
         durationBackground.layer.cornerRadius = 4
         durationBackground.layer.masksToBounds = true
-        contentView.bringSubviewToFront(durationLabel)
     }
 
     override func layoutSubviews() {
