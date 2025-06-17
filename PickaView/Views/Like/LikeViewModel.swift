@@ -54,7 +54,7 @@ final class LikeViewModel: NSObject, ObservableObject {
         do {
             try self.frc.performFetch()
         } catch {
-            print("Failed to fetch videos: \(error)")
+            fatalError("Failed to fetch videos: \(error)")
         }
     }
 
@@ -66,7 +66,7 @@ final class LikeViewModel: NSObject, ObservableObject {
             try frc.performFetch()
             currentPage = 1
         } catch {
-            print("Failed to refetch videos: \(error)")
+            fatalError("Failed to refetch videos: \(error)")
         }
     }
 
