@@ -72,7 +72,7 @@ extension PlayerViewController {
             fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
 
             dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
-            dismissButton.leadingAnchor.constraint(equalTo: controlsOverlayView.leadingAnchor, constant: 16)
+            dismissButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16)
         ])
 
         // 버튼 고정 크기 설정

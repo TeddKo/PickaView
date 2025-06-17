@@ -127,7 +127,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 닫기 버튼
     lazy var dismissButton: UIButton = {
-        let button = createButton(systemName: "chevron.down", useSmallConfig: true)
+        let button = createButton(systemName: "xmark", useSmallConfig: true)
         button.addTarget(self, action: #selector(handleDismissButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
