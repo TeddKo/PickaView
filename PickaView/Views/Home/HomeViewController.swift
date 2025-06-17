@@ -105,13 +105,11 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
                 self.tags = viewModel?.allTags ?? []
                 self.filteredTags = self.tags
                 self.tableView.reloadData()
-                print("로드된 태그 개수: \(self.tags.count)")
             }
         }
         
         Task {
             guard let viewModel = viewModel else {
-                print("viewModel이 아직 초기화되지 않았습니다.")
                 return
             }
             
@@ -142,7 +140,8 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
         }, completion: nil)
     }
-    
+
+    //새로고침 기능을 설정하는 함수
     private func setupPullToRefresh() {
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)

@@ -27,23 +27,22 @@ final class HomeViewModel {
             let videos = try await pixabayVideoService.fetchVideos(query: query)
             await MainActor.run {
                 // Core Data에 비디오 데이터 저장
-                print("Saving videos to Core Data")
                 self.coreDataManager.saveVideos(videos)
-                print("Saved videos successfully")
             }
-        } catch {
-            // 네트워크 요청 실패 시 에러 출력
-            print("Failed to fetch videos: \(error.localizedDescription)")
+       	 } catch {
+            fatalError("비디오를 가져오거나 저장하는 데 실패했습니다: \(error.localizedDescription)")
         }
-
     }
 
+    // 모든 비디오를 Core Data에서 불러와 추천 점수 기준으로 정렬하고,
+    // 현재 페이지를 첫 페이지(1)로 초기화하는 함수
     func refreshVideos() {
         let allVideos = coreDataManager.fetch()
         self.allRecommendedVideos = VideoRecommender.sortVideosByRecommendationScore(from: allVideos)
         self.currentPage = 1
     }
 
+    // 현재 페이지에 해당하는 비디오 배열을 반환하는 함수
     func getCurrentPageVideos() -> [Video] {
         let offset = (currentPage - 1) * limit
         let end = min(offset + limit, allRecommendedVideos.count)
@@ -51,6 +50,7 @@ final class HomeViewModel {
         return Array(allRecommendedVideos[offset..<end])
     }
 
+    // 다음 페이지로 이동 후, 해당 페이지에 맞는 비디오 배열을 반환하는 함수
     func loadNextPage() -> [Video] {
         currentPage += 1
         return getCurrentPageVideos()
@@ -64,8 +64,8 @@ final class HomeViewModel {
             self.allTags = tags
         }
     }
-    
-     //실시간 태그목록 갱신용
+
+    //실시간 태그목록 갱신용
     func filterTags(keyword: String) -> [Tag] {
         let trimmed = keyword.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {
@@ -80,10 +80,11 @@ final class HomeViewModel {
         }
     }
 
+    // 특정 태그 이름에 해당하는 비디오 배열을 Core Data에서 불러온다.
     func fetchVideosForTag(_ tagName: String) -> [Video] {
         return coreDataManager.fetch(tag: tagName)
     }
-    
+
     func getCoreDataManager() -> CoreDataManager {
         return coreDataManager
     }
