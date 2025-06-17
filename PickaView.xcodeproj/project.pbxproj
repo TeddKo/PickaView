@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0EA2B32DF81B1E005AA031 /* DGCharts */; };
+		8D9324722E0148A200D30BFB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D9324712E0148A200D30BFB /* README.md */; };
 		B565D31D2DFFD4C9008E1659 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = B565D31C2DFFD4C9008E1659 /* SkeletonView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		8D20CDCA2DF1728900D1D063 /* PickaView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PickaView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D9324712E0148A200D30BFB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -54,6 +56,7 @@
 			children = (
 				8D20CDCC2DF1728900D1D063 /* PickaView */,
 				8D20CDCB2DF1728900D1D063 /* Products */,
+				8D9324712E0148A200D30BFB /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -135,6 +138,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D9324722E0148A200D30BFB /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
