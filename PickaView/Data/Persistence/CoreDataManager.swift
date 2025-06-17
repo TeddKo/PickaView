@@ -197,8 +197,20 @@ final class CoreDataManager {
     ///   - video: 대상 Video 객체
     ///   - isLiked: 좋아요 여부 (true/false)
     func updateIsLiked(for video: Video, isLiked: Bool) {
+        guard video.isLiked != isLiked else { return }
+        
         video.isLiked = isLiked
         
+        let scoreChange = isLiked ? 1.0 : -1.0
+        
+        if let tags = video.tags as? Set<Tag> {
+            for tag in tags {
+                tag.score += scoreChange
+                if tag.score < 0 {
+                    tag.score = 0
+                }
+            }
+        }
         saveContext()
     }
 
@@ -226,7 +238,7 @@ final class CoreDataManager {
         let rawProgress = watchTime / timeStamp.totalTime
         let roundedProgress = (rawProgress * 100).rounded() / 100
 
-        guard roundedProgress > 0.3 else { return }
+        guard roundedProgress > 0.15 else { return }
 
         for tag in tags {
             tag.score += roundedProgress
