@@ -75,7 +75,6 @@ extension HomeViewController: UISearchBarDelegate {
 
         // 일치하는 태그가 없으면 검색 안 함
         guard let validTag = matchedTag else {
-            print("❌ 일치하는 태그 없음 - 검색 중단")
             return
         }
 
