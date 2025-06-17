@@ -72,9 +72,9 @@ class PlayerViewHeaderView: UICollectionReusableView {
     ///   - userImageURL: 업로더 이미지 URL (옵션)
     ///   - user: 업로더 이름
     ///   - isLiked: 좋아요 상태
-    func configure(views: String, userImageURL: String?, user: String, isLiked: Bool) {
+    func configure(views: String, userImageURL: String, user: String, isLiked: Bool) {
         viewsLabel.text = views
-        if let userImageURL = userImageURL, !userImageURL.isEmpty {
+        if !userImageURL.isEmpty {
             userImageView.loadImage(from: userImageURL)
         } else {
             userImageView.image = UIImage(systemName: "person.circle")
