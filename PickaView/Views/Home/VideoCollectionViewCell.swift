@@ -14,6 +14,8 @@ class VideoCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var durationLabel: UILabel!
 
+    @IBOutlet weak var durationBackground: UIView!
+
     @IBOutlet weak var userImage: UIImageView!
 
     @IBOutlet weak var userNameLabel: UILabel!
@@ -35,14 +37,18 @@ class VideoCollectionViewCell: UICollectionViewCell {
         contentView.isSkeletonable = true
         contentView.backgroundColor = .clear
 
-        //유저 이미지 둥글게 처리
+        //영상길이 레이블 커스텀
+        durationBackground.layer.cornerRadius = 4
+        durationBackground.layer.masksToBounds = true
+        contentView.bringSubviewToFront(durationLabel)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
         userImage.layer.cornerRadius = userImage.frame.width / 2
         userImage.clipsToBounds = true
-
-        //영상길이 레이블 커스텀
-        durationLabel.layer.cornerRadius = 4
-        durationLabel.layer.masksToBounds = true
     }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         // 재사용 시 스켈레톤 제거
