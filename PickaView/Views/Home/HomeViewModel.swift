@@ -27,14 +27,11 @@ final class HomeViewModel {
             let videos = try await pixabayVideoService.fetchVideos(query: query)
             await MainActor.run {
                 // Core Data에 비디오 데이터 저장
-                print("Saving videos to Core Data")
                 self.coreDataManager.saveVideos(videos)
-                print("Saved videos successfully")
             }
         } catch {
-            // 네트워크 요청 실패 시 에러 출력
-            print("Failed to fetch videos: \(error.localizedDescription)")
-        }
+           		//
+            }
 
     }
 
