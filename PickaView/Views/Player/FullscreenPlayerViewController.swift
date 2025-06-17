@@ -10,7 +10,18 @@ import AVKit
 
 /// 전체화면 영상 플레이어 뷰 컨트롤러
 class FullscreenPlayerViewController: UIViewController {
-
+    
+    let viewModel: PlayerViewModel
+    
+    init(viewModel: PlayerViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Properties
 
     /// 영상 출력을 위한 AVPlayerLayer
