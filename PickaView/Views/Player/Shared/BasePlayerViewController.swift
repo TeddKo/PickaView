@@ -8,7 +8,7 @@
 import UIKit
 import AVFoundation
 
-class BasePlayerViewController: UIViewController {
+class BasePlayerViewController: UIViewController, PlayerGestureDelegate {
     
     @IBOutlet weak var videoContainerView: UIView!
     
@@ -340,44 +340,8 @@ class BasePlayerViewController: UIViewController {
         playPauseButtonTapped()
         viewModel?.pauseWatching()
     }
-
-    // MARK: - Deinit
     
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-}
-
-// MARK: - PlayerManagerDelegate
-
-extension BasePlayerViewController: PlayerManagerDelegate {
-    func playerDidUpdateTime(current: String, total: String, progress: Float) {
-        currentTimeLabel.text = current
-        totalDurationLabel.text = total
-        progressSlider.value = progress
-    }
-    
-    /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
-    func playerDidFinishPlaying() {
-        isPlaying = false
-        viewModel?.pauseWatching()
-        let playImage = UIImage(systemName: "arrow.clockwise", withConfiguration: symbolConfig)
-        playPauseButton.setImage(playImage, for: .normal)
-        areControlsVisible = true
-        cancelControlsHide()
-        
-        UIView.animate(withDuration: 0.3) {
-            self.playbackControlsStack.alpha = 1.0
-            self.seekerStack.alpha = 1.0
-            self.fullscreenButton.alpha = 1.0
-            self.dismissButton.alpha = 1.0
-        }
-    }
-}
-
-// MARK: - PlayerGestureDelegate
-
-extension BasePlayerViewController: PlayerGestureDelegate {
+    // MARK: - PlayerGestureDelegate
     /// 단일 탭: 컨트롤(재생버튼, 시커 등) show/hide 토글
     func didToggleControls() {
         areControlsVisible.toggle()
@@ -455,11 +419,44 @@ extension BasePlayerViewController: PlayerGestureDelegate {
         rateTwoView.isHidden = true
     }
     
-    func requestEnterFullscreen() {
-        assertionFailure("Must override requestEnterFullscreen in subclass")
+    @objc func requestEnterFullscreen() {
+        // Swipe-up
     }
     
     func requestDismissToHome() {
         assertionFailure("Must override requestEnterFullscreen in subclass")
+    }
+
+    // MARK: - Deinit
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+}
+
+// MARK: - PlayerManagerDelegate
+
+extension BasePlayerViewController: PlayerManagerDelegate {
+    func playerDidUpdateTime(current: String, total: String, progress: Float) {
+        currentTimeLabel.text = current
+        totalDurationLabel.text = total
+        progressSlider.value = progress
+    }
+    
+    /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
+    func playerDidFinishPlaying() {
+        isPlaying = false
+        viewModel?.pauseWatching()
+        let playImage = UIImage(systemName: "arrow.clockwise", withConfiguration: symbolConfig)
+        playPauseButton.setImage(playImage, for: .normal)
+        areControlsVisible = true
+        cancelControlsHide()
+        
+        UIView.animate(withDuration: 0.3) {
+            self.playbackControlsStack.alpha = 1.0
+            self.seekerStack.alpha = 1.0
+            self.fullscreenButton.alpha = 1.0
+            self.dismissButton.alpha = 1.0
+        }
     }
 }

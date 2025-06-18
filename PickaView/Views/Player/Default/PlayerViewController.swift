@@ -184,6 +184,16 @@ class PlayerViewController: BasePlayerViewController, PlayerViewControllerDelega
     /// 자동회전 허용 여부
     override var shouldAutorotate: Bool { true }
     
+    // MARK: - Overrides for BasePlayerViewController
+    
+    override func requestEnterFullscreen() {
+        presentFullscreen()
+    }
+    
+    override func requestDismissToHome() {
+        dismissVC()
+    }
+    
     // MARK: - Deinit
     
     deinit {

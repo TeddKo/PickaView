@@ -218,6 +218,23 @@ class IPadLandscapeViewController: BasePlayerViewController, PlayerViewControlle
             // 전체화면에서 FullscreenPlayerViewController가 알아서 내려감
         }
     }
+    
+    // MARK: - Overrides for BasePlayerViewController
+    
+    override func requestEnterFullscreen() {
+        presentFullscreen()
+    }
+    
+    override func requestDismissToHome() {
+        dismissVC()
+    }
+    
+    // MARK: - Deinit
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
 }
 
 extension IPadLandscapeViewController: UICollectionViewDataSource {

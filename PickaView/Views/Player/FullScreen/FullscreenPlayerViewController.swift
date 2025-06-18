@@ -128,6 +128,11 @@ class FullscreenPlayerViewController: BasePlayerViewController {
             self?.isDismissing = false
         }
     }
+    
+    // MARK: - Overrides for BasePlayerViewController
+    override func requestDismissToHome() {
+        handleDismiss()
+    }
 
     // MARK: - Status Bar & System Gesture
 
