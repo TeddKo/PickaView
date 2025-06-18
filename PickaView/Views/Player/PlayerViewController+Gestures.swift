@@ -78,6 +78,8 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
     /// 더블 탭: 왼쪽/오른쪽 10초 skip
     /// - Parameter recognizer: UITapGestureRecognizer
     @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
+//        let container: UIView = isFullscreenMode ? view : videoContainerView
+        
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.prepare()
         generator.impactOccurred()
@@ -96,12 +98,13 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         iconView.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
 
         // 중앙 위치 계산 (좌/우) - videoContainerView 기준
-        let containerBounds = videoContainerView.bounds
+        let containerBounds = controlsOverlayView.bounds
         let centerY = containerBounds.midY
         let centerX = location.x < midX ? containerBounds.width * 0.25 : containerBounds.width * 0.75
         iconView.center = CGPoint(x: centerX, y: centerY)
 
-        videoContainerView.insertSubview(iconView, belowSubview: controlsOverlayView)
+        controlsOverlayView.addSubview(iconView)
+//        container.insertSubview(iconView, belowSubview: controlsOverlayView)
 
         // 애니메이션 처리
         UIView.animate(withDuration: 0.15, animations: {

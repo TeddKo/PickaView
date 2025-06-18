@@ -22,7 +22,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
-    @IBOutlet weak var rateTwoView: UIView!
     
     var viewModel: PlayerViewModel!
     
@@ -97,6 +96,11 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
+    }()
+    
+    /// 2배속 재생 안내 뷰
+    lazy var rateTwoView: UIView = {
+        return createRateTwoView()
     }()
 
     /// 재생/일시정지 버튼
@@ -413,6 +417,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
         fullscreenVC.delegate = self
         fullscreenVC.exitFullscreenButton = self.exitFullscreenButton
+        fullscreenVC.rateTwoView = self.rateTwoView
 
         self.present(fullscreenVC, animated: true) {
             if #available(iOS 16.0, *) {

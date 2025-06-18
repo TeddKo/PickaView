@@ -37,7 +37,6 @@ extension PlayerViewController {
   
         videoContainerView.addSubview(rateTwoView)
         videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
-
         rateTwoView.layer.cornerRadius = 8
 
         // 공통 오토레이아웃 (컨트롤/시커/버튼)
@@ -52,6 +51,9 @@ extension PlayerViewController {
             controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
             controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
 
+            rateTwoView.topAnchor.constraint(equalTo: videoContainerView.topAnchor, constant: 20),
+            rateTwoView.centerXAnchor.constraint(equalTo: videoContainerView.centerXAnchor),
+            
             playbackControlsStack.centerXAnchor.constraint(equalTo: controlsOverlayView.centerXAnchor),
             playbackControlsStack.centerYAnchor.constraint(equalTo: controlsOverlayView.centerYAnchor),
 
@@ -104,6 +106,44 @@ extension PlayerViewController {
         button.imageView?.contentMode = .scaleAspectFit
         return button
     }
+    
+    /// "2x + 아이콘" 형태의 2배속 재생 안내 뷰 생성
+    /// - Returns: UIView 인스턴스 (숨겨진 상태로 생성됨)
+    func createRateTwoView() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        container.layer.cornerRadius = 8
+        container.isHidden = true
+
+        let label = UILabel()
+        label.text = "2x"
+        label.textColor = .white
+        label.font = .boldSystemFont(ofSize: 13)
+
+        let config = UIImage.SymbolConfiguration(scale: .small)
+        let image = UIImage(systemName: "forward.fill", withConfiguration: config)
+        let icon = UIImageView(image: image)
+        icon.contentMode = .scaleAspectFit
+        icon.tintColor = .white
+
+        let stack = UIStackView(arrangedSubviews: [label, icon])
+        stack.axis = .horizontal
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 5),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -5)
+        ])
+
+        return container
+    }
+
 
     /// 재생/일시정지 버튼 이미지 상태 변경
     /// - Parameter isPlaying: 재생 중 여부

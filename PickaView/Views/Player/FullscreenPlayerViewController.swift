@@ -40,15 +40,17 @@ class FullscreenPlayerViewController: UIViewController {
     private var isFullscreenMode = false
 
     var exitFullscreenButton: UIButton?
+    
+    var rateTwoView: UIView?
 
     // MARK: - Lifecycle
 
     /// 뷰가 메모리에 올라왔을 때 호출
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .black
-
+        
         // AVPlayerLayer 추가
         if let playerLayer = playerLayer {
             playerLayer.frame = view.bounds
@@ -56,14 +58,22 @@ class FullscreenPlayerViewController: UIViewController {
         }
 
         // 오버레이 추가 및 오토레이아웃
-        if let controlsOverlayView = controlsOverlayView {
+        if let controlsOverlayView = controlsOverlayView, let rateTwoView {
             view.addSubview(controlsOverlayView)
             controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
+            
+            view.addSubview(rateTwoView)
+            view.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
+            rateTwoView.layer.cornerRadius = 8
+            
             NSLayoutConstraint.activate([
                 controlsOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 controlsOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 controlsOverlayView.topAnchor.constraint(equalTo: view.topAnchor),
-                controlsOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+                controlsOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                
+                rateTwoView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
+                rateTwoView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             ])
         }
 
