@@ -8,20 +8,29 @@
 import UIKit
 
 /// 수평 스크롤 태그 목록을 표시하는 셀
-/// 내부에 UICollectionView를 포함, 태그 데이터를 기반으로 셀을 구성
+///
+/// 'UICollectionView'를 포함하고 있으며, 각 셀은 태그 정보를 표시
+/// 'UICollectionViewDataSource', 'UICollectionViewDelegate'를 구현하여 셀 구성 및 동작을 제어
 class HorizontalCollectionViewCell: UICollectionViewCell, UICollectionViewDataSource, UICollectionViewDelegate {
-    // 표시할 태그 목록 데이터
     var tags: [Tag] = []
-    
-    // 태그들을 표시할 내부 컬렉션 뷰
     @IBOutlet weak var tagCollectionView: UICollectionView!
     
-    // 태그의 개수를 셀 개수로 반환
+    /// 컬렉션 뷰의 항목 수를 반환
+    ///
+    /// - Parameters:
+    ///   - collectionView: 태그를 표시할 컬렉션 뷰
+    ///   - section: 섹션 인덱스
+    /// - Returns: 태그 개수만큼의 셀 수
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return tags.count
     }
     
-    // 인덱스에 해당하는 태그 셀 구성
+    /// 주어진 위치에 해당하는 태그 셀을 반환
+    ///
+    /// - Parameters:
+    ///   - collectionView: 태그를 표시할 컬렉션 뷰
+    ///   - indexPath: 셀의 위치를 나타내는 인덱스 경로
+    /// - Returns: 구성된 태그 셀
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TagCollectionViewCell.self), for: indexPath) as! TagCollectionViewCell
         
@@ -31,7 +40,8 @@ class HorizontalCollectionViewCell: UICollectionViewCell, UICollectionViewDataSo
 }
 
 /// 개별 태그 항목을 표현하는 셀
-/// 배경 색상, 테두리, 코너 반경 등의 UI를 설정하고 태그 이름을 표시
+///
+/// 태그 이름을 라벨로 표시하고, 배경 뷰에는 색상, 테두리, 코너 반경 등의 UI 속성을 설정
 class TagCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var tagBackgroundView: UIView!
     @IBOutlet weak var tagNameLabel: UILabel!
@@ -47,7 +57,9 @@ class TagCollectionViewCell: UICollectionViewCell {
         tagBackgroundView.clipsToBounds = true
     }
     
-    // 태그 정보를 셀에 설정
+    /// 주어진 태그를 기반으로 셀을 구성
+    ///
+    /// - Parameter tag: 셀에 표시할 태그 객체
     func configure(tag: Tag) {
         tagNameLabel.text = tag.name
     }

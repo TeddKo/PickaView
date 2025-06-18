@@ -7,8 +7,9 @@
 
 import UIKit
 
-/// 추천 영상 목록에서 개별 비디오를 나타내는 컬렉션 뷰 셀
-/// 썸네일, 영상 길이, 업로더 정보(이미지, 이름), 조회수를 표시
+/// 추천 영상 목록에서 개별 비디오 정보를 표시하는 셀
+///
+/// 썸네일 이미지, 영상 길이, 업로더 프로필 이미지 및 이름, 조회 수 등을 포함한 UI 요소로 구성
 class PlayerViewCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var thumbnailImageView: UIImageView!
     @IBOutlet weak var userImageView: UIImageView!
@@ -17,6 +18,9 @@ class PlayerViewCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var durationView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
     
+    /// 셀의 하위 뷰들의 레이아웃을 조정.
+    ///
+    /// durationView의 코너 반경과, userImageView의 원형 마스크 처리를 수행
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -26,27 +30,25 @@ class PlayerViewCollectionViewCell: UICollectionViewCell {
         userImageView.clipsToBounds = true
     }
     
-    /// 비디오 정보를 기반으로 셀 UI 구성
-    /// - Parameter video: 표시할 비디오 데이터
+    /// 비디오 정보를 기반으로 셀의 UI 요소를 구성
+    ///
+    /// - Parameter video: 셀에 표시할 'Video' 객체
     func configure(with video: Video) {
         usernameLabel.text = video.user
         viewsLabel.text = video.views.formattedViews()
         
-        // 총 재생 시간을 포맷팅하여 표시
         if let durationSeconds = video.timeStamp?.totalTime {
             durationLabel.text = Int(durationSeconds).toDurationString()
         } else {
             durationLabel.text = "Duration: N/A"
         }
         
-        // 사용자 이미지 설정, 없으면 기본 이미지 사용
         if let userImageURL = video.userImageURL, !userImageURL.isEmpty {
             userImageView.loadImage(from: userImageURL)
         } else {
             userImageView.image = UIImage(systemName: "person.circle")
         }
         
-        // 썸네일 이미지 설정, 없으면 기본 이미지 사용
         if let thumbnailURL = video.thumbnailURL, !thumbnailURL.isEmpty {
             thumbnailImageView.loadImage(from: thumbnailURL)
         } else {

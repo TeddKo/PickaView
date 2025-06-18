@@ -8,9 +8,10 @@
 import Foundation
 
 enum VideoRecommender {
-    /// 전체 영상을 받아 추천 점수를 계산한 후, 점수 기준으로 정렬된 영상 리스트를 반환
-    /// - Parameter allVideos: 추천 점수를 계산할 VideoEntity 배열
-    /// - Returns: 추천 점수 기준으로 정렬된 VideoEntity 배열
+    /// 주어진 영상 목록에 대해 추천 점수를 계산하고, 이를 기준으로 내림차순 정렬한 결과를 반환
+    ///
+    /// - Parameter allVideos: 추천 점수를 계산할 'Video' 객체 배열
+    /// - Returns: 추천 점수 기준으로 내림차순 정렬된 'Video' 객체 배열
     static func sortVideosByRecommendationScore(from allVideos: [Video]) -> [Video] {
         let scoredVideos = allVideos.map { video in
             let score = RecommendationScorer.calculateRecommendationScore(for: video)
