@@ -23,9 +23,12 @@ class FullscreenPlayerViewController: UIViewController {
     }
     
     // MARK: - Properties
-
+    
     /// 영상 출력을 위한 AVPlayerLayer
-    var playerLayer: AVPlayerLayer?
+    private var playerLayer: AVPlayerLayer?
+
+    /// 영상 출력을 위한 AVPlayer
+    var player: AVPlayer?
 
     /// 플레이어 컨트롤 오버레이 뷰 (재생/정지, 시커 등)
     var controlsOverlayView: UIView?
@@ -51,10 +54,13 @@ class FullscreenPlayerViewController: UIViewController {
         
         view.backgroundColor = .black
         
-        // AVPlayerLayer 추가
-        if let playerLayer = playerLayer {
+        if let player = self.player {
+            let playerLayer = AVPlayerLayer(player: player)
             playerLayer.frame = view.bounds
-            view.layer.addSublayer(playerLayer)
+            playerLayer.videoGravity = .resizeAspect
+            
+            view.layer.insertSublayer(playerLayer, at: 0)
+            self.playerLayer = playerLayer
         }
 
         // 오버레이 추가 및 오토레이아웃

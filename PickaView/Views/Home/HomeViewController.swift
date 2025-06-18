@@ -140,6 +140,11 @@ class HomeViewController: UIViewController, ScrollToTopCapable {
             self.collectionView.collectionViewLayout.invalidateLayout()//화면 회전시 셀 크기와 배치 다시 계산
         }, completion: nil)
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.collectionView.collectionViewLayout.invalidateLayout()
+    }
 
     //새로고침 기능을 설정하는 함수
     private func setupPullToRefresh() {
