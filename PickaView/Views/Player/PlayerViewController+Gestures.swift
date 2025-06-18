@@ -141,16 +141,7 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
         }
     }
 
-    /// 위로 스와이프: 전체화면 진입(세로모드일 때만)
     @objc func handleSwipeToFullscreen(_ gesture: UISwipeGestureRecognizer) {
-        guard !isFullscreenMode else { return }
-        let isPortrait: Bool
-        if let orientation = view.window?.windowScene?.interfaceOrientation {
-            isPortrait = orientation.isPortrait
-        } else {
-            isPortrait = UIDevice.current.orientation.isPortrait
-        }
-        guard isPortrait else { return }
         presentFullscreen()
     }
 
