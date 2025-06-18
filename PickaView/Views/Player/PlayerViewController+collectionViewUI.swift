@@ -9,12 +9,19 @@ import UIKit
 
 /// PlayerViewController의 UICollectionView에 대한 UI 구성 및 레이아웃 설정을 담당
 extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    
+    func collectionView(
+        _ collectionView: UICollectionView,
+        numberOfItemsInSection section: Int
+    ) -> Int {
         return 11
     }
     
     // 각 인덱스에 맞는 셀 구성: 0번은 가로 스크롤 태그 셀, 나머지는 비디오 셀
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        cellForItemAt indexPath: IndexPath
+    ) -> UICollectionViewCell {
         guard let viewModel else { fatalError("viewModel nil") }
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(
@@ -38,9 +45,11 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
     }
     
     // 섹션 헤더 뷰의 크기 설정 (사용자 정보 + 좋아요 등)
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        referenceSizeForHeaderInSection section: Int) -> CGSize {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        referenceSizeForHeaderInSection section: Int
+    ) -> CGSize {
         let width = collectionView.bounds.width
         
         let font = UIFont.preferredFont(forTextStyle: .footnote)
@@ -61,9 +70,11 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
     }
     
     // 섹션 헤더 뷰를 생성 및 설정
-    func collectionView(_ collectionView: UICollectionView,
-                        viewForSupplementaryElementOfKind kind: String,
-                        at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        viewForSupplementaryElementOfKind kind: String,
+        at indexPath: IndexPath
+    ) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let viewModel else { fatalError("viewModel nil") }
             let header = collectionView.dequeueReusableSupplementaryView(
@@ -87,57 +98,59 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
     }
     
     // 각 셀의 크기 계산
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        // 0번 인덱스는 태그 셀이므로 기존 로직을 유지합니다.
         if indexPath.item == 0 {
             let font = UIFont.preferredFont(forTextStyle: .body)
             let text = "Sample" as NSString
             let labelHeight = text.size(withAttributes: [.font: font]).height
             
             let insets: CGFloat = 8
-            
             let height = ceil(labelHeight) + (insets * 2)
 
             return CGSize(width: collectionView.bounds.width, height: height)
         } else {
-            let width = collectionView.bounds.width
-            
-            var itemsPerRow: CGFloat = 1
-            var insets: CGFloat = 10
-            
-            let isPad = traitCollection.userInterfaceIdiom == .pad
-            
-            if isPad {
-                itemsPerRow = 2
-            } else {
-                itemsPerRow = 1
-                insets = 0
-            }
-            
-            let spacing: CGFloat = 10
-            let totalSpacing = spacing * (itemsPerRow - 1) + insets * 2
-            let itemWidth = (width - totalSpacing) / itemsPerRow
-            
-            return CGSize(width: itemWidth, height: (itemWidth * 9 / 16) + (itemWidth * 1 / 6) + 8)
+            return calculateVideoCellSize(
+                for: collectionView,
+                layout: collectionViewLayout,
+                at: indexPath
+            )
         }
     }
     
     // 셀 간 세로 간격 설정
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumLineSpacingForSectionAt section: Int
+    ) -> CGFloat {
         return 30
     }
     
     // 셀 간 가로 간격 설정
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        minimumInteritemSpacingForSectionAt section: Int
+    ) -> CGFloat {
         return 10
     }
     
     // 디바이스 방향과 크기에 따라 섹션 여백 설정
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
         let width = collectionView.bounds.width
         let height = collectionView.bounds.height
         let isPhonePortrait = traitCollection.userInterfaceIdiom == .phone && width < height
         
-        return isPhonePortrait ? .zero : UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        return isPhonePortrait ? .zero : .init(horizontal: 10)
     }
     
     // 셀 선택 시 동작 처리
@@ -160,15 +173,51 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
             guard let self, let viewModel = self.viewModel else { return }
             
             let storyboard = UIStoryboard(name: "Player", bundle: nil)
-            guard let newPlayerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
-                return
-            }
+            guard let newPlayerVC = storyboard.instantiateViewController(
+                withIdentifier: String(
+                    describing: PlayerViewController.self
+                )
+            ) as? PlayerViewController else { return }
             newPlayerVC.modalPresentationStyle = .fullScreen
             
-            let newPlayerVM = PlayerViewModel(video: video, coreDataManager: viewModel.getCoreDataManager())
+            let newPlayerVM = PlayerViewModel(
+                video: video,
+                coreDataManager: viewModel.getCoreDataManager()
+            )
             newPlayerVC.viewModel = newPlayerVM
 
             presentingVC.present(newPlayerVC, animated: false)
         }
     }
+    
+    private func calculateVideoCellSize(
+        for collectionView: UICollectionView,
+        layout collectionViewLayout: UICollectionViewLayout,
+        at indexPath: IndexPath
+    ) -> CGSize {
+            let insets = self.collectionView(
+                collectionView,
+                layout: collectionViewLayout,
+                insetForSectionAt: indexPath.section
+            )
+            let interitemSpacing = self.collectionView(
+                collectionView,
+                layout: collectionViewLayout,
+                minimumInteritemSpacingForSectionAt: indexPath.section
+            )
+
+            let isPad = traitCollection.userInterfaceIdiom == .pad
+            
+            let itemsPerRow: CGFloat = isPad ? 2 : 1
+            
+            let totalHorizontalSpacing = insets.left + insets.right + (interitemSpacing * (itemsPerRow - 1))
+            
+            let itemWidth = (collectionView.bounds.width - totalHorizontalSpacing) / itemsPerRow
+            
+            let thumbnailHeight = itemWidth * 9 / 16
+            let userInfoHeight = itemWidth * 1 / 6
+            let itemHeight = thumbnailHeight + userInfoHeight + 8
+            
+            return CGSize(width: itemWidth, height: itemHeight)
+        }
 }

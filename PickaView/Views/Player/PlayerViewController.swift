@@ -25,6 +25,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     @IBOutlet weak var rateTwoView: UIView!
     
     var viewModel: PlayerViewModel!
+    
+    private var videoPlayerHeightConstraint: NSLayoutConstraint?
 
     // MARK: - Player Properties
 
@@ -163,6 +165,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupPlayerHieght(for: view.bounds.size)
         // 백그라운드 실행 금지
         try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .moviePlayback, options: [])
         
@@ -235,8 +238,20 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         playerLayer?.frame = videoContainerView.bounds
+        collectionView.collectionViewLayout.invalidateLayout()
     }
 
+    override func viewWillTransition(
+        to size: CGSize,
+        with coordinator: any UIViewControllerTransitionCoordinator
+    ) {
+        guard isViewLoaded else { return }
+        coordinator.animate(alongsideTransition: { [weak self] _ in
+            self?.collectionView.collectionViewLayout.invalidateLayout()
+        })
+        setupPlayerHieght(for: size)
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
@@ -477,10 +492,19 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
             UIViewController.attemptRotationToDeviceOrientation()
         }
     }
-
-    /// 현재 지원되는 화면 방향
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return isFullscreenMode ? .landscape : .portrait
+    
+    private func setupPlayerHieght(for size: CGSize) {
+        videoPlayerHeightConstraint?.isActive = false
+        
+        if traitCollection.userInterfaceIdiom == .pad {
+            let isPortrait = size.width < size.height
+            let heightMultiplier = isPortrait ? 0.4 : 0.3
+            videoPlayerHeightConstraint = videoPlayerView.heightAnchor.constraint(
+                equalTo: view.widthAnchor,
+                multiplier: heightMultiplier
+            )
+        }
+        videoPlayerHeightConstraint?.isActive = true
     }
 
     /// 프리젠테이션시 기본 방향

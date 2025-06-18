@@ -95,7 +95,7 @@ extension PlayerViewController {
     /// 가로/세로 모드에 따라 제약조건 전환
     func updateConstraintsForOrientation() {
         let isLandscape = UIDevice.current.orientation.isLandscape
-        if isFullscreenMode || isLandscape {
+        if isFullscreenMode  {
             NSLayoutConstraint.deactivate(portraitConstraints)
             NSLayoutConstraint.activate(landscapeConstraints)
             collectionView.isHidden = true
