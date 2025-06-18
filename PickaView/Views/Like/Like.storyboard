@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Like View Controller-->
+        <!--Like-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
                 <viewController storyboardIdentifier="LikeViewController" id="Y6W-OH-hqX" customClass="LikeViewController" customModule="PickaView" customModuleProvider="target" sceneMemberID="viewController">
@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="D5B-O1-YNa">
-                                <rect key="frame" x="0.0" y="118" width="393" height="617"/>
+                                <rect key="frame" x="0.0" y="0.0" width="393" height="735"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="1Oq-OO-Bte">
                                     <size key="itemSize" width="128" height="128"/>
@@ -46,13 +46,13 @@
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="D5B-O1-YNa" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="6QE-KW-3nn"/>
+                            <constraint firstItem="D5B-O1-YNa" firstAttribute="top" secondItem="5EZ-qb-Rvc" secondAttribute="top" priority="1" id="6QE-KW-3nn"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="D5B-O1-YNa" secondAttribute="trailing" id="Noy-KF-NWR"/>
                             <constraint firstItem="D5B-O1-YNa" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="VFY-GX-P29"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="D5B-O1-YNa" secondAttribute="bottom" id="acV-Q6-iDy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="nvW-Es-wKl"/>
+                    <navigationItem key="navigationItem" title="Like" id="nvW-Es-wKl"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="D5B-O1-YNa" id="yg3-Bg-EP0"/>
@@ -68,8 +68,8 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0r5-Uq-WEw" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Like" image="heart.fill" catalog="system" id="LlS-TU-jWB"/>
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="9OA-GW-ber">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="9OA-GW-ber">
+                        <rect key="frame" x="0.0" y="118" width="393" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="hzD-zO-V0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="jbc-RP-UZn">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -21,7 +21,7 @@
                             <searchBar contentMode="redraw" text="" placeholder="#Search tags" translatesAutoresizingMaskIntoConstraints="NO" id="rM4-xC-Jut">
                                 <rect key="frame" x="0.0" y="162" width="393" height="56"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="56" id="b4p-Cf-IQx"/>
+                                    <constraint firstAttribute="height" constant="56" id="wLV-4p-0yR"/>
                                 </constraints>
                                 <textInputTraits key="textInputTraits" returnKeyType="search"/>
                                 <scopeButtonTitles>
@@ -173,10 +173,10 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="rM4-xC-Jut" firstAttribute="trailing" secondItem="TIZ-io-mjc" secondAttribute="trailing" id="9eK-me-5id"/>
-                            <constraint firstItem="rM4-xC-Jut" firstAttribute="top" secondItem="TIZ-io-mjc" secondAttribute="top" id="CRs-pA-ERN"/>
                             <constraint firstItem="IMi-Ge-B0i" firstAttribute="leading" secondItem="TIZ-io-mjc" secondAttribute="leading" id="GJ5-As-82h"/>
                             <constraint firstItem="IMi-Ge-B0i" firstAttribute="top" secondItem="rM4-xC-Jut" secondAttribute="bottom" id="MK7-QD-AHH"/>
                             <constraint firstItem="TIZ-io-mjc" firstAttribute="bottom" secondItem="DdB-0f-Tho" secondAttribute="bottom" id="ape-NJ-Ni8"/>
+                            <constraint firstItem="rM4-xC-Jut" firstAttribute="top" secondItem="TIZ-io-mjc" secondAttribute="top" id="bWH-fy-ZHE"/>
                             <constraint firstItem="rM4-xC-Jut" firstAttribute="leading" secondItem="TIZ-io-mjc" secondAttribute="leading" id="cNA-Ks-Iu0"/>
                             <constraint firstItem="IMi-Ge-B0i" firstAttribute="trailing" secondItem="TIZ-io-mjc" secondAttribute="trailing" id="gGy-DU-mdJ"/>
                             <constraint firstItem="DdB-0f-Tho" firstAttribute="trailing" secondItem="TIZ-io-mjc" secondAttribute="trailing" id="gHu-Zh-224"/>
@@ -184,7 +184,7 @@
                             <constraint firstItem="DdB-0f-Tho" firstAttribute="leading" secondItem="TIZ-io-mjc" secondAttribute="leading" id="tB7-wQ-zG7"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="PICK A VIEW" id="dnm-v4-6EI"/>
+                    <navigationItem key="navigationItem" title="PICK A VIEW" id="w4T-iI-fhm"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="DdB-0f-Tho" id="gaQ-ZW-Pfo"/>
@@ -195,30 +195,28 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DcI-gi-Vsk" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1916.7938931297708" y="-38.028169014084511"/>
+            <point key="canvasLocation" x="2843.5114503816794" y="-38.028169014084511"/>
         </scene>
         <!--Home-->
         <scene sceneID="aDL-34-gZL">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="hzD-zO-V0r" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Home" image="house.fill" catalog="system" id="m4G-JT-jY5"/>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="jbc-RP-UZn" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="f4e-gf-ZDi">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="b8v-Sj-tsA">
                         <rect key="frame" x="0.0" y="118" width="393" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="HZY-Ch-Qe1" kind="relationship" relationship="rootViewController" id="kVd-Nr-Iea"/>
+                        <segue destination="HZY-Ch-Qe1" kind="relationship" relationship="rootViewController" id="9dr-mZ-NDu"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rMC-8E-EBw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hNE-co-GGN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="990.07633587786256" y="-38.028169014084511"/>
+            <point key="canvasLocation" x="1916.7938931297708" y="-38.028169014084511"/>
         </scene>
     </scenes>
     <resources>
-        <image name="house.fill" catalog="system" width="128" height="104"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
