@@ -82,17 +82,18 @@ PickaView/
 ```
 ## 📁 주요 뷰 화면
 
-| 🏠 홈 화면          | 🔍 검색 화면         |
-| :-----------------: | :-----------------: |
-| <img src="./docs/ScreenShots/홈 메인.png" width="250px"> | <img src="./docs/ScreenShots/홈 태그 검색.png" width="250px"> |
+| <img src="./docs/ScreenShots/home_main.png" width="250px"> | <img src="./docs/ScreenShots/home_tag.png" width="250px"> |
+| :--: | :--: |
+| 🏠 홈 화면 | 🔍 검색 화면 |
 
-| ❤️ 좋아요 화면         | ▶️ 플레이어 화면    |
-| :-----------------: | :-----------------: |
-| <img src="./docs/ScreenShots/좋아요.png" width="250px"> | <img src="./docs/ScreenShots/재생화면.png" width="250px"> |
+| <img src="./docs/ScreenShots/player.png" width="250px"> | <img src="./docs/ScreenShots/like.png" width="250px"> |
+| :--: | :--: |
+| 🎬 재생 화면 | ❤️ 좋아요 화면 |
 
-| ✨ My Page 화면      |                     |
-| :-----------------: | :-----------------: |
-| <img src="./docs/ScreenShots/마이페이지.png" width="250px"> | 
+| <img src="./docs/ScreenShots/mypage.png" width="250px"> |
+| :--: |
+| 🏷️ 마이 페이지 |
+
 
 
 ## 👨‍👩‍👧‍👦 기여자
