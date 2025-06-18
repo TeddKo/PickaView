@@ -4,7 +4,7 @@
    
 
 <p align="center">
-  <img src="./docs/ScreenShots/온보딩 영상.gif" width="250px">
+  <img src="./docs/ScreenShots/appLogo.PNG" width="250px">
 
 </p>
 
