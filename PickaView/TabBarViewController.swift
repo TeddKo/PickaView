@@ -12,10 +12,16 @@ protocol ScrollToTopCapable {
     func scrollToTop()
 }
 
+/// 앱의 메인 탭 바 컨트롤러
+///
+/// 각 탭에 대한 뷰 컨트롤러를 설정하고, 탭이 다시 선택되었을 때 최상단으로 스크롤하는 기능을 제공
 class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
     private let viewModel = TabBarViewModel()
     private var lastSelectedIndex: Int = 0
 
+    /// 초기 탭 바 설정을 구성
+    ///
+    /// 테마를 적용하고, 탭 바 외관을 설정한 뒤 뷰 컨트롤러들을 구성
     override func viewDidLoad() {
         super.viewDidLoad()
         // UITabBarController가 탭 선택 이벤트가 발생했을 때 didSelect를 호출
@@ -25,6 +31,9 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
         viewControllers = viewModel.makeTabViewControllers()
     }
 
+    /// 탭 바의 색상과 외관을 설정
+    ///
+    /// 선택된 항목과 선택되지 않은 항목의 색상을 지정하며, iOS 15 이상에서는 `scrollEdgeAppearance`를 적용
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -46,7 +55,13 @@ class TabBarViewController: UITabBarController, UITabBarControllerDelegate {
             tabBar.scrollEdgeAppearance = appearance
         }
     }
-    // UITabBarControllerDelegate 메서드 추가
+    /// 동일한 탭이 다시 선택되었을 때 스크롤을 최상단으로 이동
+    ///
+    /// `ScrollToTopCapable` 프로토콜을 구현한 뷰 컨트롤러에서만 동작
+    ///
+    /// - Parameters:
+    ///   - tabBarController: 현재 탭 바 컨트롤러
+    ///   - viewController: 선택된 탭의 뷰 컨트롤러
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         guard let index = tabBarController.viewControllers?.firstIndex(of: viewController) else { return }
         // 선택된 인덱스가 마지막으로 선택된 인덱스와 같을 때만 스크롤 최상단으로 이동

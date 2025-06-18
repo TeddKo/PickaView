@@ -228,9 +228,15 @@ final class CoreDataManager {
         saveContext()
     }
     
-    /// Tag Score 계산
+    /// 영상 시청 시간에 따라 태그의 점수를 갱신
+    ///
     /// - Parameters:
-    ///   - video: Tag 점수를 업데이트할 Video 객체
+    ///   - video: 태그 점수를 업데이트할 Video 객체
+    ///   - watchTime: 사용자가 실제로 시청한 시간 (초 단위)
+    ///
+    /// - Note:
+    /// 시청 비율이 15% 이하인 경우 점수는 갱신되지 않습니다. 시청 비율은 소수점 둘째 자리까지 반올림됩니다.
+    /// 태그 점수는 누적되며, 갱신 시 'lastUpdated' 값도 현재 시각으로 갱신됩니다.
     func updateTagScores(for video: Video, watchTime: TimeInterval) {
         guard let tags = video.tags as? Set<Tag> else { return }
         guard let timeStamp = video.timeStamp, timeStamp.totalTime > 0 else { return }

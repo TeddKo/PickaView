@@ -12,7 +12,6 @@ import CoreData
 ///
 /// FRC 생성과 관련된 반복적인 코드를 캡슐화하고 재사용성을 높임.
 enum FRCFactory {
-    
     /// `Video` 엔티티에 대한 `NSFetchedResultsController`를 생성하여 반환함.
     /// - Parameters:
     ///   - context: FRC가 사용할 `NSManagedObjectContext`.

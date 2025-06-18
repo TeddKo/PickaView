@@ -22,7 +22,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var videoPlayerView: UIView!
-    @IBOutlet weak var rateTwoView: UIView!
     
     var viewModel: PlayerViewModel!
     
@@ -98,6 +97,11 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    
+    /// 2배속 재생 안내 뷰
+    lazy var rateTwoView: UIView = {
+        return createRateTwoView()
+    }()
 
     /// 재생/일시정지 버튼
     lazy var playPauseButton: UIButton = {
@@ -123,6 +127,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 전체화면 버튼
     lazy var fullscreenButton: UIButton = {
         let button = createButton(systemName: "arrow.down.backward.and.arrow.up.forward.rectangle", useSmallConfig: true)
+        button.addTarget(self, action: #selector(handleFullscreenButtonTapped(_:)), for: .touchUpInside)
+        return button
+    }()
+    
+    /// 전체화면 취소 버튼
+    lazy var exitFullscreenButton: UIButton = {
+        let button = createButton(systemName: "arrow.up.forward.and.arrow.down.backward.rectangle", useSmallConfig: true)
         button.addTarget(self, action: #selector(handleFullscreenButtonTapped(_:)), for: .touchUpInside)
         return button
     }()
@@ -204,6 +215,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(true, animated: false)
         tabBarController?.tabBar.isHidden = true
+        exitFullscreenButton.isHidden = true
         fullscreenButton.isHidden = false
         dismissButton.isHidden = false
     }
@@ -242,6 +254,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         navigationController?.setNavigationBarHidden(false, animated: false)
         tabBarController?.tabBar.isHidden = false
+        exitFullscreenButton.isHidden = false
         fullscreenButton.isHidden = true
         dismissButton.isHidden = true
     }
@@ -273,6 +286,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
             self.playbackControlsStack.alpha = 0.0
             self.seekerStack.alpha = 0.0
             self.fullscreenButton.alpha = 0.0
+            self.exitFullscreenButton.alpha = 0.0
             self.dismissButton.alpha = 0.0
         }
     }
@@ -356,6 +370,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
                 self.playbackControlsStack.alpha = 1.0
                 self.seekerStack.alpha = 1.0
                 self.fullscreenButton.alpha = 1.0
+                self.exitFullscreenButton.alpha = 1.0
                 self.dismissButton.alpha = 1.0
             }
     }
@@ -401,6 +416,8 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         fullscreenVC.playerLayer = self.playerLayer
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
         fullscreenVC.delegate = self
+        fullscreenVC.exitFullscreenButton = self.exitFullscreenButton
+        fullscreenVC.rateTwoView = self.rateTwoView
 
         self.present(fullscreenVC, animated: true) {
             if #available(iOS 16.0, *) {

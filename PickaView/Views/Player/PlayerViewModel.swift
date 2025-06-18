@@ -7,6 +7,10 @@
 
 import Foundation
 
+/// 플레이어 화면에서 사용되는 뷰모델
+///
+/// 비디오 정보, 좋아요 상태, 태그, 추천 영상 목록 등을 제공
+/// 영상 시청 시간 기록 및 Core Data 업데이트를 관리
 final class PlayerViewModel {
     
     // MARK: - Properties
@@ -21,6 +25,11 @@ final class PlayerViewModel {
 
     // MARK: - Init
     
+    /// 주어진 비디오와 CoreDataManager를 이용하여 뷰모델을 초기화
+    ///
+    /// - Parameters:
+    ///   - video: 현재 재생 중인 비디오 객체
+    ///   - coreDataManager: Core Data 작업을 담당하는 매니저
     init(video: Video, coreDataManager: CoreDataManager) {
         self.video = video
         self.coreDataManager = coreDataManager

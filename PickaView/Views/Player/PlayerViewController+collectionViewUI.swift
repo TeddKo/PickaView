@@ -44,7 +44,13 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         }
     }
     
-    // 섹션 헤더 뷰의 크기 설정 (사용자 정보 + 좋아요 등)
+    /// 섹션 헤더 뷰의 크기를 계산하여 반환
+    ///
+    /// - Parameters:
+    ///   - collectionView: 크기를 계산할 컬렉션 뷰
+    ///   - collectionViewLayout: 현재 적용 중인 레이아웃 객체
+    ///   - section: 대상 섹션의 인덱스
+    /// - Returns: 사용자 정보 및 좋아요 상태 등을 포함한 섹션 헤더의 크기
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
@@ -105,7 +111,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         layout collectionViewLayout: UICollectionViewLayout,
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
-        // 0번 인덱스는 태그 셀이므로 기존 로직을 유지합니다.
+        // 0번 인덱스는 태그 셀이므로 기존 로직을 유지
         if indexPath.item == 0 {
             let font = UIFont.preferredFont(forTextStyle: .body)
             let text = "Sample" as NSString
@@ -165,7 +171,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         replaceWithNewVideo(selectedVideo)
     }
     
-    /// 현재 플레이어 화면을 닫고, 선택한 비디오로 새로운 PlayerViewController를 모달로 띄웁니다.
+    /// 현재 플레이어 화면을 닫고, 선택한 비디오로 새로운 PlayerViewController를 모달로 띄움
     /// - Parameter video: 새로 재생할 비디오 객체
     func replaceWithNewVideo(_ video: Video) {
         guard let presentingVC = self.presentingViewController else { return }
