@@ -290,8 +290,11 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
 
     // 특정 태그 이름으로 비디오 목록을 필터링하고 UI를 업데이트하는 함수
     func applyTagFilter(tagName: String) {
-        //필터 적용 전에 원래 보이던 비디오 리스트 저장
-        originalVideoList = videoList
+
+        // 0. 태그 필터가 처음 적용될 때만 원본 리스트를 저장
+        if !isTagSearchActive {
+            originalVideoList = videoList
+        }
 
         // 1. ViewModel에서 해당 태그 이름으로 필터링된 비디오 리스트를 가져옴
         let filteredVideos = viewModel?.fetchVideosForTag(tagName) ?? []
