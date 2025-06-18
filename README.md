@@ -80,3 +80,27 @@ PickaView/
 ├── Recommendation      // 추천 시스템 로직
 └── Models              // CoreData 모델
 ```
+## 📁 주요 뷰 화면
+
+| 🏠 홈 화면          | 🔍 검색 화면         |
+| :-----------------: | :-----------------: |
+| <img src="./docs/ScreenShots/홈 메인.png" width="250px"> | <img src="./docs/ScreenShots/홈 태그 검색.png" width="250px"> |
+
+| ❤️ 좋아요 화면         | ▶️ 플레이어 화면    |
+| :-----------------: | :-----------------: |
+| <img src="./docs/ScreenShots/좋아요.png" width="250px"> | <img src="./docs/ScreenShots/재생화면.png" width="250px"> |
+
+| ✨ My Page 화면      |                     |
+| :-----------------: | :-----------------: |
+| <img src="./docs/ScreenShots/마이페이지.png" width="250px"> | 
+
+
+## 👨‍👩‍👧‍👦 기여자
+
+| <img src="https://github.com/jihyeonjjang.png?size=200" width="100px"> | <img src="https://github.com/TeddKo.png?size=200" width="100px"> | <img src="https://github.com/kdn0325.png?size=200" width="100px"> | <img src="https://github.com/vinyl-nyl.png?size=200" width="100px"> | <img src="https://github.com/giseungNoh.png?size=200" width="100px"> |
+| :---: | :---: | :---: | :---: | :---: |
+| [장지현](https://github.com/jihyeonjjang) | [고민혁](https://github.com/TeddKo) | [김동녕](https://github.com/kdn0325) | [이준일](https://github.com/vinyl-nyl) | [노기승](https://github.com/giseungNoh) |
+
+
+
+---
