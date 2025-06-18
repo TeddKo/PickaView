@@ -271,7 +271,10 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         }
 
         viewController.modalPresentationStyle = .fullScreen
-        present(viewController, animated: true)
+//        present(viewController, animated: true)
+        let navigationController = UINavigationController(rootViewController: viewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true)
     }
 }
 

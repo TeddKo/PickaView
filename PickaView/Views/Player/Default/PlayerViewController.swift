@@ -148,26 +148,43 @@ class PlayerViewController: BasePlayerViewController, PlayerViewControllerDelega
         ])
     }
     
-    // MARK: - Orientation
-    
-    // FIXME: 아이패드 가로일때
-    /// 기기 방향 변경시 호출(가로 → 전체화면, 세로 → 복귀)
-    @objc func deviceOrientationDidChange() {
-        let orientation = UIDevice.current.orientation
-        if (orientation == .landscapeLeft || orientation == .landscapeRight), !isFullscreenMode {
-            presentFullscreen()
-        } else if orientation == .portrait, isFullscreenMode {
-            // 전체화면에서 FullscreenPlayerViewController가 알아서 내려감
+    /// 아이패드 가로 모드 진입
+    func presentIPadLandscapescreen() {
+        let storyboard = UIStoryboard(name: "IPadLandscape", bundle: nil)
+        
+        guard let ipadVC = storyboard.instantiateViewController(withIdentifier: String(describing: IPadLandscapeViewController.self)) as? IPadLandscapeViewController else { return }
+        
+        ipadVC.modalPresentationStyle = .fullScreen
+        ipadVC.viewModel = viewModel
+        ipadVC.playerManager = playerManager
+        ipadVC.gestureHandler = gestureHandler
+        
+        if let playerManager, let layer = playerManager.playerLayer {
+            ipadVC.videoContainerView?.layer.addSublayer(layer)
+            if let fullBounds = ipadVC.videoContainerView?.bounds {
+                playerManager.updatePlayerLayerFrame(to: fullBounds)
+            }
         }
+        
+        guard let navigationController = self.navigationController else { return }
+        navigationController.setViewControllers([ipadVC], animated: true)
     }
     
-    func setOrientationLegacy(to orientation: UIInterfaceOrientation) {
-        if let scene = view.window?.windowScene {
-            let mask = UIInterfaceOrientationMask.portrait
-            let preferences = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: mask)
-            scene.requestGeometryUpdate(preferences, errorHandler: { error in
-                print("Orientation update error: \(error)")
-            })
+    // MARK: - Orientation
+    
+    /// 기기 방향 변경시 호출
+    @objc func deviceOrientationDidChange() {
+        let orientation = UIDevice.current.orientation
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+
+        if (orientation == .landscapeLeft || orientation == .landscapeRight), !isFullscreenMode {
+            if isPad {
+                presentIPadLandscapescreen()
+            } else {
+                presentFullscreen()
+            }
+        } else if orientation == .portrait, isFullscreenMode {
+            // 전체화면에서 FullscreenPlayerViewController가 알아서 내려감
         }
     }
     

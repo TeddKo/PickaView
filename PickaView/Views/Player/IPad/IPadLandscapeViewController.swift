@@ -180,13 +180,14 @@ class IPadLandscapeViewController: BasePlayerViewController, PlayerViewControlle
         ])
     }
     
-    /// 세로화면 진입
-    func presentPortrait() {
+    /// 아이패드 세로 모드 진입
+    func presentPlayerView() {
         let storyboard = UIStoryboard(name: "Player", bundle: nil)
         
         guard let playerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else { return }
         
         playerVC.modalPresentationStyle = .fullScreen
+        playerVC.viewModel = viewModel
         playerVC.playerManager = playerManager
         playerVC.gestureHandler = gestureHandler
         
@@ -197,25 +198,19 @@ class IPadLandscapeViewController: BasePlayerViewController, PlayerViewControlle
             }
         }
         
-        self.present(playerVC, animated: true) {
-            if let windowScene = playerVC.view.window?.windowScene {
-                let orientationPrefs = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .portrait)
-                windowScene.requestGeometryUpdate(orientationPrefs) { error in
-                    print("Orientation update error: \(error)")
-                }
-            }
-        }
+        guard let navigationController = self.navigationController else { return }
+        navigationController.setViewControllers([playerVC], animated: true)
     }
     
     // MARK: - Orientation
-    
-    /// 기기 방향 변경시 호출(가로 → 전체화면, 세로 → 복귀)
+
+    /// 기기 방향 변경시 호출
     @objc func deviceOrientationDidChange() {
         let orientation = UIDevice.current.orientation
-        if (orientation == .landscapeLeft || orientation == .landscapeRight), !isFullscreenMode {
-            presentFullscreen()
-        } else if orientation == .portrait, isFullscreenMode {
-            // 전체화면에서 FullscreenPlayerViewController가 알아서 내려감
+        let isPad = UIDevice.current.userInterfaceIdiom == .pad
+
+        if orientation == .portrait, isPad {
+            presentPlayerView()
         }
     }
     
@@ -227,6 +222,23 @@ class IPadLandscapeViewController: BasePlayerViewController, PlayerViewControlle
     
     override func requestDismissToHome() {
         dismissVC()
+    }
+    
+    // MARK: - Status Bar & System Gesture
+
+//    /// 시스템 제스처 연기 (모든 엣지)
+//    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
+
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .landscape
+    }
+
+    override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
+        return .landscapeRight
+    }
+
+    override var shouldAutorotate: Bool {
+        return true
     }
     
     // MARK: - Deinit

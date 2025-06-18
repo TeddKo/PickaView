@@ -139,8 +139,8 @@ class FullscreenPlayerViewController: BasePlayerViewController {
     /// 상태바 숨김
     override var prefersStatusBarHidden: Bool { true }
 
-    /// 시스템 제스처 연기 (모든 엣지)
-    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
+//    /// 시스템 제스처 연기 (모든 엣지)
+//    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .landscape

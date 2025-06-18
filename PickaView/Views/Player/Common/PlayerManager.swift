@@ -29,6 +29,8 @@ final class PlayerManager: NSObject {
     
     private var isObservingStatus = false
     
+    private var observedItem: AVPlayerItem?
+    
     weak var delegate: PlayerManagerDelegate?
     
     var videoContainerView: UIView?
@@ -82,19 +84,22 @@ final class PlayerManager: NSObject {
             object: player.currentItem
         )
 
-        if isObservingStatus {
-            player.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status), context: nil)
+        if let observed = observedItem {
+            observed.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+            observedItem = nil
             isObservingStatus = false
         }
 
-        // 플레이어 준비 상태 옵저빙
-        player.currentItem?.addObserver(
-            self,
-            forKeyPath: #keyPath(AVPlayerItem.status),
-            options: [.new],
-            context: nil
-        )
-        isObservingStatus = true
+        if let item = player.currentItem {
+            item.addObserver(
+                self,
+                forKeyPath: #keyPath(AVPlayerItem.status),
+                options: [.new],
+                context: nil
+            )
+            observedItem = item
+            isObservingStatus = true
+        }
     }
 
     /// AVPlayerItem의 status 옵저빙 결과 처리
@@ -160,8 +165,9 @@ final class PlayerManager: NSObject {
         }
         // Notification and KVO 옵저버 해제
         NotificationCenter.default.removeObserver(self)
-        if isObservingStatus {
-            player?.currentItem?.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+        if let observed = observedItem {
+            observed.removeObserver(self, forKeyPath: #keyPath(AVPlayerItem.status))
+            observedItem = nil
             isObservingStatus = false
         }
     }
