@@ -156,4 +156,8 @@ class FullscreenPlayerViewController: UIViewController {
     override var shouldAutorotate: Bool {
         return true
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
