@@ -1,5 +1,5 @@
 //
-//  MediaViewCell.swift
+//  Components.swift
 //  PickaView
 //
 //  Created by Ko Minhyuk on 6/11/25.
@@ -7,11 +7,10 @@
 
 import UIKit
 
-/**
- 해시태그 하나를 표시하는 뷰 컴포넌트.
- */
+/// 해시태그 하나를 표시하는 UI 컴포넌트.
 final class TagView: UIView {
     
+    /// 태그의 이름을 표시하는 UILabel.
     private let tagLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -22,10 +21,8 @@ final class TagView: UIView {
         return label
     }()
     
-    /**
-     주어진 제목으로 TagView를 초기화함.
-     - Parameter title: 태그에 표시될 문자열.
-     */
+    /// 주어진 제목으로 `TagView`를 초기화함.
+    /// - Parameter title: 태그에 표시될 문자열.
     init(title: String) {
         super.init(frame: .zero)
         
@@ -39,6 +36,7 @@ final class TagView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// 뷰의 배경색, 테두리 등 외형을 설정함.
     private func setupUI() {
         backgroundColor = .tagBackground
         layer.borderWidth = 1.0
@@ -49,6 +47,7 @@ final class TagView: UIView {
         addSubview(tagLabel)
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         NSLayoutConstraint.activate([
             tagLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
@@ -59,11 +58,10 @@ final class TagView: UIView {
     }
 }
 
-/**
- 썸네일, 영상 길이를 표시하는 뷰 컴포넌트.
- */
+/// 썸네일과 영상 길이를 표시하는 UI 컴포넌트.
 final class MediaContentView: UIView {
     
+    /// 비디오 썸네일을 표시하는 `UIImageView`.
     private let thumbnailImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
@@ -74,6 +72,7 @@ final class MediaContentView: UIView {
         return image
     }()
     
+    /// 비디오의 총 길이를 표시하는 `UILabel`.
     private let durationLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -95,12 +94,10 @@ final class MediaContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /**
-     뷰를 주어진 데이터로 설정함.
-     - Parameters:
-       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-       - videoLength: 영상 길이 (초단위).
-     */
+    /// 뷰를 주어진 데이터로 설정함.
+    /// - Parameters:
+    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+    ///   - videoLength: 영상 길이 (초단위).
     func configure(
         thumbnailURL: String,
         videoLength: Double
@@ -112,18 +109,18 @@ final class MediaContentView: UIView {
         durationLabel.text = String(format: " %02d:%02d ", minutes, seconds)
     }
     
-    /**
-     썸네일 이미지를 초기화함.
-     */
+    /// 썸네일 이미지를 초기화하여 셀 재사용 시 기존 이미지가 남는 것을 방지함.
     func resetImage() {
         thumbnailImageView.image = nil
     }
     
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         addSubview(thumbnailImageView)
         addSubview(durationLabel)
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         NSLayoutConstraint.activate([
             thumbnailImageView.topAnchor.constraint(equalTo: topAnchor),
@@ -137,11 +134,10 @@ final class MediaContentView: UIView {
     }
 }
 
-/**
- 날짜, 썸네일, 영상 길이를 표시하는 뷰 컴포넌트.
- */
+/// 날짜, 썸네일, 영상 길이를 수직으로 표시하는 UI 컴포넌트.
 final class MediaDateContentView: UIView {
     
+    /// 하위 뷰들을 수직으로 정렬하는 `UIStackView`.
     private let contentVStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -150,6 +146,7 @@ final class MediaDateContentView: UIView {
         return stack
     }()
     
+    /// 날짜를 표시하는 `UILabel`.
     private let dateLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .caption1)
@@ -158,6 +155,7 @@ final class MediaDateContentView: UIView {
         return label
     }()
     
+    /// 썸네일을 표시하는 `UIImageView`.
     private let thumbnailImageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
@@ -168,6 +166,7 @@ final class MediaDateContentView: UIView {
         return image
     }()
     
+    /// 영상 길이를 표시하는 `UILabel`.
     private let durationLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -189,13 +188,11 @@ final class MediaDateContentView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /**
-     뷰를 주어진 데이터로 설정함.
-     - Parameters:
-       - date: 표시할 날짜.
-       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-       - videoLength: 영상 길이 (초단위).
-     */
+    /// 뷰를 주어진 데이터로 설정함.
+    /// - Parameters:
+    ///   - date: 표시할 날짜.
+    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+    ///   - videoLength: 영상 길이 (초단위).
     func configure(
         date: Date,
         thumbnailURL: String,
@@ -212,6 +209,7 @@ final class MediaDateContentView: UIView {
         durationLabel.text = String(format: " %02d:%02d ", minutes, seconds)
     }
     
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         addSubview(contentVStack)
         thumbnailImageView.addSubview(durationLabel)
@@ -220,6 +218,7 @@ final class MediaDateContentView: UIView {
         contentVStack.addArrangedSubview(thumbnailImageView)
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         NSLayoutConstraint.activate([
             contentVStack.topAnchor.constraint(equalTo: topAnchor),
@@ -232,20 +231,19 @@ final class MediaDateContentView: UIView {
         ])
     }
     
-    /**
-     썸네일 이미지를 초기화함.
-     */
+    /// 썸네일 이미지를 초기화함.
     func resetImage() {
         thumbnailImageView.image = nil
     }
 }
 
-/**
- 상단의 액션 버튼과 하단의 태그 목록을 포함하는 뷰.
- */
+/// 상단의 액션 버튼과 하단의 태그 목록을 포함하는 뷰.
 final class ActionableTagsView: UIView {
+    
+    /// 버튼이 탭되었을 때 실행될 클로저.
     private var buttonAction: (() -> Void)?
     
+    /// '좋아요' 상태를 나타내는 `UIButton`.
     private lazy var likeButton: UIButton = {
         let button = UIButton()
         
@@ -259,6 +257,7 @@ final class ActionableTagsView: UIView {
         return button
     }()
     
+    /// 태그 목록을 수평으로 표시하는 뷰.
     private let tagsView = HorizontalTagsView()
 
     override init(frame: CGRect) {
@@ -273,40 +272,34 @@ final class ActionableTagsView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
-        setupLayout()
-        likeButton.addTarget(
-            self,
-            action: #selector(handleButtonTap),
-            for: .touchUpInside
-        )
         fatalError("init(coder:) has not been implemented")
-        
     }
 
-    /**
-     태그 목록을 주어진 문자열 배열로 설정함.
-     - Parameter tags: 표시할 태그 문자열의 배열.
-     */
+    /// 태그 목록을 주어진 `Set<Tag>`으로 설정함.
+    /// - Parameter tags: 표시할 `Tag` 객체의 `Set`.
     func configure(with tags: Set<Tag>) {
         tagsView.configure(with: tags)
     }
     
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         addSubview(likeButton)
         addSubview(tagsView)
     }
     
+    /// 버튼 탭 이벤트를 처리함.
     @objc private func handleButtonTap() {
         guard let buttonAction = buttonAction else { return }
         buttonAction()
     }
     
+    /// 버튼 탭 시 실행될 클로저를 외부에서 설정함.
+    /// - Parameter action: 버튼 탭 시 실행될 클로저.
     func setButtonTapAction(action: @escaping () -> Void) {
         self.buttonAction = action
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         tagsView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -322,11 +315,10 @@ final class ActionableTagsView: UIView {
     }
 }
 
-/**
- 여러 태그를 가로로 스크롤하여 보여주는 뷰.
- */
+/// 여러 태그를 가로로 스크롤하여 보여주는 뷰.
 final class HorizontalTagsView: UIView {
     
+    /// 수평 스크롤을 담당하는 `UIScrollView`.
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
@@ -334,6 +326,7 @@ final class HorizontalTagsView: UIView {
         return scrollView
     }()
     
+    /// 태그들을 수평으로 나열하는 `UIStackView`.
     private let tagsHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -355,12 +348,10 @@ final class HorizontalTagsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /**
-     태그 목록을 주어진 문자열 배열로 설정함.
-     
-     기존에 표시되던 모든 태그를 제거하고 새로운 태그로 교체.
-     - Parameter tags: 표시할 태그 문자열의 배열.
-     */
+    /// 태그 목록을 주어진 `Set<Tag>`으로 설정함.
+    ///
+    /// 기존에 표시되던 모든 태그를 제거하고 새로운 태그로 교체함.
+    /// - Parameter tags: 표시할 `Tag` 객체의 `Set`.
     func configure(with tags: Set<Tag>) {
         tagsHStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
@@ -371,11 +362,13 @@ final class HorizontalTagsView: UIView {
         }
     }
     
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         addSubview(scrollView)
         scrollView.addSubview(tagsHStack)
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: topAnchor),
@@ -393,21 +386,21 @@ final class HorizontalTagsView: UIView {
     }
 }
 
-/**
- 미디어 콘텐츠와 수평 태그 목록을 조합한 히스토리 셀 뷰.
- */
+/// 미디어 콘텐츠(날짜, 썸네일)와 수평 태그 목록을 조합한 히스토리 셀 뷰.
 final class MediaHistoryCellView: UIView {
     
+    /// 하위 뷰들을 수평으로 정렬하는 메인 `UIStackView`.
     private let mainHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
-
         stack.alignment = .bottom
         return stack
     }()
     
+    /// 날짜와 미디어 콘텐츠를 표시하는 뷰.
     private let mediaDateContentView = MediaDateContentView()
+    /// 태그 목록을 수평으로 표시하는 뷰.
     private let tagsView = HorizontalTagsView()
     
     override init(frame: CGRect) {
@@ -420,14 +413,12 @@ final class MediaHistoryCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    /**
-     셀 뷰를 주어진 데이터로 설정함.
-     - Parameters:
-       - date: 표시할 날짜.
-       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-       - videoLength: 영상 길이 (초단위).
-       - tags: 표시할 태그 문자열의 배열.
-     */
+    /// 셀 뷰를 주어진 데이터로 설정함.
+    /// - Parameters:
+    ///   - date: 표시할 날짜.
+    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+    ///   - videoLength: 영상 길이 (초단위).
+    ///   - tags: 표시할 `Tag` 객체의 `Set`.
     func configure(
         date: Date,
         thumbnailURL: String,
@@ -443,6 +434,7 @@ final class MediaHistoryCellView: UIView {
         tagsView.configure(with: tags)
     }
     
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         mainHStack.addArrangedSubview(mediaDateContentView)
         mainHStack.addArrangedSubview(tagsView)
@@ -450,6 +442,7 @@ final class MediaHistoryCellView: UIView {
         addSubview(mainHStack)
     }
     
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         translatesAutoresizingMaskIntoConstraints = false
         
@@ -465,22 +458,17 @@ final class MediaHistoryCellView: UIView {
         ])
     }
     
-    /**
-     셀의 모든 콘텐츠를 초기화함.
-     
-     `prepareForReuse`에서 호출될 것을 대비한 메서드.
-     */
+    /// 셀의 모든 콘텐츠를 초기화함. 셀 재사용을 위함.
     func resetContents() {
         mediaDateContentView.resetImage()
         tagsView.configure(with: [])
     }
 }
 
-/**
- 미디어 콘텐츠와 액션 버튼 및 태그 목록을 조합한 '좋아요' 셀 뷰.
- */
+/// 미디어 콘텐츠와 액션 버튼 및 태그 목록을 조합한 '좋아요' 셀 뷰.
 final class LikeCellView: UIView {
     
+    /// 하위 뷰들을 수평으로 정렬하는 메인 `UIStackView`.
     private let mainHStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
@@ -489,7 +477,9 @@ final class LikeCellView: UIView {
         return stack
     }()
     
+    /// 미디어 콘텐츠를 표시하는 뷰.
     private let mediaContentView = MediaContentView()
+    /// 액션 버튼과 태그 목록을 표시하는 뷰.
     private let actionabletagsView = ActionableTagsView()
     
     override init(frame: CGRect) {
@@ -499,24 +489,20 @@ final class LikeCellView: UIView {
     }
     
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        setupUI()
-        setupLayout()
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// `actionabletagsView`의 버튼 액션을 설정함.
+    /// - Parameter action: 버튼 탭 시 실행될 클로저.
     func setButtonAction(action: @escaping () -> Void) {
         actionabletagsView.setButtonTapAction(action: action)
     }
     
-    /**
-     셀 뷰를 주어진 데이터로 설정함.
-     - Parameters:
-       - date: 표시할 날짜.
-       - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
-       - videoLength: 영상 길이 (초단위).
-       - tags: 표시할 태그 문자열의 배열.
-     */
+    /// 셀 뷰를 주어진 데이터로 설정함.
+    /// - Parameters:
+    ///   - thumbnailURL: 불러올 썸네일 이미지의 URL 주소.
+    ///   - videoLength: 영상 길이 (초단위).
+    ///   - tags: 표시할 `Tag` 객체의 `Set`.
     func configure(
         thumbnailURL: String,
         videoLength: Double,
@@ -530,7 +516,7 @@ final class LikeCellView: UIView {
         actionabletagsView.configure(with: tags)
     }
     
-    
+    /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
         mainHStack.addArrangedSubview(mediaContentView)
         mainHStack.addArrangedSubview(actionabletagsView)
@@ -538,10 +524,7 @@ final class LikeCellView: UIView {
         addSubview(mainHStack)
     }
     
-    func setButtonTapAction(_ action: @escaping () -> Void) {
-        actionabletagsView.setButtonTapAction(action: action)
-    }
-    
+    /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
         translatesAutoresizingMaskIntoConstraints = false
         
@@ -557,18 +540,14 @@ final class LikeCellView: UIView {
         ])
     }
     
-    /**
-     셀의 모든 콘텐츠를 초기화함.
-     
-     `prepareForReuse`에서 호출될 것을 대비한 메서드.
-     */
+    /// 셀의 모든 콘텐츠를 초기화함. 셀 재사용을 위함.
     func resetContents() {
         mediaContentView.resetImage()
         actionabletagsView.configure(with: [])
     }
 }
 
-
+/// 두 개의 아이템을 수평으로, 양 끝에 배치하는 `UIStackView`의 서브클래스.
 final class HorizontalTwoItemStackView : UIStackView {
     
     override init(frame: CGRect) {
@@ -577,11 +556,10 @@ final class HorizontalTwoItemStackView : UIStackView {
     }
     
     required init(coder: NSCoder) {
-        super.init(coder: coder)
-        setupView()
         fatalError("init(coder:) has not been implemented")
     }
     
+    /// 스택뷰의 기본 속성을 설정함.
     private func setupView() {
         self.translatesAutoresizingMaskIntoConstraints = false
         self.axis = .horizontal
@@ -593,9 +571,9 @@ final class HorizontalTwoItemStackView : UIStackView {
             self.trailingAnchor.constraint(equalTo: trailingAnchor),
             self.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
-        
     }
     
+    /// 스택뷰에 왼쪽과 오른쪽 아이템을 추가함.
     func configure(
         leftItem: UIView,
         rightItem: UIView
@@ -605,9 +583,12 @@ final class HorizontalTwoItemStackView : UIStackView {
     }
 }
 
-
+/// 데이터가 없을 때 사용자에게 표시할 내용을 담는 뷰.
+///
+/// 예: '좋아요' 목록이 비어있을 경우 "No liked items yet" 메시지를 표시함.
 final class EmptyView: UIView {
     
+    /// 하위 뷰들을 수직으로 정렬하는 `UIStackView`.
     private let stackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .vertical
@@ -617,8 +598,10 @@ final class EmptyView: UIView {
         return stack
     }()
     
+    /// 아이콘을 표시하는 `UIImageView`.
     private let imageView = UIImageView()
     
+    /// 주 제목을 표시하는 `UILabel`.
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .largeTitle)
@@ -627,6 +610,7 @@ final class EmptyView: UIView {
         return label
     }()
     
+    /// 부가 설명을 표시하는 `UILabel`.
     private let descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = .preferredFont(forTextStyle: .body)
@@ -646,6 +630,7 @@ final class EmptyView: UIView {
         setupLayout()
     }
     
+    /// 하위 뷰들을 추가하고 레이아웃을 설정함.
     private func setupLayout() {
         self.addSubview(stackView)
         
@@ -665,6 +650,11 @@ final class EmptyView: UIView {
         ])
     }
     
+    /// 뷰에 표시될 이미지, 제목, 설명을 설정함.
+    /// - Parameters:
+    ///   - systemName: 표시할 SF Symbol 이름.
+    ///   - title: 주 제목 문자열.
+    ///   - description: 부가 설명 문자열.
     func configure(
         systemName: String,
         title: String,
