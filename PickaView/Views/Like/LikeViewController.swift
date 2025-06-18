@@ -132,7 +132,7 @@ class LikeViewController: UIViewController {
             cell.configure(with: videoToShow)
             
             cell.setButtonAction {
-                self.viewModel?.toggleLike(for: videoToShow)
+                self.viewModel?.toggleLike(for: videoToShow) ?? false
             }
             
             return cell

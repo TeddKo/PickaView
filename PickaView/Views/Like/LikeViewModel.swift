@@ -73,8 +73,9 @@ final class LikeViewModel: NSObject, ObservableObject {
     /// 지정된 비디오의 '좋아요' 상태를 토글(변경)함.
     ///
     /// - Parameter video: '좋아요' 상태를 변경할 Video 객체.
-    func toggleLike(for video: Video) {
+    func toggleLike(for video: Video) -> Bool {
         coreDataManager.updateIsLiked(for: video, isLiked: !video.isLiked)
+        return video.isLiked
     }
 
     /// 이 뷰모델이 사용 중인 CoreDataManager 인스턴스를 반환함.
