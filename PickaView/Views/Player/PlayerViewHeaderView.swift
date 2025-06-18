@@ -37,16 +37,11 @@ class PlayerViewHeaderView: UICollectionReusableView {
                        })
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    override func awakeFromNib() {
+        super.awakeFromNib()
         
-        // 업로더 이미지 뷰를 원형으로 설정
-        userImageView.layer.cornerRadius = userImageView.frame.width / 2
-        userImageView.clipsToBounds = true
-
-        // iPad일 경우 높이 제약 조건을 수정하여 더 작게 표시
         if UIDevice.current.userInterfaceIdiom == .pad {
-            // 기존의 높이 제약 (너비의 1/6 비율)을 찾아 비활성화
+            // 기존 제약 제거
             let allConstraints = self.constraints + userImageView.constraints
             if let constraintToRemove = allConstraints.first(where: {
                 $0.firstItem === userImageView &&
@@ -59,11 +54,19 @@ class PlayerViewHeaderView: UICollectionReusableView {
                 self.removeConstraint(constraintToRemove)
             }
 
-            // 새로 높이 제약을 설정 (너비의 1/12 비율)
+            // 새 제약 추가
             let heightConstraint = userImageView.heightAnchor.constraint(equalTo: self.widthAnchor, multiplier: 1.0 / 12.0)
             heightConstraint.priority = .required
             heightConstraint.isActive = true
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        // 업로더 이미지 뷰를 원형으로 설정
+        userImageView.layer.cornerRadius = userImageView.frame.width / 2
+        userImageView.clipsToBounds = true
     }
     
     /// 헤더 뷰에 데이터를 설정

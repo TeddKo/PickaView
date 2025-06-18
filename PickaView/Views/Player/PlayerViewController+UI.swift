@@ -39,23 +39,13 @@ extension PlayerViewController {
 
         rateTwoView.layer.cornerRadius = 8
 
-        // 세로/가로 레이아웃 제약 정의
-        portraitConstraints = [
+        // 공통 오토레이아웃 (컨트롤/시커/버튼)
+        NSLayoutConstraint.activate([
             videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
             videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
             videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
             videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor),
-        ]
-
-        landscapeConstraints = [
-            videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
-            videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
-            videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
-            videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor)
-        ]
-
-        // 공통 오토레이아웃 (컨트롤/시커/버튼)
-        NSLayoutConstraint.activate([
+            
             controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
             controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
             controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
@@ -86,24 +76,6 @@ extension PlayerViewController {
         fullscreenButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-
-        updateConstraintsForOrientation()
-    }
-
-    // MARK: - 레이아웃 변경
-
-    /// 가로/세로 모드에 따라 제약조건 전환
-    func updateConstraintsForOrientation() {
-        let isLandscape = UIDevice.current.orientation.isLandscape
-        if isFullscreenMode  {
-            NSLayoutConstraint.deactivate(portraitConstraints)
-            NSLayoutConstraint.activate(landscapeConstraints)
-            collectionView.isHidden = true
-        } else {
-            NSLayoutConstraint.deactivate(landscapeConstraints)
-            NSLayoutConstraint.activate(portraitConstraints)
-            collectionView.isHidden = false
-        }
     }
 
     // MARK: - UI 생성 유틸

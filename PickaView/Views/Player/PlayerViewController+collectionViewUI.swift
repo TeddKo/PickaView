@@ -58,10 +58,12 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         
         let stackInsets: CGFloat = 16
         let imageInsets: CGFloat = 10
-        var imageHeight: CGFloat = width / 6
+        var imageHeight: CGFloat
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             imageHeight = width / 12
+        } else {
+            imageHeight = width / 6
         }
         
         let height = stackInsets + ceil(labelHeight) + (imageInsets * 2) + imageHeight
@@ -171,6 +173,7 @@ extension PlayerViewController: UICollectionViewDataSource, UICollectionViewDele
         // 현재 플레이어 화면을 닫은 뒤, 새 비디오로 다시 화면을 구성
         self.dismiss(animated: false) { [weak self] in
             guard let self, let viewModel = self.viewModel else { return }
+            isReturningFromFullscreen = false
             
             let storyboard = UIStoryboard(name: "Player", bundle: nil)
             guard let newPlayerVC = storyboard.instantiateViewController(

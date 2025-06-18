@@ -174,13 +174,13 @@
                                                                 <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" axis="vertical" distribution="equalSpacing" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="1w0-Em-S0C">
                                                                     <rect key="frame" x="85.666666666666657" y="17" width="291.33333333333337" height="40"/>
                                                                     <subviews>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Tw-i7-PoV">
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2Tw-i7-PoV">
                                                                             <rect key="frame" x="0.0" y="0.0" width="291.33333333333331" height="19.333333333333332"/>
                                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCallout"/>
                                                                             <nil key="textColor"/>
                                                                             <nil key="highlightedColor"/>
                                                                         </label>
-                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wo4-l1-mnc">
+                                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="1000" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wo4-l1-mnc">
                                                                             <rect key="frame" x="0.0" y="24.333333333333318" width="291.33333333333331" height="15.666666666666668"/>
                                                                             <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -249,11 +249,11 @@
                                     <rect key="frame" x="0.0" y="0.0" width="393" height="125"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="bdn-pf-iAL">
+                                        <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" axis="vertical" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="bdn-pf-iAL">
                                             <rect key="frame" x="16" y="16" width="361" height="109"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VOy-OF-ghd">
-                                                    <rect key="frame" x="0.0" y="0.0" width="361" height="23.666666666666668"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="361" height="15.666666666666666"/>
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                                     <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
@@ -285,7 +285,7 @@
                                                     </subviews>
                                                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="bottom" secondItem="DVu-VC-ude" secondAttribute="bottom" constant="10" id="8ku-Cl-di3"/>
+                                                        <constraint firstAttribute="bottom" secondItem="DVu-VC-ude" secondAttribute="bottom" priority="750" constant="10" id="8ku-Cl-di3"/>
                                                         <constraint firstAttribute="trailing" secondItem="joD-hk-qVY" secondAttribute="trailing" id="Dp3-z5-W45"/>
                                                         <constraint firstItem="joD-hk-qVY" firstAttribute="centerY" secondItem="DVu-VC-ude" secondAttribute="centerY" id="JI6-gw-7DW"/>
                                                         <constraint firstItem="joD-hk-qVY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="SEL-cW-P11" secondAttribute="trailing" constant="10" id="Kgk-ZA-5Rb"/>
@@ -324,7 +324,6 @@
                             <constraint firstItem="NV6-1e-jJs" firstAttribute="bottom" secondItem="5EZ-qb-Rvc" secondAttribute="bottom" id="Czm-GI-MiD"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="K5S-xl-3OB" secondAttribute="trailing" id="Rrd-cy-vyr"/>
                             <constraint firstItem="K5S-xl-3OB" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="UNZ-cT-3fz"/>
-                            <constraint firstItem="K5S-xl-3OB" firstAttribute="width" secondItem="5EZ-qb-Rvc" secondAttribute="width" id="UrV-4i-uGk"/>
                             <constraint firstItem="K5S-xl-3OB" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="Xoi-60-Hz4"/>
                             <constraint firstItem="NV6-1e-jJs" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="dy6-T8-Dcd"/>
                             <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="NV6-1e-jJs" secondAttribute="trailing" id="kGR-B5-bHA"/>
