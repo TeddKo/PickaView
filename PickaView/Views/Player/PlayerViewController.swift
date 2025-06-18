@@ -461,7 +461,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
             controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
         ])
 
-        updateConstraintsForOrientation()
         setupGestures()
     }
 
