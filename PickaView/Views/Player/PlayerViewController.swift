@@ -208,21 +208,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         dismissButton.isHidden = false
     }
 
-    /// 뷰가 나타날 때 방향/레이아웃 갱신
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        updateConstraintsForOrientation()
-        
-        if player?.currentItem?.status == .readyToPlay {
-            if isReturningFromFullscreen {
-                isReturningFromFullscreen = false
-            } else {
-                viewModel?.updateStartTime()
-                viewModel?.startWatching()
-            }
-        }
-    }
-
     /// 뷰가 사라질 때 전체화면 delegate 호출
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -354,6 +339,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         let seekTime = CMTime(value: Int64(value), timescale: 1)
         player.seek(to: seekTime)
         resetControlsHideTimer()
+        setPlayPauseImage(isPlaying: isPlaying)
     }
 
     /// 영상 재생이 끝났을 때 호출됨 (자동 초기화)
@@ -363,6 +349,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         let playImage = UIImage(systemName: "arrow.clockwise", withConfiguration: symbolConfig)
         playPauseButton.setImage(playImage, for: .normal)
         areControlsVisible = true
+        rateTwoView.isHidden = true
         cancelControlsHide()
         
         UIView.animate(withDuration: 0.3) {

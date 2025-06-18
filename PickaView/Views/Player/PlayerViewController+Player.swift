@@ -79,6 +79,13 @@ extension PlayerViewController {
                     scheduleControlsHide()
                 }
                 updatePlayerTime()
+
+                if isReturningFromFullscreen {
+                    isReturningFromFullscreen = false
+                } else {
+                    viewModel?.updateStartTime()
+                    viewModel?.startWatching()
+                }
             }
         }
     }
