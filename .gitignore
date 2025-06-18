@@ -1,5 +1,38 @@
-# Created by https://www.toptal.com/developers/gitignore/api/swift,xcode
-# Edit at https://www.toptal.com/developers/gitignore?templates=swift,xcode
+# Created by https://www.toptal.com/developers/gitignore/api/macos,xcode,swift
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,xcode,swift
+
+### macOS ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+### macOS Patch ###
+# iCloud generated files
+*.icloud
 
 ### Swift ###
 # Xcode
@@ -85,6 +118,17 @@ fastlane/test_output
 
 iOSInjectionProject/
 
+# Configuration files for sensitive data
+#
+# Track template/example files, but ignore the actual configuration files
+# containing sensitive data (API keys, secrets, etc.).
+# e.g., commit `Secrets.xcconfig.example` but ignore `Secrets.xcconfig`.
+*.xcconfig
+!*.xcconfig.example
+!*.xcconfig.template
+!Shared.xcconfig
+
+
 ### Xcode ###
 
 ## Xcode 8 and earlier
@@ -98,4 +142,4 @@ iOSInjectionProject/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
-# End of https://www.toptal.com/developers/gitignore/api/swift,xcode
+# End of https://www.toptal.com/developers/gitignore/api/macos,xcode,swift

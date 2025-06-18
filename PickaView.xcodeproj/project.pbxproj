@@ -6,8 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */ = {isa = PBXBuildFile; productRef = 8D0EA2B32DF81B1E005AA031 /* DGCharts */; };
+		8D9324722E0148A200D30BFB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 8D9324712E0148A200D30BFB /* README.md */; };
+		B565D31D2DFFD4C9008E1659 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = B565D31C2DFFD4C9008E1659 /* SkeletonView */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		8D20CDCA2DF1728900D1D063 /* PickaView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PickaView.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D9324712E0148A200D30BFB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -36,6 +43,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B565D31D2DFFD4C9008E1659 /* SkeletonView in Frameworks */,
+				8D0EA2B42DF81B1E005AA031 /* DGCharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +56,7 @@
 			children = (
 				8D20CDCC2DF1728900D1D063 /* PickaView */,
 				8D20CDCB2DF1728900D1D063 /* Products */,
+				8D9324712E0148A200D30BFB /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,6 +88,8 @@
 			);
 			name = PickaView;
 			packageProductDependencies = (
+				8D0EA2B32DF81B1E005AA031 /* DGCharts */,
+				B565D31C2DFFD4C9008E1659 /* SkeletonView */,
 			);
 			productName = PickaView;
 			productReference = 8D20CDCA2DF1728900D1D063 /* PickaView.app */;
@@ -107,6 +119,10 @@
 			);
 			mainGroup = 8D20CDC12DF1728900D1D063;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */,
+				B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8D20CDCB2DF1728900D1D063 /* Products */;
 			projectDirPath = "";
@@ -122,6 +138,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8D9324722E0148A200D30BFB /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +162,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -152,7 +170,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -173,6 +191,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PickaView/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -180,7 +199,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -196,6 +215,8 @@
 		};
 		8D20CDE02DF1728B00D1D063 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -259,6 +280,8 @@
 		};
 		8D20CDE12DF1728B00D1D063 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 8D20CDCC2DF1728900D1D063 /* PickaView */;
+			baseConfigurationReferenceRelativePath = Data/Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -335,6 +358,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ChartsOrg/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.0;
+			};
+		};
+		B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.31.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8D0EA2B32DF81B1E005AA031 /* DGCharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8D0EA2B22DF81B1E005AA031 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = DGCharts;
+		};
+		B565D31C2DFFD4C9008E1659 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B565D31B2DFFD4C9008E1659 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8D20CDC22DF1728900D1D063 /* Project object */;
 }
