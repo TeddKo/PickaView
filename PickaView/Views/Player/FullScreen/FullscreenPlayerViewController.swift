@@ -9,87 +9,27 @@ import UIKit
 import AVKit
 
 /// 전체화면 영상 플레이어 뷰 컨트롤러
-class FullscreenPlayerViewController: UIViewController {
-    
-    let viewModel: PlayerViewModel
-    
-    init(viewModel: PlayerViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+class FullscreenPlayerViewController: BasePlayerViewController {
+
     // MARK: - Properties
-
-    /// 영상 출력을 위한 AVPlayerLayer
-    var playerLayer: AVPlayerLayer?
-
-    /// 플레이어 컨트롤 오버레이 뷰 (재생/정지, 시커 등)
-    var controlsOverlayView: UIView?
-
     /// 전체화면 dismiss 시 호출될 델리게이트
     weak var delegate: PlayerViewControllerDelegate?
-
+    
     /// 중복 dismiss 방지용 플래그
     private var isDismissing = false
-
-    /// (옵션) 전체화면 모드 여부
-    private var isFullscreenMode = false
-
-    var exitFullscreenButton: UIButton = UIButton()
-    var dismissButton: UIButton = UIButton()
-
+    
     // MARK: - Lifecycle
 
     /// 뷰가 메모리에 올라왔을 때 호출
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(">> 전체화면 viewDidLoad")
-
-        view.backgroundColor = .black
-
-        // AVPlayerLayer 추가
-        if let playerLayer = playerLayer {
-            playerLayer.frame = view.bounds
-            view.layer.addSublayer(playerLayer)
-        }
-
-        // 오버레이 추가 및 오토레이아웃
-        if let controlsOverlayView = controlsOverlayView {
-            view.addSubview(controlsOverlayView)
-            controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                controlsOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                controlsOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                controlsOverlayView.topAnchor.constraint(equalTo: view.topAnchor),
-                controlsOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
-        }
-
-        exitFullscreenButton.translatesAutoresizingMaskIntoConstraints = false
-        exitFullscreenButton.setImage(UIImage(systemName: "arrow.up.forward.and.arrow.down.backward.rectangle"), for: .normal)
-        exitFullscreenButton.tintColor = .white
-        exitFullscreenButton.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
-        controlsOverlayView?.addSubview(exitFullscreenButton)
         
-        if let overlay = controlsOverlayView {
-            NSLayoutConstraint.activate([
-                exitFullscreenButton.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -16),
-                exitFullscreenButton.bottomAnchor.constraint(equalTo: overlay.bottomAnchor, constant: -37),
-                exitFullscreenButton.widthAnchor.constraint(equalToConstant: 25),
-                exitFullscreenButton.heightAnchor.constraint(equalToConstant: 25)
-            ])
-        }
-
-        // 스와이프 다운 제스처(뷰/오버레이에 모두 등록)
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
-        swipeDown.direction = .down
-        view.addGestureRecognizer(swipeDown)
-        controlsOverlayView?.addGestureRecognizer(swipeDown)
-
+        fullscreenButton.alpha = 1.0
+        
+        fullscreenButton.setImage(UIImage(systemName: "arrow.up.forward.and.arrow.down.backward.rectangle"), for: .normal)
+        
+        fullscreenButton.addTarget(self, action: #selector(handleFullscreenButtonTapped(_:)), for: .touchUpInside)
+        
         // 기기 회전 감지(세로 전환 시 전체화면 닫기)
         NotificationCenter.default.addObserver(
             self,
@@ -97,22 +37,72 @@ class FullscreenPlayerViewController: UIViewController {
             name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
+        
+        // 앱이 백그라운드로 진입할 때 알림 등록
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+
+        // AVPlayerLayer 추가
+//        if let playerLayer = playerLayer {
+//            playerLayer.frame = view.bounds
+//            view.layer.addSublayer(playerLayer)
+//        }
+//
+//        // 오버레이 추가 및 오토레이아웃
+//        if let controlsOverlayView = controlsOverlayView {
+//            view.addSubview(controlsOverlayView)
+//            controlsOverlayView.translatesAutoresizingMaskIntoConstraints = false
+//            NSLayoutConstraint.activate([
+//                controlsOverlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//                controlsOverlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//                controlsOverlayView.topAnchor.constraint(equalTo: view.topAnchor),
+//                controlsOverlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//            ])
+//        }
+
+//        exitFullscreenButton.translatesAutoresizingMaskIntoConstraints = false
+//        exitFullscreenButton.setImage(UIImage(systemName: "arrow.up.forward.and.arrow.down.backward.rectangle"), for: .normal)
+//        exitFullscreenButton.tintColor = .white
+//        exitFullscreenButton.addTarget(self, action: #selector(handleDismiss), for: .touchUpInside)
+//        controlsOverlayView?.addSubview(exitFullscreenButton)
+        
+//        if let overlay = controlsOverlayView {
+//            NSLayoutConstraint.activate([
+//                exitFullscreenButton.trailingAnchor.constraint(equalTo: overlay.trailingAnchor, constant: -16),
+//                exitFullscreenButton.bottomAnchor.constraint(equalTo: overlay.bottomAnchor, constant: -37),
+//                exitFullscreenButton.widthAnchor.constraint(equalToConstant: 25),
+//                exitFullscreenButton.heightAnchor.constraint(equalToConstant: 25)
+//            ])
+//        }
+
+        // 스와이프 다운 제스처(뷰/오버레이에 모두 등록)
+//        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(handleDismiss))
+//        swipeDown.direction = .down
+//        view.addGestureRecognizer(swipeDown)
+//        controlsOverlayView?.addGestureRecognizer(swipeDown)
+// FIXME: requestDismissToHome구현해야하나?
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        exitFullscreenButton.isHidden = false
+        dismissButton.isHidden = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        exitFullscreenButton.isHidden = true
     }
-
-    /// 레이아웃이 변경될 때마다 AVPlayerLayer 크기 갱신
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        playerLayer?.frame = view.bounds
+    
+    // MARK: - Fullscreen Actions
+    
+    @objc func handleFullscreenButtonTapped(_ sender: UIButton) {
+        animateButtonTap(sender) {
+            self.handleDismiss()
+        }
     }
 
     // MARK: - Orientation & Dismiss
@@ -129,13 +119,11 @@ class FullscreenPlayerViewController: UIViewController {
     /// 전체화면 뷰 dismiss 처리 및 델리게이트 호출
     @objc
     private func handleDismiss() {
-        print(">> 전체화면: handleDismiss 호출")
         guard !isDismissing else { return }
         isDismissing = true
 
         // dismiss 및 delegate 전달
         dismiss(animated: true) { [weak self] in
-            print(">> 전체화면 dismiss 완료, delegate 호출")
             self?.delegate?.didDismissFullscreen()
             self?.isDismissing = false
         }

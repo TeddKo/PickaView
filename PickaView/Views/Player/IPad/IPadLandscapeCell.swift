@@ -19,6 +19,8 @@ class IPadLandscapeCell: UICollectionViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         
+        thumbnailImageView.layer.cornerRadius = 5
+        
         durationView.layer.cornerRadius = 4
         
         userImageView.layer.cornerRadius = userImageView.frame.width / 2

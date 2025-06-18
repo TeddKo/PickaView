@@ -203,3 +203,20 @@ extension UIEdgeInsets {
         self.init(top: vertical, left: 0, bottom: vertical, right: 0)
     }
 }
+
+extension UIImage {
+    /// 원형 이미지 생성
+    static func circle(diameter: CGFloat, color: UIColor) -> UIImage {
+        let rect = CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter))
+        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
+
+        let context = UIGraphicsGetCurrentContext()
+        context?.setFillColor(color.cgColor)
+        context?.fillEllipse(in: rect)
+
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        return image ?? UIImage()
+    }
+}

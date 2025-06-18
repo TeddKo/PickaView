@@ -1,5 +1,5 @@
 //
-//  PlayerViewController+UI.swift
+//  BasePlayerViewController+UI.swift
 //  PickaView
 //
 //  Created by junil on 6/11/25.
@@ -8,7 +8,7 @@
 import UIKit
 
 /// PlayerViewController의 UI 및 레이아웃 확장
-extension PlayerViewController {
+extension BasePlayerViewController {
 
     // MARK: - Symbol Config
 
@@ -26,40 +26,29 @@ extension PlayerViewController {
 
     /// UI 컴포넌트 계층 및 오토레이아웃 세팅
     func setupUI() {
-        videoPlayerView.addSubview(videoContainerView)
+        videoContainerView.addSubview(videoView)
 
-        videoContainerView.addSubview(controlsOverlayView)
+        videoView.addSubview(controlsOverlayView)
         controlsOverlayView.addSubview(playbackControlsStack)
         controlsOverlayView.addSubview(seekerStack)
         controlsOverlayView.addSubview(fullscreenButton)
         controlsOverlayView.addSubview(dismissButton)
   
-        videoContainerView.addSubview(rateTwoView)
-        videoContainerView.insertSubview(rateTwoView, belowSubview: controlsOverlayView)
-
+        videoView.addSubview(rateTwoView)
+        videoView.insertSubview(rateTwoView, aboveSubview: controlsOverlayView)
         rateTwoView.layer.cornerRadius = 8
-
-        // 세로/가로 레이아웃 제약 정의
-        portraitConstraints = [
-            videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
-            videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
-            videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
-            videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor),
-        ]
-
-        landscapeConstraints = [
-            videoContainerView.leadingAnchor.constraint(equalTo: videoPlayerView.leadingAnchor),
-            videoContainerView.trailingAnchor.constraint(equalTo: videoPlayerView.trailingAnchor),
-            videoContainerView.topAnchor.constraint(equalTo: videoPlayerView.topAnchor),
-            videoContainerView.bottomAnchor.constraint(equalTo: videoPlayerView.bottomAnchor)
-        ]
 
         // 공통 오토레이아웃 (컨트롤/시커/버튼)
         NSLayoutConstraint.activate([
-            controlsOverlayView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
-            controlsOverlayView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
-            controlsOverlayView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
-            controlsOverlayView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
+            videoView.leadingAnchor.constraint(equalTo: videoContainerView.leadingAnchor),
+            videoView.trailingAnchor.constraint(equalTo: videoContainerView.trailingAnchor),
+            videoView.topAnchor.constraint(equalTo: videoContainerView.topAnchor),
+            videoView.bottomAnchor.constraint(equalTo: videoContainerView.bottomAnchor),
+            
+            controlsOverlayView.topAnchor.constraint(equalTo: videoView.topAnchor),
+            controlsOverlayView.bottomAnchor.constraint(equalTo: videoView.bottomAnchor),
+            controlsOverlayView.leadingAnchor.constraint(equalTo: videoView.leadingAnchor),
+            controlsOverlayView.trailingAnchor.constraint(equalTo: videoView.trailingAnchor),
 
             playbackControlsStack.centerXAnchor.constraint(equalTo: controlsOverlayView.centerXAnchor),
             playbackControlsStack.centerYAnchor.constraint(equalTo: controlsOverlayView.centerYAnchor),
@@ -72,7 +61,10 @@ extension PlayerViewController {
             fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
 
             dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
-            dismissButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16)
+            dismissButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
+            
+            rateTwoView.topAnchor.constraint(equalTo: videoContainerView.topAnchor, constant: 20),
+            rateTwoView.centerXAnchor.constraint(equalTo: videoContainerView.centerXAnchor)
         ])
 
         // 버튼 고정 크기 설정
@@ -86,24 +78,6 @@ extension PlayerViewController {
         fullscreenButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-
-        updateConstraintsForOrientation()
-    }
-
-    // MARK: - 레이아웃 변경
-
-    /// 가로/세로 모드에 따라 제약조건 전환
-    func updateConstraintsForOrientation() {
-        let isLandscape = UIDevice.current.orientation.isLandscape
-        if isFullscreenMode || isLandscape {
-            NSLayoutConstraint.deactivate(portraitConstraints)
-            NSLayoutConstraint.activate(landscapeConstraints)
-            collectionView.isHidden = true
-        } else {
-            NSLayoutConstraint.deactivate(landscapeConstraints)
-            NSLayoutConstraint.activate(portraitConstraints)
-            collectionView.isHidden = false
-        }
     }
 
     // MARK: - UI 생성 유틸
@@ -148,6 +122,43 @@ extension PlayerViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }
+    
+    /// "2x + 아이콘" 형태의 2배속 재생 안내 뷰 생성
+    /// - Returns: UIView 인스턴스 (숨겨진 상태로 생성됨)
+    func createRateTwoView() -> UIView {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        container.layer.cornerRadius = 8
+        container.isHidden = true
+
+        let label = UILabel()
+        label.text = "2x"
+        label.textColor = .white
+        label.font = .boldSystemFont(ofSize: 13)
+
+        let config = UIImage.SymbolConfiguration(scale: .small)
+        let image = UIImage(systemName: "forward.fill", withConfiguration: config)
+        let icon = UIImageView(image: image)
+        icon.contentMode = .scaleAspectFit
+        icon.tintColor = .white
+
+        let stack = UIStackView(arrangedSubviews: [label, icon])
+        stack.axis = .horizontal
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 8),
+            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -8),
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 5),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -5)
+        ])
+
+        return container
+    }
 
     /// 버튼 터치 다운 애니메이션
     /// - Parameters:
@@ -163,22 +174,5 @@ extension PlayerViewController {
                 completion()
             })
         }
-    }
-}
-
-extension UIImage {
-    /// 원형 이미지 생성
-    static func circle(diameter: CGFloat, color: UIColor) -> UIImage {
-        let rect = CGRect(origin: .zero, size: CGSize(width: diameter, height: diameter))
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
-
-        let context = UIGraphicsGetCurrentContext()
-        context?.setFillColor(color.cgColor)
-        context?.fillEllipse(in: rect)
-
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return image ?? UIImage()
     }
 }

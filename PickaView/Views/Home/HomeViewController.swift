@@ -240,27 +240,34 @@ extension HomeViewController: UICollectionViewDataSource, UICollectionViewDelega
         guard let viewModel else { return }
         let selectedVideo = videoList[indexPath.item]
         let vm = PlayerViewModel(video: selectedVideo, coreDataManager: viewModel.getCoreDataManager())
+        let pm = PlayerManager()
+        let gh = PlayerGestureHandler()
 
         let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape ?? false
-
-        // 스토리보드에서 PlayerViewController 인스턴스 생성
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
         let viewController: UIViewController
 
         if isLandscape {
+            let storyboard = UIStoryboard(name: "IPadLandscape", bundle: nil)
+            
             guard let ipadVC = storyboard.instantiateViewController(withIdentifier: String(describing: IPadLandscapeViewController.self)) as? IPadLandscapeViewController else {
                 return
             }
             
             ipadVC.viewModel = vm
+            ipadVC.playerManager = pm
+            ipadVC.gestureHandler = gh
             viewController = ipadVC
         } else {
+            let storyboard = UIStoryboard(name: "Player", bundle: nil)
+            
             guard let playerVC = storyboard.instantiateViewController(withIdentifier: String(describing: PlayerViewController.self)) as? PlayerViewController else {
                 return
             }
             
             playerVC.viewModel = vm
+            playerVC.playerManager = pm
+            playerVC.gestureHandler = gh
             viewController = playerVC
         }
 
