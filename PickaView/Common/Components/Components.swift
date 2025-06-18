@@ -241,7 +241,7 @@ final class MediaDateContentView: UIView {
 final class ActionableTagsView: UIView {
     
     /// 버튼이 탭되었을 때 실행될 클로저.
-    private var buttonAction: (() -> Void)?
+    private var buttonAction: (() -> Bool)?
     
     /// '좋아요' 상태를 나타내는 `UIButton`.
     private lazy var likeButton: UIButton = {
@@ -276,9 +276,12 @@ final class ActionableTagsView: UIView {
     }
 
     /// 태그 목록을 주어진 `Set<Tag>`으로 설정함.
-    /// - Parameter tags: 표시할 `Tag` 객체의 `Set`.
-    func configure(with tags: Set<Tag>) {
+    /// - Parameters:
+    ///   - tags: 표시할 `Tag` 객체의 `Set`.
+    ///   - isLiked: 좋아요 버튼 상태(Bool).
+    func configure(with tags: Set<Tag>, isLiked: Bool) {
         tagsView.configure(with: tags)
+        updateButtonColor(isLiked: isLiked)
     }
     
     /// 하위 뷰들을 뷰 계층에 추가함.
@@ -289,13 +292,32 @@ final class ActionableTagsView: UIView {
     
     /// 버튼 탭 이벤트를 처리함.
     @objc private func handleButtonTap() {
-        guard let buttonAction = buttonAction else { return }
-        buttonAction()
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+        
+        guard let isNowLiked = buttonAction?() else { return }
+        
+        updateButtonColor(isLiked: isNowLiked)
+        
+        UIView.animate(withDuration: 1.2, animations: {
+            self.likeButton.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        }, completion: { _ in
+            UIView.animate(withDuration: 1.2) {
+                self.likeButton.transform = .identity
+            }
+        })
     }
+    
+    /// '좋아요' 상태에 따라 버튼의 tintColor를 변경.
+        /// - Parameter isLiked: 현재 '좋아요' 상태.
+        private func updateButtonColor(isLiked: Bool) {
+            likeButton.tintColor = isLiked ? .main : .systemGray4
+        }
     
     /// 버튼 탭 시 실행될 클로저를 외부에서 설정함.
     /// - Parameter action: 버튼 탭 시 실행될 클로저.
-    func setButtonTapAction(action: @escaping () -> Void) {
+    func setButtonTapAction(action: @escaping () -> Bool) {
         self.buttonAction = action
     }
     
@@ -494,7 +516,7 @@ final class LikeCellView: UIView {
     
     /// `actionabletagsView`의 버튼 액션을 설정함.
     /// - Parameter action: 버튼 탭 시 실행될 클로저.
-    func setButtonAction(action: @escaping () -> Void) {
+    func setButtonAction(action: @escaping () -> Bool) {
         actionabletagsView.setButtonTapAction(action: action)
     }
     
@@ -506,14 +528,15 @@ final class LikeCellView: UIView {
     func configure(
         thumbnailURL: String,
         videoLength: Double,
-        tags: Set<Tag>
+        tags: Set<Tag>,
+        isLiked: Bool
     ) {
         mediaContentView
             .configure(
                 thumbnailURL: thumbnailURL,
                 videoLength: videoLength
             )
-        actionabletagsView.configure(with: tags)
+        actionabletagsView.configure(with: tags, isLiked: isLiked)
     }
     
     /// 하위 뷰들을 뷰 계층에 추가함.
@@ -543,7 +566,7 @@ final class LikeCellView: UIView {
     /// 셀의 모든 콘텐츠를 초기화함. 셀 재사용을 위함.
     func resetContents() {
         mediaContentView.resetImage()
-        actionabletagsView.configure(with: [])
+        actionabletagsView.configure(with: [], isLiked: false)
     }
 }
 

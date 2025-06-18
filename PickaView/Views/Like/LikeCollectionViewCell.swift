@@ -46,13 +46,14 @@ class LikeCollectionViewCell: UICollectionViewCell {
             .configure(
                 thumbnailURL: thumbnailURL,
                 videoLength: timestamp.totalTime,
-                tags: tags
+                tags: tags,
+                isLiked: video.isLiked
             )
     }
     
     /// 셀 내부의 '좋아요' 버튼이 탭되었을 때 실행될 클로저를 설정함.
     /// - Parameter action: 버튼 탭 시 실행될 클로저.
-    func setButtonAction(action: @escaping () -> Void) {
+    func setButtonAction(action: @escaping () -> Bool) {
         likeCellView.setButtonAction(action: action)
     }
     
