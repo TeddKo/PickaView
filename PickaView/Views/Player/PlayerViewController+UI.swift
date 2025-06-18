@@ -32,6 +32,7 @@ extension PlayerViewController {
         controlsOverlayView.addSubview(playbackControlsStack)
         controlsOverlayView.addSubview(seekerStack)
         controlsOverlayView.addSubview(fullscreenButton)
+        controlsOverlayView.addSubview(exitFullscreenButton)
         controlsOverlayView.addSubview(dismissButton)
   
         videoContainerView.addSubview(rateTwoView)
@@ -61,6 +62,9 @@ extension PlayerViewController {
             fullscreenButton.bottomAnchor.constraint(equalTo: seekerStack.topAnchor, constant: -5),
             fullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
 
+            exitFullscreenButton.bottomAnchor.constraint(equalTo: seekerStack.topAnchor, constant: -5),
+            exitFullscreenButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16),
+            
             dismissButton.topAnchor.constraint(equalTo: controlsOverlayView.topAnchor, constant: 16),
             dismissButton.trailingAnchor.constraint(equalTo: controlsOverlayView.trailingAnchor, constant: -16)
         ])
@@ -74,6 +78,8 @@ extension PlayerViewController {
         forwardButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         fullscreenButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
         fullscreenButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        exitFullscreenButton.widthAnchor.constraint(equalToConstant: 25).isActive = true
+        exitFullscreenButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
         dismissButton.widthAnchor.constraint(equalToConstant: 20).isActive = true
         dismissButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
     }

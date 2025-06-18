@@ -64,6 +64,7 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
             self.playbackControlsStack.alpha = alpha
             self.seekerStack.alpha = alpha
             self.fullscreenButton.alpha = alpha
+            self.exitFullscreenButton.alpha = alpha
             self.dismissButton.alpha = alpha
         }
 
