@@ -413,7 +413,7 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         let fullscreenVC = FullscreenPlayerViewController(viewModel: viewModel)
         fullscreenVC.modalPresentationStyle = .fullScreen
-        fullscreenVC.playerLayer = self.playerLayer
+        fullscreenVC.player = player
         fullscreenVC.controlsOverlayView = self.controlsOverlayView
         fullscreenVC.delegate = self
         fullscreenVC.exitFullscreenButton = self.exitFullscreenButton
@@ -421,12 +421,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
         self.present(fullscreenVC, animated: true) {
             if #available(iOS 16.0, *) {
-                if let windowScene = fullscreenVC.view.window?.windowScene {
-                    let orientationPrefs = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
-                    windowScene.requestGeometryUpdate(orientationPrefs) { [weak self] _ in
-                        self?.present(fullscreenVC, animated: true)
-                    }
-                }
+                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+                let orientationPrefs = UIWindowScene.GeometryPreferences.iOS(interfaceOrientations: .landscape)
+                windowScene.requestGeometryUpdate(orientationPrefs, errorHandler: nil)
             } else {
                 UIDevice.current.setValue(UIInterfaceOrientation.landscapeRight.rawValue, forKey: "orientation")
                 UIViewController.attemptRotationToDeviceOrientation()
@@ -436,8 +433,13 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     /// 전체화면에서 복귀(dismiss)할 때 호출 (FullScreen → 일반모드)
     func didDismissFullscreen() {
+        guard let layer = playerLayer else { return }
         isFullscreenMode = false
         setNeedsUpdateOfSupportedInterfaceOrientations()
+        
+        if layer.superlayer == nil {
+            videoContainerView.layer.insertSublayer(layer, at: 0)
+        }
 
         // 화면 방향을 '세로'로 강제 설정
         if #available(iOS 16.0, *) {
