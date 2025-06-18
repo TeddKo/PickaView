@@ -1,4 +1,24 @@
 # PickaView
+<h1 align="center">
+
+   
+
+<p align="center">
+  <img src="./docs/ScreenShots/온보딩 영상.gif" width="250px">
+
+</p>
+
+<h4 align="center"> 스마트 비디오 플레이어 – 시청 기록과 통계로 나만의 취향을 발견하세요..</h4>
+<p align="center">
+  <a href="https://swift.org">
+    <img src="https://img.shields.io/badge/Swift-6.0-orange?logo=swift" alt="Swift Version" />
+  </a>
+  <a href="https://github.com/rlarjsdn3/EST-2th-Team2-Project/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/rlarjsdn3/EST-2th-Team2-Project?color=blue" alt="Contributors" />
+  </a>
+  <br/>
+ 
+</p>
 
 `PickaView`는 Pixabay API를 활용하여 사용자가 다양한 비디오를 탐색하고, 개인화된 추천을 받으며, 시청 기록과 '좋아요' 목록을 관리할 수 있는 iOS 비디오 스트리밍 애플리케이션입니다.
 
