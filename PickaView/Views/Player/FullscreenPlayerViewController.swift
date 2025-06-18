@@ -47,7 +47,6 @@ class FullscreenPlayerViewController: UIViewController {
     /// 뷰가 메모리에 올라왔을 때 호출
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(">> 전체화면 viewDidLoad")
 
         view.backgroundColor = .black
 
@@ -129,13 +128,11 @@ class FullscreenPlayerViewController: UIViewController {
     /// 전체화면 뷰 dismiss 처리 및 델리게이트 호출
     @objc
     private func handleDismiss() {
-        print(">> 전체화면: handleDismiss 호출")
         guard !isDismissing else { return }
         isDismissing = true
 
         // dismiss 및 delegate 전달
         dismiss(animated: true) { [weak self] in
-            print(">> 전체화면 dismiss 완료, delegate 호출")
             self?.delegate?.didDismissFullscreen()
             self?.isDismissing = false
         }
