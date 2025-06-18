@@ -86,14 +86,17 @@ PickaView/
 | :--: | :--: |
 | 🏠 홈 화면 | 🔍 검색 화면 |
 
-| <img src="./docs/ScreenShots/player.png" width="250px"> | <img src="./docs/ScreenShots/like.png" width="250px"> |
+| <img src="./docs/ScreenShots/player.png" width="250px"> | <img src="./docs/ScreenShots/player2.PNG" width="250px"> |
 | :--: | :--: |
-| 🎬 재생 화면 | ❤️ 좋아요 화면 |
+| 🎬 재생 화면  |  재생 화면(전체화면) |
+
+| <img src="./docs/ScreenShots/like.png" width="250px"> | <img src="./docs/ScreenShots/history.PNG" width="250px"> |
+| :--: | :--: |
+| ❤️ 좋아요 화면 | 🕘 시청 기록 화면 |
 
 | <img src="./docs/ScreenShots/mypage.png" width="250px"> |
 | :--: |
 | 🏷️ 마이 페이지 |
-
 
 
 ## 👨‍👩‍👧‍👦 기여자
