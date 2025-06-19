@@ -49,6 +49,7 @@ final class TagView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             tagLabel.topAnchor.constraint(equalTo: topAnchor, constant: 8),
             tagLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
@@ -122,6 +123,7 @@ final class MediaContentView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             thumbnailImageView.topAnchor.constraint(equalTo: topAnchor),
             thumbnailImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -211,6 +213,7 @@ final class MediaDateContentView: UIView {
     
     /// 하위 뷰들을 뷰 계층에 추가함.
     private func setupUI() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentVStack)
         thumbnailImageView.addSubview(durationLabel)
         
@@ -323,7 +326,7 @@ final class ActionableTagsView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
-        tagsView.translatesAutoresizingMaskIntoConstraints = false
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             likeButton.topAnchor.constraint(equalTo: self.topAnchor),
@@ -392,6 +395,7 @@ final class HorizontalTagsView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
+        self.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -466,7 +470,7 @@ final class MediaHistoryCellView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
-        translatesAutoresizingMaskIntoConstraints = false
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             mainHStack.topAnchor.constraint(equalTo: topAnchor),
@@ -475,7 +479,6 @@ final class MediaHistoryCellView: UIView {
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
-            mediaDateContentView.heightAnchor.constraint(equalTo: mediaDateContentView.widthAnchor, multiplier: 0.75),
             tagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }
@@ -549,7 +552,7 @@ final class LikeCellView: UIView {
     
     /// 하위 뷰의 레이아웃 제약조건을 설정함.
     private func setupLayout() {
-        translatesAutoresizingMaskIntoConstraints = false
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             mainHStack.topAnchor.constraint(equalTo: topAnchor),
@@ -558,7 +561,6 @@ final class LikeCellView: UIView {
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
             
             mediaContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
-            mediaContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
             actionabletagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }
