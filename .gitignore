@@ -118,17 +118,6 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-# Configuration files for sensitive data
-#
-# Track template/example files, but ignore the actual configuration files
-# containing sensitive data (API keys, secrets, etc.).
-# e.g., commit `Secrets.xcconfig.example` but ignore `Secrets.xcconfig`.
-*.xcconfig
-!*.xcconfig.example
-!*.xcconfig.template
-!Shared.xcconfig
-
-
 ### Xcode ###
 
 ## Xcode 8 and earlier
