@@ -473,9 +473,9 @@ final class MediaHistoryCellView: UIView {
             mainHStack.leadingAnchor.constraint(equalTo: leadingAnchor),
             mainHStack.trailingAnchor.constraint(equalTo: trailingAnchor),
             mainHStack.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
+
             mediaDateContentView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5),
-            mediaDateContentView.heightAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.4),
+            mediaDateContentView.heightAnchor.constraint(equalTo: mediaDateContentView.widthAnchor, multiplier: 0.75),
             tagsView.widthAnchor.constraint(equalTo: mainHStack.safeAreaLayoutGuide.widthAnchor, multiplier: 0.5)
         ])
     }

@@ -177,8 +177,6 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
         super.viewDidLoad()
         
         setupPlayerHieght(for: view.bounds.size)
-        // 백그라운드 실행 금지
-        try? AVAudioSession.sharedInstance().setCategory(.ambient, mode: .moviePlayback, options: [])
         
         if let viewModel, let videoURL = viewModel.videoURL {
             setupPlayer(with: videoURL)
@@ -212,7 +210,15 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.ambient, mode: .default, options: [])
+            try session.setActive(true)
+        } catch {
+            print(error)
+        }
+        
         navigationController?.setNavigationBarHidden(true, animated: false)
         tabBarController?.tabBar.isHidden = true
         exitFullscreenButton.isHidden = true
@@ -532,6 +538,9 @@ class PlayerViewController: UIViewController, PlayerViewControllerDelegate {
     /// 뷰컨트롤러 해제 시 클린업
     deinit {
         if let token = timeObserverToken { player?.removeTimeObserver(token) }
+        if let currentItem = player?.currentItem {
+            currentItem.removeObserver(self, forKeyPath: "status")
+        }
         NotificationCenter.default.removeObserver(self)
     }
 }
