@@ -60,23 +60,32 @@
 ## 📂 프로젝트 구조
 
 ```
-PickaView/
+PickaView
+├── App                           // 앱 진입 지점 설정
+│
 ├── Data
-│   ├── Network         // API 통신 (APIClient, Service, DTO)
-│   ├── Persistence     // CoreData 관리
-│   └── UserDefault     // UserDefaults 관리 (ThemeManager)
+│   ├── Network                   // API 요청 및 네트워크 관련 전반 처리
+│   │   └── Services              // 외부 API에 대한 실제 호출 구현
+│   ├── Persistence               // Core Data 관련 설정 및 데이터 영속성 관리
+│   └── UserDefault               // 사용자 설정 정보 저장 및 접근
+│
+├── Recommendation                // 영상 추천 알고리즘
+│
+├── Shared
+│   ├── Components                // 여러 화면에서 공통으로 사용하는 UI 컴포넌트
+│   ├── Extentions                // 전역에서 사용하는 확장 메서드
+│   └── Factories                 // 객체 생성 또는 관리 책임 분리
+│
 ├── Views
-│   ├── Home            // 홈 화면 (추천, 검색)
-│   ├── Like            // '좋아요' 목록 화면
-│   ├── MyPage          // 마이페이지 (통계, 설정)
-│   ├── Player          // 비디오 플레이어 화면
-│   └── Root            // 탭바 컨트롤러
-├── Common
-│   ├── Components      // 재사용 가능한 UI 컴포넌트
-│   ├── Factories       // 객체 생성 팩토리
-│   └── Extensions      // 클래스 확장
-├── Recommendation      // 추천 시스템 로직
-└── Models              // CoreData 모델
+│   ├── Home                      // 홈 화면, 영상 검색 및 리스트 표시
+│   ├── Like                      // 좋아요한 영상 목록 표시
+│   ├── MyPage                    // 통계 및 최근 본 영상 등 마이페이지 주요 콘텐츠
+│   ├── MyPageHistories           // 마이페이지 내 시청 기록 상세 화면
+│   ├── Root                      // 런치화면, 탭바 등 앱의 루트 구성
+│   └── VideoPlayer               // 영상 재생 화면 및 관련 제어 로직
+│
+├── Assets.xcassets
+└── Info.plist
 ```
 ## 📁 주요 뷰 화면
 
